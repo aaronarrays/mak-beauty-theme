@@ -95,126 +95,6 @@
         "reset_spacing": false
       }
     },
-    "slideshow_8KKtNU": {
-      "type": "slideshow",
-      "blocks": {
-        "slider_item_YipJd4": {
-          "type": "slider_item",
-          "settings": {
-            "overlay_opacity": 0,
-            "slider_effect": "effect_fadeinup",
-            "subheading": "Sweater Collection",
-            "heading": "Cozy Crew<br>\nOnline Exclusive",
-            "description": "",
-            "first_button_label": "Shop Collection",
-            "first_button_link": "shopify://collections/sweaters",
-            "first_button_style": false,
-            "second_button_label": "",
-            "second_button_link": "",
-            "second_button_style": false,
-            "content_alignment": "left",
-            "content_position": "middle-left",
-            "content_width": "full_width",
-            "content_max_width": 100,
-            "content_padding_block": 60,
-            "content_padding_inline": 120,
-            "show_content_background": false,
-            "content_background": "#ffffff",
-            "content_box_opacity": 100,
-            "content_alignment_mobile": "center"
-          }
-        },
-        "slider_item_jiLA39": {
-          "type": "slider_item",
-          "settings": {
-            "overlay_opacity": 0,
-            "slider_effect": "effect_fadeinup",
-            "subheading": "Season Collection",
-            "heading": "Pure Ease<br>\nAll-Day Cool",
-            "description": "",
-            "first_button_label": "Shop Collection",
-            "first_button_link": "shopify://collections/best-seller",
-            "first_button_style": false,
-            "second_button_label": "",
-            "second_button_link": "",
-            "second_button_style": false,
-            "content_alignment": "left",
-            "content_position": "middle-left",
-            "content_width": "full_width",
-            "content_max_width": 100,
-            "content_padding_block": 60,
-            "content_padding_inline": 120,
-            "show_content_background": false,
-            "content_background": "#ffffff",
-            "content_box_opacity": 100,
-            "content_alignment_mobile": "center"
-          }
-        },
-        "slider_item_iAiXpe": {
-          "type": "slider_item",
-          "settings": {
-            "overlay_opacity": 0,
-            "slider_effect": "effect_fadeinup",
-            "subheading": "Look Exclusive",
-            "heading": "Clean Look<br>\nSuper Comfort",
-            "description": "",
-            "first_button_label": "Shop Collection",
-            "first_button_link": "shopify://collections/crop-top",
-            "first_button_style": false,
-            "second_button_label": "",
-            "second_button_link": "",
-            "second_button_style": false,
-            "content_alignment": "left",
-            "content_position": "middle-left",
-            "content_width": "full_width",
-            "content_max_width": 100,
-            "content_padding_block": 60,
-            "content_padding_inline": 120,
-            "show_content_background": false,
-            "content_background": "#ffffff",
-            "content_box_opacity": 100,
-            "content_alignment_mobile": "center"
-          }
-        }
-      },
-      "block_order": [
-        "slider_item_YipJd4",
-        "slider_item_jiLA39",
-        "slider_item_iAiXpe"
-      ],
-      "custom_css": [
-        ".h-full_screen {--height-topbar: 41px;}",
-        "@media (max-width: 767.988px) {.sec__content {align-items: end; padding-bottom: 30px; }}"
-      ],
-      "settings": {
-        "section_width": "full_width",
-        "slide_height": "custom",
-        "desktop_height": 480,
-        "mobile_height": 300,
-        "color_scheme": "scheme-c4fa9b2e-e94e-477a-a1f0-ab1da4f2a676",
-        "slide_effect": "fade",
-        "reveal_slideshow": false,
-        "show_arrow": true,
-        "carousel_pagination": "show_dots",
-        "pagination_position": "center",
-        "autoplay": false,
-        "autorotate_speed": 5,
-        "subheading_font_size": 18,
-        "subheading_font_weight": "subheading_weight",
-        "subheading_spacing_bottom": 15,
-        "heading_font_size": 60,
-        "heading_font_weight": "heading_weight",
-        "heading_uppercase": false,
-        "heading_spacing_bottom": 40,
-        "des_font_size": 19,
-        "des_font_weight": "heading_weight",
-        "des_spacing_bottom": 60,
-        "content_below_image": false,
-        "padding_top": 0,
-        "padding_bottom": 0,
-        "reset_spacing": false
-      }
-    },
     "collection_list_VmEYkJ": {
       "type": "collection-list",
       "blocks": {
@@ -272,8 +152,8 @@
       "settings": {
         "section_width": "fluid_container",
         "color_scheme": "",
-        "heading": "Top Collections",
-        "description": "<p>Express your style with our standout collection—fashion meets sophistication.</p>",
+        "heading": "",
+        "description": "",
         "show_view_all_button": false,
         "header_size": "medium",
         "header_alignment": "center",
@@ -302,8 +182,8 @@
         "image_custom_width": true,
         "image_width": 185,
         "padding_top": 0,
-        "padding_bottom": 0,
-        "reset_spacing": false
+        "padding_bottom": 60,
+        "reset_spacing": true
       }
     },
     "featured_collection_TCP844": {
@@ -342,147 +222,8 @@
         "block_position": "left",
         "carousel_on_mobile": false,
         "items_per_row_mobile": 2,
-        "padding_top": 0,
-        "padding_bottom": 10,
-        "reset_spacing": false
-      }
-    },
-    "outfit_idea_kakiyq": {
-      "type": "outfit-idea",
-      "blocks": {
-        "idea_MGP8jb": {
-          "type": "_idea",
-          "settings": {
-            "product_1": "crossover-long-sleeve-crop-top-copy",
-            "product_2": "basic-sleeveless-tank-top-copy",
-            "product_3": "",
-            "product_4": "",
-            "product_5": ""
-          },
-          "blocks": {}
-        },
-        "group_idea_image_overlay_9BVUcw": {
-          "type": "_group-idea-image-overlay",
-          "name": "t:sections.image_with_text_overlay.name",
-          "settings": {
-            "color_scheme": "scheme-3d10de96-a479-49bd-819c-e044746b4f3e",
-            "image_link": "",
-            "image_overlay_opacity": 0,
-            "content_alignment": "center",
-            "content_position": "bottom-center",
-            "content_padding_block": 30,
-            "content_padding_inline": 30
-          },
-          "blocks": {
-            "subheading_zbh76L": {
-              "type": "subheading",
-              "settings": {
-                "subheading": "DON'T MISS OUT...",
-                "font_size": 12,
-                "font_weight": "subheading_weight",
-                "uppercase": false,
-                "spacing_bottom": 20
-              },
-              "blocks": {}
-            },
-            "heading_wqjNqV": {
-              "type": "heading",
-              "settings": {
-                "heading": "Today's Big Deals",
-                "font_size": 36,
-                "font_weight": "heading_weight",
-                "uppercase": false,
-                "spacing_bottom": 10
-              },
-              "blocks": {}
-            },
-            "description_yE6kqJ": {
-              "type": "description",
-              "name": "t:blocks.general.text.name",
-              "settings": {
-                "text": "<p>Sale up to 75% all items. Hurry Up!</p>",
-                "font_size": 14,
-                "font_weight": "body_weight",
-                "spacing_bottom": 25
-              },
-              "blocks": {}
-            },
-            "timer_RgCCrW": {
-              "type": "timer",
-              "name": "t:blocks.general.countdown.name",
-              "settings": {
-                "timer": "09-22-2026",
-                "expired_message": "Time expired",
-                "style": "default",
-                "font_size": 24,
-                "spacing_bottom": 50
-              },
-              "blocks": {}
-            },
-            "button_aiVQDN": {
-              "type": "button",
-              "settings": {
-                "show_full_width": false,
-                "first_button_label": "Shop Sale",
-                "first_button_link": "shopify://collections/crop-top",
-                "first_button_type": "primary",
-                "second_button_label": "",
-                "second_button_link": "",
-                "second_button_type": "primary",
-                "spacing_bottom": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "subheading_zbh76L",
-            "heading_wqjNqV",
-            "description_yE6kqJ",
-            "timer_RgCCrW",
-            "button_aiVQDN"
-          ]
-        },
-        "idea_aMAixR": {
-          "type": "_idea",
-          "settings": {
-            "product_1": "back-printed-t-shirt-copy",
-            "product_2": "leather-straps-sandals",
-            "product_3": "",
-            "product_4": "",
-            "product_5": ""
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "idea_MGP8jb",
-        "group_idea_image_overlay_9BVUcw",
-        "idea_aMAixR"
-      ],
-      "name": "t:sections.outfit-idea.name",
-      "settings": {
-        "section_width": "fluid_container",
-        "color_scheme": "scheme-3d10de96-a479-49bd-819c-e044746b4f3e",
-        "heading": "",
-        "description": "",
-        "header_size": "medium",
-        "header_alignment": "left",
-        "image_ratio": "adapt",
-        "custom_ratio": "",
-        "items_per_row": 3,
-        "column_gap": 30,
-        "carousel_on_mobile": false,
-        "padding_top": 0,
-        "padding_bottom": 0,
-        "reset_spacing": false
-      }
-    },
-    "divider_FcGgzn": {
-      "type": "divider",
-      "settings": {
-        "section_width": "full_width",
-        "border_height": 1,
-        "border_color": "#ebebeb",
+        "padding_top": 60,
+        "padding_bottom": 60,
         "reset_spacing": true
       }
     },
@@ -529,15 +270,6 @@
         "reset_spacing": true
       }
     },
-    "divider_xPQYgr": {
-      "type": "divider",
-      "settings": {
-        "section_width": "full_width",
-        "border_height": 1,
-        "border_color": "#ebebeb",
-        "reset_spacing": false
-      }
-    },
     "featured_collection_nTcT4V": {
       "type": "featured-collection",
       "name": "t:names.featured_collection",
@@ -574,9 +306,9 @@
         "block_position": "left",
         "carousel_on_mobile": false,
         "items_per_row_mobile": 2,
-        "padding_top": 0,
-        "padding_bottom": 10,
-        "reset_spacing": false
+        "padding_top": 60,
+        "padding_bottom": 60,
+        "reset_spacing": true
       }
     },
     "product_testimonials_KNN6XE": {
@@ -640,8 +372,8 @@
         "autorotate_speed": 5,
         "reveal": false,
         "items_per_row_mobile": 1,
-        "padding_top": 0,
-        "padding_bottom": 0,
+        "padding_top": 60,
+        "padding_bottom": 60,
         "reset_spacing": false
       }
     },
@@ -925,13 +657,9 @@
   },
   "order": [
     "hero_cards_TbEDdi",
-    "slideshow_8KKtNU",
     "collection_list_VmEYkJ",
     "featured_collection_TCP844",
-    "outfit_idea_kakiyq",
-    "divider_FcGgzn",
     "scrolling_text_U3mttg",
-    "divider_xPQYgr",
     "featured_collection_nTcT4V",
     "product_testimonials_KNN6XE",
     "rich_text_EcBgbR",
