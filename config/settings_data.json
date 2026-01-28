@@ -29,6 +29,8 @@
     "pre_order_background": "#6a33d8",
     "sold_out_background": "#666666",
     "custom_badge_background": "#14854e",
+    "show_wishlist": false,
+    "show_compare": false,
     "product_alignment": "center",
     "product_size": 15,
     "price_size": 15,
