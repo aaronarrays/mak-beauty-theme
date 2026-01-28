@@ -309,7 +309,7 @@
               "settings": {
                 "show_full_width": false,
                 "first_button_label": "Comprar Ahora",
-                "first_button_link": "#",
+                "first_button_link": "shopify://collections/all",
                 "first_button_type": "primary",
                 "second_button_label": "",
                 "second_button_link": "",
