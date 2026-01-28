@@ -64,30 +64,12 @@
     "header": {
       "type": "header",
       "blocks": {
-        "menu_promotion_EeqGGC": {
+        "menu_promotion_LeEe3g": {
           "type": "menu_promotion",
           "settings": {
-            "text": "Home",
-            "open-link-newtab": true,
+            "text": "Marcas",
+            "open-link-newtab": false,
             "item_label": "unset",
-            "promotion_menu_column": 3,
-            "mega_custom_width": 1100,
-            "center_submenu": true,
-            "full_width": false,
-            "promotion_position": "right",
-            "promotion_image_width": 31,
-            "promotion_link_1": "https://themeforest.net/item/glozin-multipurpose-shopify-theme-os-20/53006461?s_rank=1",
-            "promotion_link_newtab_1": true,
-            "promotion_link_2": "",
-            "promotion_link_newtab_2": true
-          }
-        },
-        "menu_promotion_xJdpmk": {
-          "type": "menu_promotion",
-          "settings": {
-            "text": "Sale",
-            "open-link-newtab": true,
-            "item_label": "hot",
             "promotion_menu_column": 4,
             "mega_custom_width": 1030,
             "center_submenu": true,
@@ -99,47 +81,10 @@
             "promotion_link_2": "",
             "promotion_link_newtab_2": true
           }
-        },
-        "menu_collection_EkdGyG": {
-          "type": "menu_collection",
-          "settings": {
-            "text": "Shop",
-            "open-link-newtab": true,
-            "item_label": "unset",
-            "collection_menu_column": 2,
-            "mega_custom_width": 1030,
-            "center_submenu": true,
-            "full_width": false,
-            "collection_width": 52,
-            "collection_1": "sweaters",
-            "collection_2": "handbags",
-            "collection_3": ""
-          }
-        },
-        "menu_promotion_rWzQL6": {
-          "type": "menu_promotion",
-          "settings": {
-            "text": "Products",
-            "open-link-newtab": true,
-            "item_label": "unset",
-            "promotion_menu_column": 4,
-            "mega_custom_width": 1030,
-            "center_submenu": true,
-            "full_width": true,
-            "promotion_position": "right",
-            "promotion_image_width": 34,
-            "promotion_link_1": "shopify://collections/activewear",
-            "promotion_link_newtab_1": true,
-            "promotion_link_2": "",
-            "promotion_link_newtab_2": true
-          }
         }
       },
       "block_order": [
-        "menu_promotion_EeqGGC",
-        "menu_promotion_xJdpmk",
-        "menu_collection_EkdGyG",
-        "menu_promotion_rWzQL6"
+        "menu_promotion_LeEe3g"
       ],
       "settings": {
         "section_width": "stretch_width",
@@ -179,7 +124,7 @@
           "activewear"
         ],
         "menu_mobile_color": "#ffffff",
-        "menu_mobile_background": "#d0473e",
+        "menu_mobile_background": "#fa9ccb",
         "show_search": true,
         "show_account_icon": true,
         "show_wishlist_icon": true,
