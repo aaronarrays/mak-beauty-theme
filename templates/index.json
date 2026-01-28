@@ -189,8 +189,8 @@
       "settings": {
         "section_width": "fluid_container",
         "color_scheme": "",
-        "heading": "Best Selling",
-        "description": "Unmatched design—superior performance and customer satisfaction in one.",
+        "heading": "LOS MÁS VENDIDOS",
+        "description": "",
         "show_view_all_button": false,
         "space_between_header": true,
         "header_size": "medium",
@@ -267,8 +267,132 @@
         "reset_spacing": true
       }
     },
+    "multi_content_GYmhdq": {
+      "type": "multi-content",
+      "blocks": {
+        "group_text_9mxGax": {
+          "type": "_group-text",
+          "name": "t:blocks.names.text",
+          "settings": {
+            "color_scheme": "",
+            "content_width": "50%",
+            "content_alignment": "start",
+            "vertical_align": "start",
+            "content_padding_block": 30,
+            "content_padding_inline": 30
+          },
+          "blocks": {
+            "heading_a7i9Rw": {
+              "type": "heading",
+              "settings": {
+                "heading": "Encuentra tu combinación",
+                "font_size": 36,
+                "font_weight": "subheading_weight",
+                "uppercase": false,
+                "spacing_bottom": 20
+              },
+              "blocks": {}
+            },
+            "description_ghR9En": {
+              "type": "description",
+              "name": "t:blocks.general.text.name",
+              "settings": {
+                "text": "<p>En <strong>Mak Beauty</strong>, creemos en la magia de la combinación perfecta. Imagina un look radiante que realce tu belleza natural y destaque tus mejores rasgos. Completa tu estilo con detalles que te hagan sentir segura y deslumbrante en cada ocasión.<br/>Cada elemento está diseñado para complementarse y resaltar tu singularidad. ¡Descubre la combinación perfecta y luce espectacular todos los días con <strong>Mak Beauty</strong></p>",
+                "font_size": 14,
+                "font_weight": "body_weight",
+                "spacing_bottom": 10
+              },
+              "blocks": {}
+            },
+            "button_ewJpq3": {
+              "type": "button",
+              "settings": {
+                "show_full_width": false,
+                "first_button_label": "Comprar Ahora",
+                "first_button_link": "#",
+                "first_button_type": "primary",
+                "second_button_label": "",
+                "second_button_link": "",
+                "second_button_type": "primary",
+                "spacing_bottom": 10
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "heading_a7i9Rw",
+            "description_ghR9En",
+            "button_ewJpq3"
+          ]
+        },
+        "group_media_content_mGtqNa": {
+          "type": "_group-media-content",
+          "settings": {
+            "color_scheme": "",
+            "content_width": "50%",
+            "media_type": "video",
+            "image_link": "",
+            "video_url": "https://www.youtube.com/watch?v=AG9Fionf4AA",
+            "autoplay": true,
+            "video_ratio": "16/9",
+            "overlay_opacity": 0,
+            "content_type": "overlay",
+            "content_alignment": "start",
+            "content_position": "top-left",
+            "content_padding_block": 30,
+            "content_padding_inline": 30,
+            "content_mobile_image": false
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "group_text_9mxGax",
+        "group_media_content_mGtqNa"
+      ],
+      "name": "t:sections.multi_content.name",
+      "settings": {
+        "section_width": "fluid_container",
+        "color_scheme": "default",
+        "heading": "",
+        "description": "",
+        "header_size": "medium",
+        "header_alignment": "center",
+        "column_gap": 30,
+        "equal_height_adjustment": false,
+        "vertical_align": "center",
+        "carousel_on_mobile": false,
+        "items_per_row_mobile": 1,
+        "padding_top": 30,
+        "padding_bottom": 30,
+        "reset_spacing": false
+      }
+    },
     "featured_collection_nTcT4V": {
       "type": "featured-collection",
+      "blocks": {
+        "group_media_product_7qqaYq": {
+          "type": "_group-media-product",
+          "name": "t:blocks.names.media_banner",
+          "settings": {
+            "color_scheme": "",
+            "media_type": "image",
+            "image_link": "",
+            "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
+            "autoplay": true,
+            "video_ratio": "16/9",
+            "overlay_opacity": 0,
+            "content_alignment": "start",
+            "content_position": "top-left",
+            "content_padding_block": 30,
+            "content_padding_inline": 30
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "group_media_product_7qqaYq"
+      ],
       "name": "t:names.featured_collection",
       "settings": {
         "section_width": "fluid_container",
@@ -441,6 +565,7 @@
     "collection_list_VmEYkJ",
     "featured_collection_TCP844",
     "scrolling_text_U3mttg",
+    "multi_content_GYmhdq",
     "featured_collection_nTcT4V",
     "product_testimonials_KNN6XE",
     "icon_box_TRwJBD"
