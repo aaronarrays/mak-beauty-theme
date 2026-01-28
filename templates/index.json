@@ -370,35 +370,12 @@
     },
     "featured_collection_nTcT4V": {
       "type": "featured-collection",
-      "blocks": {
-        "group_media_product_7qqaYq": {
-          "type": "_group-media-product",
-          "name": "t:blocks.names.media_banner",
-          "settings": {
-            "color_scheme": "",
-            "media_type": "image",
-            "image_link": "",
-            "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
-            "autoplay": true,
-            "video_ratio": "16/9",
-            "overlay_opacity": 0,
-            "content_alignment": "start",
-            "content_position": "top-left",
-            "content_padding_block": 30,
-            "content_padding_inline": 30
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "group_media_product_7qqaYq"
-      ],
       "name": "t:names.featured_collection",
       "settings": {
         "section_width": "fluid_container",
         "color_scheme": "",
-        "heading": "Trending Outfits",
-        "description": "Unmatched design—superior performance and customer satisfaction in one.",
+        "heading": "LO MÁS NUEVO",
+        "description": "",
         "show_view_all_button": false,
         "space_between_header": true,
         "header_size": "medium",
@@ -410,7 +387,7 @@
         "collections_type": "carousel",
         "collection": "sol-de-janeiro",
         "items_to_show": 8,
-        "items_per_row": 4,
+        "items_per_row": 5,
         "rows_on_desktop": 2,
         "enable_load_more": false,
         "button_label": "Load more",
@@ -418,7 +395,7 @@
         "show_arrow": true,
         "carousel_pagination": "show_dots_on_mobile",
         "infinite": false,
-        "autoplay": false,
+        "autoplay": true,
         "autorotate_speed": 5,
         "reveal": false,
         "equal_height_adjustment": false,
@@ -452,21 +429,11 @@
             "select_product": "balloon-sleeve-blouse-square-neck",
             "author_name": "Cameron Smith."
           }
-        },
-        "testimonials_items_RV8Jjg": {
-          "type": "testimonials_items",
-          "settings": {
-            "author_rating": 5,
-            "author_text": "<p>A fantastic purchase! The product provides just the right amount of warmth without causing overheating. Highly recommend! 😊</p>",
-            "select_product": "slim-fit-basic-unpatterned-t-shirt",
-            "author_name": "Algistino Lionel."
-          }
         }
       },
       "block_order": [
         "testimonials_items_FQz4eH",
-        "testimonials_items_taknUR",
-        "testimonials_items_RV8Jjg"
+        "testimonials_items_taknUR"
       ],
       "settings": {
         "section_width": "fluid_container",
@@ -476,7 +443,7 @@
         "header_alignment": "center",
         "header_size": "medium",
         "design": "default",
-        "show_image": true,
+        "show_image": false,
         "show_verified_buyer": true,
         "img_position": "left",
         "image_ratio": "square",
