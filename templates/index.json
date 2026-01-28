@@ -102,42 +102,35 @@
           "type": "collection",
           "settings": {
             "collection": "crop-top",
-            "collection_title": "Crop—Top"
+            "collection_title": "Maquillaje"
           }
         },
         "collection_FUAzK4": {
           "type": "collection",
           "settings": {
             "collection": "t-shirts",
-            "collection_title": ""
+            "collection_title": "Cuidado de la Piel (Skincare)"
           }
         },
         "collection_kUA3MH": {
           "type": "collection",
           "settings": {
             "collection": "blazers",
-            "collection_title": ""
+            "collection_title": "Cuidado del Cabello"
           }
         },
         "collection_ctTBpd": {
           "type": "collection",
           "settings": {
             "collection": "coats",
-            "collection_title": ""
+            "collection_title": "Fragancias"
           }
         },
         "collection_fyfMEN": {
           "type": "collection",
           "settings": {
             "collection": "sweaters",
-            "collection_title": ""
-          }
-        },
-        "collection_qdMHYe": {
-          "type": "collection",
-          "settings": {
-            "collection": "hoodies",
-            "collection_title": ""
+            "collection_title": "Accesorios"
           }
         }
       },
@@ -146,8 +139,7 @@
         "collection_FUAzK4",
         "collection_kUA3MH",
         "collection_ctTBpd",
-        "collection_fyfMEN",
-        "collection_qdMHYe"
+        "collection_fyfMEN"
       ],
       "settings": {
         "section_width": "fluid_container",
@@ -160,7 +152,7 @@
         "display_mode": "carousel",
         "image_ratio": "square",
         "custom_ratio": "",
-        "items_per_row": 6,
+        "items_per_row": 5,
         "column_gap": 30,
         "show_arrow": false,
         "carousel_pagination": "show_dots",
