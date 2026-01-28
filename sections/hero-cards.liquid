@@ -39,7 +39,7 @@
       data-arrow-centerimage="0"
     >
       {% if show_arrow %}
-        {%- render 'swiper-navigation' -%}
+        {%- render 'swiper-navigation', class: 'show-on-mobile' -%}
       {% endif %}
       <div class="swiper-wrapper hero-cards__wrapper">
         {% for block in section.blocks %}
