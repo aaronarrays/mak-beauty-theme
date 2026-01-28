@@ -5,24 +5,27 @@
 
 .hero-cards-swiper {
   position: relative;
-  padding-bottom: 2.5rem;
 }
 
+/* Cards mismo tamaño: altura uniforme por slide */
 .hero-cards-swiper .swiper-wrapper {
   align-items: stretch;
 }
 
 .hero-cards__slide {
-  height: auto;
+  height: 100%;
 }
 
 .hero-card {
   background: var(--color-background, #fff);
-  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .hero-card__media {
-  flex-shrink: 0;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .hero-card__media picture,
@@ -73,13 +76,4 @@
 
 .hero-card__arrow {
   font-size: 0.65em;
-}
-
-/* Navegación: flechas visibles en desktop y mobile */
-.hero-cards-swiper .swiper-arrow {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  align-items: center;
-  justify-content: center;
 }

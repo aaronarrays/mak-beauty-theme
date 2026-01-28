@@ -9,7 +9,7 @@
   assign column_gap = section_st.column_gap
   assign cards_desktop = section_st.cards_desktop
   assign show_arrow = section_st.show_arrow
-  assign carousel_pagination = section_st.carousel_pagination
+  assign card_ratio = section_st.card_image_ratio
   assign autoplay = section_st.autoplay
   assign autorotate_speed = section_st.autorotate_speed
   assign infinite = section_st.infinite
@@ -57,20 +57,14 @@
               assign subtitle_color = block_st.subtitle_color
               assign button_color = block_st.button_text_color
               assign button_hover_color = block_st.button_hover_color
-              if image != blank
-                assign aspect_ratio = image.aspect_ratio
-              else
-                assign aspect_ratio = '4/5'
-              endif
-              if image_mobile != blank
-                assign mobile_aspect_ratio = image_mobile.aspect_ratio
-              endif
+              assign aspect_ratio = card_ratio
+              assign mobile_aspect_ratio = card_ratio
             %}
             <div class="swiper-slide hero-cards__slide" {{ block.shopify_attributes }}>
               <div class="hero-card flex flex-column h-full rounded overflow-hidden">
                 <div
                   class="hero-card__media relative w-full overflow-hidden"
-                  style="--aspect-ratio: {{ aspect_ratio }};{% if mobile_aspect_ratio %}--aspect-ratio-mb: {{ mobile_aspect_ratio }};{% endif %}"
+                  style="--aspect-ratio: {{ aspect_ratio }};--aspect-ratio-mb: {{ mobile_aspect_ratio }};"
                 >
                   {% if image != blank or image_mobile != blank %}
                     {% assign image_alt = image.alt | default: heading | escape %}
@@ -108,12 +102,6 @@
           {% endif %}
         {% endfor %}
       </div>
-      {% if carousel_pagination != 'disable' %}
-        <div
-          class="swiper-pagination flex flex-wrap px-15 lh-1 bottom-20 justify-content-center{% if carousel_pagination == 'show_dots_on_mobile' %} hidden-md{% endif %}"
-          style="--swiper-pagination-bottom: 1.5rem;--swiper-pagination-position: static;"
-        ></div>
-      {% endif %}
     </slide-section>
   </div>
 </div>
@@ -165,21 +153,23 @@
       "unit": "px"
     },
     {
+      "type": "select",
+      "id": "card_image_ratio",
+      "label": "Proporción de imagen (mismo tamaño en todas las tarjetas)",
+      "default": "4/5",
+      "options": [
+        { "value": "1/1", "label": "1:1 Cuadrado" },
+        { "value": "4/5", "label": "4:5 Vertical" },
+        { "value": "3/4", "label": "3:4 Vertical" },
+        { "value": "16/9", "label": "16:9 Horizontal" },
+        { "value": "3/2", "label": "3:2 Horizontal" }
+      ]
+    },
+    {
       "type": "checkbox",
       "id": "show_arrow",
       "label": "t:sections.all.carousel_settings.show-next-back.label",
       "default": true
-    },
-    {
-      "type": "select",
-      "id": "carousel_pagination",
-      "label": "t:sections.all.carousel_settings.pagination.label",
-      "default": "show_dots",
-      "options": [
-        { "value": "disable", "label": "t:sections.all.carousel_settings.pagination.disable.label" },
-        { "value": "show_dots", "label": "t:sections.all.carousel_settings.pagination.show_dots.label" },
-        { "value": "show_dots_on_mobile", "label": "t:sections.all.carousel_settings.pagination.show_dots_on_mobile.label" }
-      ]
     },
     {
       "type": "checkbox",
