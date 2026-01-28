@@ -560,56 +560,41 @@
         "reset_spacing": true
       }
     },
-    "products_grid_iqtTDT": {
-      "type": "products-grid",
-      "name": "t:sections.products-grid.name",
+    "collection_tab_MHAJyc": {
+      "type": "collection-tab",
+      "blocks": {
+        "collection_Ujy4rH": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "collection_title": ""
+          }
+        },
+        "collection_eUKa9f": {
+          "type": "collection",
+          "settings": {
+            "collection": "",
+            "collection_title": ""
+          }
+        }
+      },
+      "block_order": [
+        "collection_Ujy4rH",
+        "collection_eUKa9f"
+      ],
+      "name": "t:sections.collection-tab.name",
       "settings": {
         "section_width": "fluid_container",
         "color_scheme": "",
-        "heading": "Product grid",
-        "description": "Best Selling Unmatched design—superior performance and customer satisfaction in one.",
-        "header_size": "medium",
-        "header_alignment": "left",
-        "collection": "",
-        "items_to_show": 8,
-        "items_per_row": 4,
-        "column_gap": 30,
-        "rows_on_desktop": 2,
-        "action_with_additional_products": "load_more",
-        "button_label": "Load more",
-        "show_banner": false,
-        "sticky_banner": false,
-        "banner_width": 30,
-        "position": "left",
-        "banner_type": "image",
-        "banner_text_color": "",
-        "banner_heading": "",
-        "banner_subheading": "",
-        "banner_description": "",
-        "banner_button_label": "",
-        "banner_link": "",
-        "carousel_on_mobile": false,
-        "items_per_row_mobile": 1,
-        "padding_top": 0,
-        "padding_bottom": 0,
-        "reset_spacing": false
-      }
-    },
-    "products_deal_b9gqBz": {
-      "type": "products-deal",
-      "name": "t:sections.products-deal.name",
-      "settings": {
-        "section_width": "fluid_container",
-        "color_scheme": "",
-        "heading": "Product deal",
+        "heading": "Trending this week",
         "description": "",
-        "header_size": "medium",
-        "header_alignment": "left",
         "show_view_all_button": false,
-        "messages": "Hurry up! Offer ends in:",
-        "end_time": "",
-        "timer_style": "default",
-        "collection": "",
+        "header_size": "medium",
+        "header_alignment": "center",
+        "tab_header_style": "horizontal",
+        "horizontal_tab_style": "fill",
+        "tab_header_postion": "default",
+        "display_mode": "grid",
         "items_to_show": 8,
         "items_per_row": 4,
         "column_gap": 30,
@@ -619,6 +604,10 @@
         "autoplay": false,
         "autorotate_speed": 5,
         "reveal": false,
+        "rows": 2,
+        "show_load_more_button": false,
+        "button_label": "Load more",
+        "carousel_on_mobile": false,
         "items_per_row_mobile": 1,
         "padding_top": 0,
         "padding_bottom": 0,
@@ -653,7 +642,7 @@
       ],
       "settings": {
         "section_width": "fluid_container",
-        "color_scheme": "",
+        "color_scheme": "scheme-3d10de96-a479-49bd-819c-e044746b4f3e",
         "heading": "Lo que dicen nuestras Beauty Lovers",
         "description": "<p>En Mak Beauty, tu confianza es nuestra prioridad. Descubre por qué cientos de clientes eligen <br/>nuestra curaduría de marcas internacionales para resaltar su belleza natural con productos 100% originales.</p>",
         "header_alignment": "center",
@@ -733,8 +722,7 @@
     "featured_collection_nTcT4V",
     "1769637672250e2bd9",
     "icon_box_TRwJBD",
-    "products_grid_iqtTDT",
-    "products_deal_b9gqBz",
+    "collection_tab_MHAJyc",
     "product_testimonials_KNN6XE",
     "featured_collection_WJG4qT"
   ]
