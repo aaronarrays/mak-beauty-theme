@@ -365,7 +365,7 @@
         "items_per_row_mobile": 1,
         "padding_top": 30,
         "padding_bottom": 30,
-        "reset_spacing": false
+        "reset_spacing": true
       }
     },
     "featured_collection_nTcT4V": {
@@ -554,7 +554,7 @@
         "des_font_weight": "body_weight",
         "carousel_on_mobile": true,
         "items_per_row_mobile": "1",
-        "padding_top": 0,
+        "padding_top": 100,
         "padding_bottom": 0,
         "reset_spacing": true
       }
