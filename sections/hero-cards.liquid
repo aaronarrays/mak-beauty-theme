@@ -82,7 +82,7 @@
                 </div>
                 <div
                   class="hero-card__strip flex flex-column py-20 px-25"
-                  style="background-color: {{ strip_bg }};{% if heading_color != blank %}--hero-card-heading-color: {{ heading_color }};{% endif %}{% if subtitle_color != blank %}--hero-card-subtitle-color: {{ subtitle_color }};{% endif %}{% if button_color != blank %}--hero-card-cta-color: {{ button_color }};{% endif %}{% if button_hover_color != blank %}--hero-card-cta-hover-color: {{ button_hover_color }};{% endif %}"
+                  style="background-color: {{ strip_bg }};{% if heading_color != blank %}--hero-card-heading-color: {{ heading_color }};{% endif %}{% if subtitle_color != blank %}--hero-card-subtitle-color: {{ subtitle_color }};{% endif %}{% if button_color != blank %}--btn-link-color: {{ button_color }};{% endif %}{% if button_hover_color != blank %}--btn-link-hover-color: {{ button_hover_color }};{% endif %}"
                 >
                   <div class="hero-card__strip-text">
                     {% if heading != blank %}
@@ -93,9 +93,9 @@
                     {% endif %}
                   </div>
                   {% if button_text != blank and button_link != blank %}
-                    <a href="{{ button_link }}" class="hero-card__cta btn-primary inline-flex no-underline justify-center align-center gap-5">
+                    <a href="{{ button_link }}" class="hero-card__cta btn-link inline-flex no-underline align-center gap-5">
                       {{ button_text }}
-                      <span class="hero-card__arrow" aria-hidden="true">▶</span>
+                      <span class="hero-card__arrow" aria-hidden="true">►</span>
                     </a>
                   {% endif %}
                 </div>

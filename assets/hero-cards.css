@@ -7,6 +7,14 @@
   position: relative;
 }
 
+/* Flechas siempre visibles (desktop y mobile) */
+.hero-cards-swiper .swiper-actions {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* Cards mismo tamaño: altura uniforme por slide */
 .hero-cards-swiper .swiper-wrapper {
   align-items: stretch;
@@ -73,18 +81,6 @@
 .hero-card__cta {
   align-self: flex-start;
   margin-top: auto;
-}
-
-.hero-card__strip .hero-card__cta.btn-primary {
-  --btn-color: var(--hero-card-cta-color, var(--btn-primary-color));
-  --btn-bg: var(--btn-primary-bg-color);
-  --btn-border-color: var(--btn-primary-bg-color);
-}
-
-.hero-card__strip .hero-card__cta.btn-primary:hover {
-  --btn-color: var(--hero-card-cta-hover-color, var(--btn-primary-hover-color));
-  --btn-bg: var(--btn-primary-hover-bg-color);
-  --btn-border-color: var(--btn-primary-hover-bg-color);
 }
 
 .hero-card__arrow {
