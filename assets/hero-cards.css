@@ -45,8 +45,16 @@
 
 .hero-card__strip {
   flex: 0 0 auto;
-  min-height: 0;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   color: var(--hero-card-heading-color, #ffffff);
+}
+
+.hero-card__strip-text {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .hero-card__heading {
@@ -63,15 +71,20 @@
 }
 
 .hero-card__cta {
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--hero-card-cta-color, #ffffff);
+  align-self: flex-start;
+  margin-top: auto;
 }
 
-.hero-card__cta:hover {
-  color: var(--hero-card-cta-hover-color, rgba(255, 255, 255, 0.85));
-  opacity: 1;
+.hero-card__strip .hero-card__cta.btn-primary {
+  --btn-color: var(--hero-card-cta-color, var(--btn-primary-color));
+  --btn-bg: var(--btn-primary-bg-color);
+  --btn-border-color: var(--btn-primary-bg-color);
+}
+
+.hero-card__strip .hero-card__cta.btn-primary:hover {
+  --btn-color: var(--hero-card-cta-hover-color, var(--btn-primary-hover-color));
+  --btn-bg: var(--btn-primary-hover-bg-color);
+  --btn-border-color: var(--btn-primary-hover-bg-color);
 }
 
 .hero-card__arrow {
