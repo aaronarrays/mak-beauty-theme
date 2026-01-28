@@ -118,6 +118,7 @@
           "type": "collection",
           "settings": {
             "collection": "blazers",
+            "collection_image": "shopify://shop_images/1.png",
             "collection_title": "Cuidado del Cabello"
           }
         },
@@ -125,6 +126,7 @@
           "type": "collection",
           "settings": {
             "collection": "coats",
+            "collection_image": "shopify://shop_images/4.png",
             "collection_title": "Fragancias"
           }
         },
@@ -132,7 +134,8 @@
           "type": "collection",
           "settings": {
             "collection": "sweaters",
-            "collection_title": "Accesorios"
+            "collection_image": "shopify://shop_images/2.png",
+            "collection_title": "Fragancia"
           }
         }
       },
@@ -155,7 +158,7 @@
         "image_ratio": "square",
         "custom_ratio": "",
         "items_per_row": 5,
-        "column_gap": 30,
+        "column_gap": 10,
         "show_arrow": false,
         "carousel_pagination": "show_dots",
         "infinite": false,
@@ -174,7 +177,7 @@
         "information_spacing": 12,
         "rounded_image": false,
         "image_custom_width": true,
-        "image_width": 185,
+        "image_width": 300,
         "padding_top": 60,
         "padding_bottom": 60,
         "reset_spacing": true
