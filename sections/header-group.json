@@ -14,16 +14,32 @@
     "announcement_bar_rxC4kz": {
       "type": "announcement-bar",
       "blocks": {
+        "announcement_cLjGkP": {
+          "type": "announcement",
+          "settings": {
+            "text": "Envíos gratis a todo el Perú por compras mayores a S/199",
+            "countdown_deadline": ""
+          }
+        },
         "announcement_kWpWi8": {
           "type": "announcement",
           "settings": {
-            "text": "Welcome to our store",
+            "text": "Visita nuestra experiencia en compra internacional",
+            "countdown_deadline": ""
+          }
+        },
+        "announcement_qhwmhW": {
+          "type": "announcement",
+          "settings": {
+            "text": "Obten los mejores descuentos en nuestros live de TIKTOK",
             "countdown_deadline": ""
           }
         }
       },
       "block_order": [
-        "announcement_kWpWi8"
+        "announcement_cLjGkP",
+        "announcement_kWpWi8",
+        "announcement_qhwmhW"
       ],
       "name": "t:sections.announcement-bar.name",
       "settings": {
