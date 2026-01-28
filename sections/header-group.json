@@ -11,44 +11,38 @@
   "name": "t:sections.header.name",
   "type": "header",
   "sections": {
-    "top_bar_CbXNYj": {
-      "type": "top-bar",
+    "announcement_bar_rxC4kz": {
+      "type": "announcement-bar",
       "blocks": {
-        "text_slider_LFaC38": {
-          "type": "text_slider",
+        "announcement_kWpWi8": {
+          "type": "announcement",
           "settings": {
-            "text1": "Sign up for 10% off your first order. <a href=\"/account/\" title=\"/account/\"><strong>Sign Up</strong></a>",
-            "text2": "Summer sale discount off 50%. <a href=\"/collections/activewear\" title=\"Activewear\"><strong>Shop Sale</strong></a>",
-            "text3": "Coats—every friday 75% Off . <a href=\"/collections/blazers\" title=\"Blazers\"><strong>Shop Sale</strong></a>",
-            "change_every": 3,
-            "hidden_on_mobile": false
-          }
-        },
-        "cur_lang_aPwfT9": {
-          "type": "cur_lang",
-          "settings": {
-            "menu_link": "",
-            "show_currency": true,
-            "show_language": false,
-            "show_our_store": true,
-            "hidden_on_mobile": true
+            "text": "Welcome to our store",
+            "countdown_deadline": ""
           }
         }
       },
       "block_order": [
-        "text_slider_LFaC38",
-        "cur_lang_aPwfT9"
+        "announcement_kWpWi8"
       ],
+      "name": "t:sections.announcement-bar.name",
       "settings": {
         "section_width": "stretch_width",
         "color_scheme": "scheme-4faf0e4d-27f4-4d02-bc51-617383bab1a9",
+        "announcement_actions": "slide",
+        "show_close": true,
+        "homepage_only": true,
         "show_mobile": true,
-        "show_separator_line": false,
+        "show_separator_line": true,
         "uppercase": false,
-        "font_size": 13,
-        "font_weight": "body_weight",
-        "padding_top": 10,
-        "padding_bottom": 10
+        "font_size": 12,
+        "font_weight": "subheading_weight",
+        "speed": 15,
+        "space_between": 50,
+        "icon_between_item": "none",
+        "change_every": 3,
+        "padding_top": 12,
+        "padding_bottom": 12
       }
     },
     "header": {
@@ -183,7 +177,7 @@
     }
   },
   "order": [
-    "top_bar_CbXNYj",
+    "announcement_bar_rxC4kz",
     "header"
   ]
 }

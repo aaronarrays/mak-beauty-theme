@@ -12,52 +12,72 @@
     "hero_cards_TbEDdi": {
       "type": "hero-cards",
       "blocks": {
+        "hero_card_LNVNtz": {
+          "type": "hero_card",
+          "settings": {
+            "image": "shopify://shop_images/4-scaled.png",
+            "heading": "Rhode",
+            "subtitle": "Los rubores en barra favoritos del momento.\nTextura cremosa, tonos hermosos y efecto glow irresistible",
+            "button_link": "",
+            "button_text": "SHOP NOW",
+            "strip_background": "#e3d5ca",
+            "heading_color": "#000000",
+            "subtitle_color": "#000000",
+            "button_text_color": "",
+            "button_hover_color": ""
+          }
+        },
         "hero_card_Py6dg8": {
           "type": "hero_card",
           "settings": {
-            "heading": "Detox Shampoos for a Hair Reset",
-            "subtitle": "Clarifying picks for a deep cleanse.",
-            "button_link": "",
-            "button_text": "SHOP NOW",
-            "strip_background": "#5b4d7a"
+            "image": "shopify://shop_images/1-scaled.png",
+            "heading": "Belleza rara en solitario",
+            "subtitle": "Maquillaje moderno, natural y luminoso inspirado en la belleza real.\n\nDescubre la línea creada por Selena Gómez ✨",
+            "button_link": "#",
+            "button_text": "COMPRAR AHORA",
+            "strip_background": "#5b4d7a",
+            "heading_color": "",
+            "subtitle_color": "",
+            "button_text_color": "",
+            "button_hover_color": ""
           }
         },
         "hero_card_XgURD6": {
           "type": "hero_card",
           "settings": {
-            "heading": "Coveted Valentine's Day Gifts Under $40",
-            "subtitle": "Value sets—the gifts that get you more for less.",
-            "button_link": "",
-            "button_text": "SHOP NOW",
-            "strip_background": "#c41e5a"
+            "image": "shopify://shop_images/3-scaled.png",
+            "heading": "HEY! ¿Llevas protectora solar?",
+            "subtitle": "Cuida tu piel todos los días y evita manchas, arrugas prematuras y daño solar.\n\nProtección real para una piel sana y luminosa. ✨",
+            "button_link": "#",
+            "button_text": "COMPRA AHORA",
+            "strip_background": "#c41e5a",
+            "heading_color": "",
+            "subtitle_color": "",
+            "button_text_color": "",
+            "button_hover_color": ""
           }
         },
         "hero_card_PG647z": {
           "type": "hero_card",
           "settings": {
-            "heading": "New from The Ordinary",
-            "subtitle": "A hydrating, serum-like moisturizer to support the skin barrier.",
+            "image": "shopify://shop_images/2-2-2048x2048.png",
+            "heading": "Rubores líquidos - Rare Beauty",
+            "subtitle": "Descubre los tonos más virales y favoritos.\nTextura ligera, acabado natural y larga duración!",
             "button_link": "",
             "button_text": "SHOP NOW",
-            "strip_background": "#3d3d3d"
-          }
-        },
-        "hero_card_LNVNtz": {
-          "type": "hero_card",
-          "settings": {
-            "heading": "Solves for Smoothing",
-            "subtitle": "Exfoliate and refine skin texture.",
-            "button_link": "",
-            "button_text": "SHOP NOW",
-            "strip_background": "#111111"
+            "strip_background": "#3d3d3d",
+            "heading_color": "",
+            "subtitle_color": "",
+            "button_text_color": "",
+            "button_hover_color": ""
           }
         }
       },
       "block_order": [
+        "hero_card_LNVNtz",
         "hero_card_Py6dg8",
         "hero_card_XgURD6",
-        "hero_card_PG647z",
-        "hero_card_LNVNtz"
+        "hero_card_PG647z"
       ],
       "name": "Hero cards",
       "settings": {
