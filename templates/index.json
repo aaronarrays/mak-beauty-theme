@@ -560,6 +560,36 @@
         "reset_spacing": true
       }
     },
+    "products_deal_b9gqBz": {
+      "type": "products-deal",
+      "name": "t:sections.products-deal.name",
+      "settings": {
+        "section_width": "fluid_container",
+        "color_scheme": "",
+        "heading": "Product deal",
+        "description": "",
+        "header_size": "medium",
+        "header_alignment": "left",
+        "show_view_all_button": false,
+        "messages": "Hurry up! Offer ends in:",
+        "end_time": "",
+        "timer_style": "default",
+        "collection": "",
+        "items_to_show": 8,
+        "items_per_row": 4,
+        "column_gap": 30,
+        "show_arrow": false,
+        "carousel_pagination": "disable",
+        "infinite": false,
+        "autoplay": false,
+        "autorotate_speed": 5,
+        "reveal": false,
+        "items_per_row_mobile": 1,
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "reset_spacing": false
+      }
+    },
     "product_testimonials_KNN6XE": {
       "type": "product-testimonials",
       "blocks": {
@@ -668,6 +698,7 @@
     "featured_collection_nTcT4V",
     "1769637672250e2bd9",
     "icon_box_TRwJBD",
+    "products_deal_b9gqBz",
     "product_testimonials_KNN6XE",
     "featured_collection_WJG4qT"
   ]
