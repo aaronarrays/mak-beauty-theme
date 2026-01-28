@@ -416,18 +416,18 @@
           "type": "testimonials_items",
           "settings": {
             "author_rating": 5,
-            "author_text": "<p>These are sooo pretty and very comfy. Perfect color as well. I love wearing these with a neutral top and Chelsea boots. Wicked cute...😍</p>",
-            "select_product": "basic-bright-green-rib-extreme-crop",
-            "author_name": "Carie-Gosée H."
+            "author_text": "<p>¡Increíble experiencia! Buscaba los rubores de Rare Beauty por todo lado y aquí los encontré originales y a buen precio. El envío a provincia llegó súper rápido y todo muy bien protegido. ¡Mi nueva tienda favorita en Perú!</p>",
+            "select_product": "new-rare-beauty",
+            "author_name": "Camila R."
           }
         },
         "testimonials_items_taknUR": {
           "type": "testimonials_items",
           "settings": {
             "author_rating": 5,
-            "author_text": "<p>A perfect product, it keeps you very warm without over heating. True to size, I couldn't be happier with the purchase... Thank you! 🤗</p>",
-            "select_product": "balloon-sleeve-blouse-square-neck",
-            "author_name": "Cameron Smith."
+            "author_text": "<p>Me encanta la variedad de marcas internacionales que tienen, sobre todo lo de Rhode y Sol de Janeiro. El servicio al cliente por WhatsApp es súper amable y te ayudan con todas las dudas sobre los tonos. ¡100% recomendados! 💖</p>",
+            "select_product": "cheirosa-59-perfume-mist",
+            "author_name": "— Luciana M."
           }
         }
       },
@@ -438,8 +438,8 @@
       "settings": {
         "section_width": "fluid_container",
         "color_scheme": "",
-        "heading": "Customer Say!",
-        "description": "<p>Customers love our products and we always strive to please them all.</p>",
+        "heading": "Lo que dicen nuestras Beauty Lovers",
+        "description": "<p>En Mak Beauty, tu confianza es nuestra prioridad. Descubre por qué cientos de clientes eligen <br/>nuestra curaduría de marcas internacionales para resaltar su belleza natural con productos 100% originales.</p>",
         "header_alignment": "center",
         "header_size": "medium",
         "design": "default",
