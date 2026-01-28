@@ -53,6 +53,10 @@
               assign button_link = block_st.button_link
               assign button_text = block_st.button_text
               assign strip_bg = block_st.strip_background
+              assign heading_color = block_st.heading_color
+              assign subtitle_color = block_st.subtitle_color
+              assign button_color = block_st.button_text_color
+              assign button_hover_color = block_st.button_hover_color
               if image != blank
                 assign aspect_ratio = image.aspect_ratio
               else
@@ -83,17 +87,17 @@
                   {% endif %}
                 </div>
                 <div
-                  class="hero-card__strip flex flex-column justify-center py-20 px-25 text-white"
-                  style="background-color: {{ strip_bg }};"
+                  class="hero-card__strip flex flex-column justify-center py-20 px-25"
+                  style="background-color: {{ strip_bg }};{% if heading_color != blank %}--hero-card-heading-color: {{ heading_color }};{% endif %}{% if subtitle_color != blank %}--hero-card-subtitle-color: {{ subtitle_color }};{% endif %}{% if button_color != blank %}--hero-card-cta-color: {{ button_color }};{% endif %}{% if button_hover_color != blank %}--hero-card-cta-hover-color: {{ button_hover_color }};{% endif %}"
                 >
                   {% if heading != blank %}
-                    <h3 class="hero-card__heading mt-0 mb-10 text-current">{{ heading }}</h3>
+                    <h3 class="hero-card__heading mt-0 mb-10">{{ heading }}</h3>
                   {% endif %}
                   {% if subtitle != blank %}
-                    <p class="hero-card__subtitle mt-0 mb-15 text-current opacity-90">{{ subtitle }}</p>
+                    <p class="hero-card__subtitle mt-0 mb-15">{{ subtitle }}</p>
                   {% endif %}
                   {% if button_text != blank and button_link != blank %}
-                    <a href="{{ button_link }}" class="hero-card__cta btn-link no-underline font-weight-bold text-current inline-flex align-center gap-5">
+                    <a href="{{ button_link }}" class="hero-card__cta btn-link no-underline font-weight-bold inline-flex align-center gap-5">
                       {{ button_text }}
                       <span class="hero-card__arrow" aria-hidden="true">►</span>
                     </a>
@@ -269,10 +273,34 @@
           "default": "SHOP NOW"
         },
         {
+          "type": "header",
+          "content": "Colores de la tarjeta"
+        },
+        {
           "type": "color",
           "id": "strip_background",
-          "label": "Color de la franja inferior",
+          "label": "Fondo de la franja inferior",
           "default": "#2d2d2d"
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "Color del título"
+        },
+        {
+          "type": "color",
+          "id": "subtitle_color",
+          "label": "Color del subtítulo"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Color del botón / enlace"
+        },
+        {
+          "type": "color",
+          "id": "button_hover_color",
+          "label": "Color del botón al pasar el ratón"
         }
       ]
     }

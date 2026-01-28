@@ -43,27 +43,32 @@
 .hero-card__strip {
   flex: 0 0 auto;
   min-height: 0;
+  color: var(--hero-card-heading-color, #ffffff);
 }
 
 .hero-card__heading {
   font-size: clamp(1rem, 2.5vw, 1.25rem);
   line-height: 1.25;
   letter-spacing: 0.02em;
+  color: var(--hero-card-heading-color, #ffffff);
 }
 
 .hero-card__subtitle {
   font-size: clamp(0.875rem, 2vw, 1rem);
   line-height: 1.4;
+  color: var(--hero-card-subtitle-color, rgba(255, 255, 255, 0.9));
 }
 
 .hero-card__cta {
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: var(--hero-card-cta-color, #ffffff);
 }
 
 .hero-card__cta:hover {
-  opacity: 0.9;
+  color: var(--hero-card-cta-hover-color, rgba(255, 255, 255, 0.85));
+  opacity: 1;
 }
 
 .hero-card__arrow {
