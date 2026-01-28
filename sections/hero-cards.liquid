@@ -18,12 +18,20 @@
   --section-pt: {{ section_st.padding_top }}px; --section-pb: {{ section_st.padding_bottom }}px;
   {% if column_gap > 0 %}--hero-cards-gap: {{ column_gap }}px;{% endif %}
 {%- endcapture -%}
+{%- capture col_style -%}
+{% if column_gap < 15 %}--col-gap: {{ column_gap }}px;{% else %}--col-gap: 15px;--col-gap-desktop: {{ column_gap }}px;{% endif %}
+{%- endcapture -%}
 <div
   id="{{ section.id }}"
   class="section{% if section_st.padding_top < 30 %} pt-min{% endif %}{% if section_st.padding_bottom < 30 %} pb-min{% endif %} sec__hero-cards color-{{ section_st.color_scheme }} gradient{{ reset_spacing }}"
   style="{{ style | strip | strip_newlines }}"
 >
-  <div class="{{ section_width }}">
+  {%- comment -%}
+    Consistente con secciones nativas:
+    - Si es full_width, aplicamos padding lateral como muchas secciones del tema (px-20)
+    - Reutilizamos variables de gap (--col-gap / --col-gap-desktop) como carousels nativos
+  {%- endcomment -%}
+  <div class="{{ section_width }}{% if section_width == 'full_width' %} px-20{% endif %}">
     <slide-section
       id="hero-cards-{{ section.id }}"
       class="swiper hero-cards-swiper"
@@ -37,6 +45,7 @@
       data-mobile="1"
       data-desktop="{{ cards_desktop }}"
       data-arrow-centerimage="0"
+      style="{{ col_style | strip | strip_newlines }}"
     >
       {% if show_arrow %}
         {%- render 'swiper-navigation', class: 'show-on-mobile' -%}
@@ -57,6 +66,9 @@
               assign subtitle_color = block_st.subtitle_color
               assign button_color = block_st.button_text_color
               assign button_hover_color = block_st.button_hover_color
+              assign button_effect = block_st.button_effect | default: 'diagonal_shine'
+              assign button_bg = block_st.button_bg_color
+              assign button_font_size = block_st.button_font_size
               assign aspect_ratio = card_ratio
               assign mobile_aspect_ratio = card_ratio
             %}
@@ -82,7 +94,7 @@
                 </div>
                 <div
                   class="hero-card__strip flex flex-column py-20 px-25"
-                  style="background-color: {{ strip_bg }};{% if heading_color != blank %}--hero-card-heading-color: {{ heading_color }};{% endif %}{% if subtitle_color != blank %}--hero-card-subtitle-color: {{ subtitle_color }};{% endif %}{% if button_color != blank %}--btn-link-color: {{ button_color }};{% endif %}{% if button_hover_color != blank %}--btn-link-hover-color: {{ button_hover_color }};{% endif %}"
+                  style="background-color: {{ strip_bg }};{% if heading_color != blank %}--hero-card-heading-color: {{ heading_color }};{% endif %}{% if subtitle_color != blank %}--hero-card-subtitle-color: {{ subtitle_color }};{% endif %}{% if button_bg != blank %}--hero-cta-bg: {{ button_bg }};{% endif %}{% if button_color != blank %}--hero-cta-color: {{ button_color }};{% endif %}{% if button_hover_color != blank %}--hero-cta-hover-color: {{ button_hover_color }};{% endif %}{% if button_font_size != blank %}--hero-cta-font-size: {{ button_font_size }}px;{% endif %}"
                 >
                   <div class="hero-card__strip-text">
                     {% if heading != blank %}
@@ -93,9 +105,10 @@
                     {% endif %}
                   </div>
                   {% if button_text != blank and button_link != blank %}
-                    <a href="{{ button_link }}" class="hero-card__cta btn-link inline-flex no-underline align-center gap-5">
-                      {{ button_text }}
+                    <a href="{{ button_link }}" class="hero-card__cta hero-card__cta--{{ button_effect | replace: '_', '-' }} inline-flex no-underline align-center gap-5" style="{% if button_bg != blank %}background-color: {{ button_bg }};{% endif %}{% if button_color != blank %}color: {{ button_color }};{% endif %}{% if button_font_size != blank %}font-size: {{ button_font_size }}px;{% endif %}">
+                      <span class="hero-card__cta-text">{{ button_text }}</span>
                       <span class="hero-card__arrow" aria-hidden="true">►</span>
+                      {% if button_effect == 'animated_border' %}<span class="hero-card__cta-frame" aria-hidden="true"></span>{% endif %}
                     </a>
                   {% endif %}
                 </div>
@@ -120,7 +133,7 @@
       "type": "select",
       "id": "section_width",
       "label": "t:sections.all.section_width.label",
-      "default": "full_width",
+      "default": "fluid_container",
       "options": [
         { "value": "container", "label": "t:sections.all.section_width.container.label" },
         { "value": "fluid_container", "label": "t:sections.all.section_width.fluid_container.label" },
@@ -263,6 +276,41 @@
           "id": "button_text",
           "label": "Texto del botón",
           "default": "SHOP NOW"
+        },
+        {
+          "type": "header",
+          "content": "Estilo del botón"
+        },
+        {
+          "type": "select",
+          "id": "button_effect",
+          "label": "Efecto hover del botón",
+          "default": "diagonal_shine",
+          "options": [
+            { "value": "diagonal_shine", "label": "Diagonal Shine" },
+            { "value": "text_slide_up", "label": "Text Slide Up" },
+            { "value": "ripple_burst", "label": "Ripple Burst" },
+            { "value": "soft_ripple", "label": "Soft Ripple" },
+            { "value": "shine_swipe", "label": "Shine Swipe" },
+            { "value": "glitch_shake", "label": "Glitch Shake" },
+            { "value": "animated_border", "label": "Animated Border" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "button_bg_color",
+          "label": "Fondo del botón",
+          "default": "#000000"
+        },
+        {
+          "type": "range",
+          "id": "button_font_size",
+          "label": "Tamaño de fuente del botón",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "default": 16,
+          "unit": "px"
         },
         {
           "type": "header",
