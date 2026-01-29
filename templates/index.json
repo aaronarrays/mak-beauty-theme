@@ -797,12 +797,39 @@
               "type": "_faq-item",
               "name": "t:sections.faqs-page.blocks.question.name",
               "settings": {
-                "faq_title": "Frequently Asked Questions?",
-                "faq_content": "Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore."
+                "faq_title": "¿A qué destinos realizan envíos?",
+                "faq_content": "Realizamos envíos a todo el Perú."
               },
               "blocks": {}
             },
             "faq_item_NNijp4": {
+              "type": "_faq-item",
+              "name": "t:sections.faqs-page.blocks.question.name",
+              "settings": {
+                "faq_title": "¿Cuál es el tiempo de entrega?",
+                "faq_content": "Contamos con un servicio de entrega rápida en 24 horas."
+              },
+              "blocks": {}
+            },
+            "faq_item_DRVDeV": {
+              "type": "_faq-item",
+              "name": "t:sections.faqs-page.blocks.question.name",
+              "settings": {
+                "faq_title": "¿Cómo obtengo el envío gratis?",
+                "faq_content": "Ofrecemos envíos gratuitos a todo el país por compras mayores a S/199."
+              },
+              "blocks": {}
+            },
+            "faq_item_XyEpzb": {
+              "type": "_faq-item",
+              "name": "t:sections.faqs-page.blocks.question.name",
+              "settings": {
+                "faq_title": "¿Los productos son originales?",
+                "faq_content": "Sí, en Mak Beauty garantizamos que todos nuestros productos son 100% originales, importados directamente desde marcas internacionales exclusivas como Rhode, Rare Beauty y Sol de Janeiro."
+              },
+              "blocks": {}
+            },
+            "faq_item_k4Va6G": {
               "type": "_faq-item",
               "name": "t:sections.faqs-page.blocks.question.name",
               "settings": {
@@ -811,7 +838,7 @@
               },
               "blocks": {}
             },
-            "faq_item_DRVDeV": {
+            "faq_item_fitiJH": {
               "type": "_faq-item",
               "name": "t:sections.faqs-page.blocks.question.name",
               "settings": {
@@ -824,7 +851,10 @@
           "block_order": [
             "faq_item_QKJaHk",
             "faq_item_NNijp4",
-            "faq_item_DRVDeV"
+            "faq_item_DRVDeV",
+            "faq_item_XyEpzb",
+            "faq_item_k4Va6G",
+            "faq_item_fitiJH"
           ]
         }
       },
