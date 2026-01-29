@@ -47,14 +47,6 @@
           "settings": {},
           "blocks": {}
         },
-        "countdown_timer_QB4Ydn": {
-          "type": "_product-countdown-timer",
-          "settings": {
-            "timer_style": "default",
-            "content": "🔥 Hurry Up! Sale ends in:"
-          },
-          "blocks": {}
-        },
         "variant_picker_tcCihG": {
           "type": "_product-variant-picker",
           "settings": {
@@ -68,7 +60,7 @@
         "stock_countdown_JNK9zi": {
           "type": "_product-stock-countdown",
           "settings": {
-            "message": "Hurry up! Only [count] items left in stock",
+            "message": "¡Corre! Solo quedan [count] unidades disponibles",
             "stock_items": 30
           },
           "blocks": {}
@@ -155,7 +147,6 @@
         "title_G6tU8U",
         "review_and_sold_AAbJC9",
         "price_VJ4N8m",
-        "countdown_timer_QB4Ydn",
         "variant_picker_tcCihG",
         "stock_countdown_JNK9zi",
         "buy_buttons_LcQGtR",
