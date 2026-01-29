@@ -66,19 +66,28 @@
 }
 
 .hero-card__heading {
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-size: var(--hero-heading-size-desk, 1.25rem);
   line-height: 1.25;
   letter-spacing: 0.02em;
   color: var(--hero-card-heading-color, #ffffff);
 }
 
 .hero-card__subtitle {
-  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-size: var(--hero-subtitle-size-desk, 1rem);
   line-height: 1.4;
   color: var(--hero-card-subtitle-color, rgba(255, 255, 255, 0.9));
 }
 
-/* Botón base: fondo, color, tamaño editable */
+@media screen and (max-width: 767.98px) {
+  .hero-card__heading {
+    font-size: var(--hero-heading-size-mob, 1.125rem);
+  }
+  .hero-card__subtitle {
+    font-size: var(--hero-subtitle-size-mob, 0.875rem);
+  }
+}
+
+/* Botón base: fondo, color, tamaño desktop/mobile */
 .hero-card__cta {
   align-self: flex-start;
   margin-top: auto;
@@ -93,10 +102,16 @@
   border: none;
   background-color: var(--hero-cta-bg, #000);
   color: var(--hero-cta-color, #fff);
-  font-size: var(--hero-cta-font-size, 16px);
+  font-size: var(--hero-cta-font-size-desk, 16px);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+}
+
+@media screen and (max-width: 767.98px) {
+  .hero-card__cta {
+    font-size: var(--hero-cta-font-size-mob, 14px);
+  }
 }
 
 .hero-card__cta:hover {

@@ -14,8 +14,16 @@
   assign autorotate_speed = section_st.autorotate_speed
   assign infinite = section_st.infinite
 %}
+{% liquid
+  assign heading_size_desk = section_st.heading_font_size_desktop | default: 20
+  assign heading_size_mob = section_st.heading_font_size_mobile | default: 18
+  assign subtitle_size_desk = section_st.subtitle_font_size_desktop | default: 16
+  assign subtitle_size_mob = section_st.subtitle_font_size_mobile | default: 14
+%}
 {%- capture style -%}
   --section-pt: {{ section_st.padding_top }}; --section-pb: {{ section_st.padding_bottom }};
+  --hero-heading-size-desk: {{ heading_size_desk }}px; --hero-heading-size-mob: {{ heading_size_mob }}px;
+  --hero-subtitle-size-desk: {{ subtitle_size_desk }}px; --hero-subtitle-size-mob: {{ subtitle_size_mob }}px;
   {% if column_gap > 0 %}--hero-cards-gap: {{ column_gap }}px;{% endif %}
 {%- endcapture -%}
 {%- capture col_style -%}
@@ -68,7 +76,8 @@
               assign button_hover_color = block_st.button_hover_color
               assign button_effect = block_st.button_effect | default: 'diagonal_shine'
               assign button_bg = block_st.button_bg_color
-              assign button_font_size = block_st.button_font_size
+              assign button_font_size = block_st.button_font_size | default: 16
+              assign button_font_size_mob = block_st.button_font_size_mobile | default: 14
               assign aspect_ratio = card_ratio
               assign mobile_aspect_ratio = card_ratio
             %}
@@ -94,7 +103,7 @@
                 </div>
                 <div
                   class="hero-card__strip flex flex-column py-20 px-25"
-                  style="background-color: {{ strip_bg }};{% if heading_color != blank %}--hero-card-heading-color: {{ heading_color }};{% endif %}{% if subtitle_color != blank %}--hero-card-subtitle-color: {{ subtitle_color }};{% endif %}{% if button_bg != blank %}--hero-cta-bg: {{ button_bg }};{% endif %}{% if button_color != blank %}--hero-cta-color: {{ button_color }};{% endif %}{% if button_hover_color != blank %}--hero-cta-hover-color: {{ button_hover_color }};{% endif %}{% if button_font_size != blank %}--hero-cta-font-size: {{ button_font_size }}px;{% endif %}"
+                  style="background-color: {{ strip_bg }};{% if heading_color != blank %}--hero-card-heading-color: {{ heading_color }};{% endif %}{% if subtitle_color != blank %}--hero-card-subtitle-color: {{ subtitle_color }};{% endif %}{% if button_bg != blank %}--hero-cta-bg: {{ button_bg }};{% endif %}{% if button_color != blank %}--hero-cta-color: {{ button_color }};{% endif %}{% if button_hover_color != blank %}--hero-cta-hover-color: {{ button_hover_color }};{% endif %}--hero-cta-font-size-desk: {{ button_font_size }}px;--hero-cta-font-size-mob: {{ button_font_size_mob }}px;"
                 >
                   <div class="hero-card__strip-text">
                     {% if heading != blank %}
@@ -105,7 +114,7 @@
                     {% endif %}
                   </div>
                   {% if button_text != blank and button_link != blank %}
-                    <a href="{{ button_link }}" class="hero-card__cta hero-card__cta--{{ button_effect | replace: '_', '-' }} inline-flex no-underline align-center gap-5" style="{% if button_bg != blank %}background-color: {{ button_bg }};{% endif %}{% if button_color != blank %}color: {{ button_color }};{% endif %}{% if button_font_size != blank %}font-size: {{ button_font_size }}px;{% endif %}">
+                    <a href="{{ button_link }}" class="hero-card__cta hero-card__cta--{{ button_effect | replace: '_', '-' }} inline-flex no-underline align-center gap-5" style="{% if button_bg != blank %}background-color: {{ button_bg }};{% endif %}{% if button_color != blank %}color: {{ button_color }};{% endif %}">
                       <span class="hero-card__cta-text">{{ button_text }}</span>
                       <span class="hero-card__arrow" aria-hidden="true">►</span>
                       {% if button_effect == 'animated_border' %}<span class="hero-card__cta-frame" aria-hidden="true"></span>{% endif %}
@@ -210,6 +219,50 @@
     },
     {
       "type": "header",
+      "content": "Tamaño de fuentes"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_desktop",
+      "label": "Título – tamaño en escritorio",
+      "min": 14,
+      "max": 32,
+      "step": 1,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_mobile",
+      "label": "Título – tamaño en móvil",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_font_size_desktop",
+      "label": "Subtítulo – tamaño en escritorio",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_font_size_mobile",
+      "label": "Subtítulo – tamaño en móvil",
+      "min": 11,
+      "max": 20,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "header",
       "content": "t:sections.all.section_padding.label"
     },
     {
@@ -305,11 +358,21 @@
         {
           "type": "range",
           "id": "button_font_size",
-          "label": "Tamaño de fuente del botón",
+          "label": "Botón – tamaño en escritorio",
           "min": 12,
           "max": 24,
           "step": 1,
           "default": 16,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "button_font_size_mobile",
+          "label": "Botón – tamaño en móvil",
+          "min": 11,
+          "max": 20,
+          "step": 1,
+          "default": 14,
           "unit": "px"
         },
         {
