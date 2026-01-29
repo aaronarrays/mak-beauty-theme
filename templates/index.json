@@ -698,6 +698,9 @@
     },
     "featured_collection_WJG4qT": {
       "type": "featured-collection",
+      "custom_css": [
+        "h2.section__header-heading.heading-letter-spacing.mt-0.mb-0 {color: #ff77d4;}"
+      ],
       "name": "t:names.featured_collection",
       "settings": {
         "section_width": "fluid_container",
@@ -857,6 +860,9 @@
       "block_order": [
         "message_faqs_g6dcet",
         "group_faq_item_xBNF6a"
+      ],
+      "custom_css": [
+        "h2.mt-0.sec__content-heading.heading-letter-spacing.text-mb-.text-md-.mb-custom.fs-medium.heading_weight {color: pink;}"
       ],
       "name": "t:sections.help-center.name",
       "settings": {
