@@ -710,6 +710,133 @@
         "padding_bottom": 60,
         "reset_spacing": true
       }
+    },
+    "help_center_cQdyNq": {
+      "type": "help-center",
+      "blocks": {
+        "message_faqs_g6dcet": {
+          "type": "_message-faqs",
+          "settings": {},
+          "blocks": {
+            "description_gH4jx6": {
+              "type": "description",
+              "name": "t:blocks.general.text.name",
+              "settings": {
+                "text": "<p>Have a question?.</p>",
+                "font_size": 14,
+                "font_weight": "body_weight",
+                "spacing_bottom": 10
+              },
+              "blocks": {}
+            },
+            "heading_BCn8ie": {
+              "type": "heading",
+              "name": "t:sections.all.contents.heading.label",
+              "settings": {
+                "heading": "Help center",
+                "font_size": 36,
+                "font_weight": "heading_weight",
+                "uppercase": false,
+                "spacing_bottom": 20
+              },
+              "blocks": {}
+            },
+            "description_VpbtWy": {
+              "type": "description",
+              "name": "t:blocks.general.text.name",
+              "settings": {
+                "text": "<p>If you have an issue or question that requires immediate assistance, you can click the button below to chat live with a Customer Service representative.</p>",
+                "font_size": 14,
+                "font_weight": "body_weight",
+                "spacing_bottom": 10
+              },
+              "blocks": {}
+            },
+            "description_bwhxWb": {
+              "type": "description",
+              "name": "t:blocks.general.text.name",
+              "settings": {
+                "text": "<p>Customer support team from: 8am to 7:30pm daily.Average answer time: 5h.</p>",
+                "font_size": 14,
+                "font_weight": "body_weight",
+                "spacing_bottom": 10
+              },
+              "blocks": {}
+            },
+            "button_HjeaYW": {
+              "type": "button",
+              "name": "t:sections.all.contents.button.label",
+              "settings": {
+                "show_full_width": false,
+                "first_button_label": "Button label",
+                "first_button_link": "",
+                "first_button_type": "primary",
+                "second_button_label": "",
+                "second_button_link": "",
+                "second_button_type": "primary",
+                "spacing_bottom": 10
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "description_gH4jx6",
+            "heading_BCn8ie",
+            "description_VpbtWy",
+            "description_bwhxWb",
+            "button_HjeaYW"
+          ]
+        },
+        "group_faq_item_xBNF6a": {
+          "type": "_group-faq-item",
+          "settings": {},
+          "blocks": {
+            "faq_item_QKJaHk": {
+              "type": "_faq-item",
+              "name": "t:sections.faqs-page.blocks.question.name",
+              "settings": {
+                "faq_title": "Frequently Asked Questions?",
+                "faq_content": "Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore."
+              },
+              "blocks": {}
+            },
+            "faq_item_NNijp4": {
+              "type": "_faq-item",
+              "name": "t:sections.faqs-page.blocks.question.name",
+              "settings": {
+                "faq_title": "Frequently Asked Questions?",
+                "faq_content": "Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore."
+              },
+              "blocks": {}
+            },
+            "faq_item_DRVDeV": {
+              "type": "_faq-item",
+              "name": "t:sections.faqs-page.blocks.question.name",
+              "settings": {
+                "faq_title": "Frequently Asked Questions?",
+                "faq_content": "Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore."
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "faq_item_QKJaHk",
+            "faq_item_NNijp4",
+            "faq_item_DRVDeV"
+          ]
+        }
+      },
+      "block_order": [
+        "message_faqs_g6dcet",
+        "group_faq_item_xBNF6a"
+      ],
+      "name": "t:sections.help-center.name",
+      "settings": {
+        "section_width": "container",
+        "color_scheme": "",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
     }
   },
   "order": [
@@ -724,6 +851,7 @@
     "1769637672250e2bd9",
     "collection_tab_MHAJyc",
     "product_testimonials_KNN6XE",
-    "featured_collection_WJG4qT"
+    "featured_collection_WJG4qT",
+    "help_center_cQdyNq"
   ]
 }
