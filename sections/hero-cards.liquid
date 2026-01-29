@@ -20,10 +20,14 @@
   assign subtitle_size_desk = section_st.subtitle_font_size_desktop | default: 16
   assign subtitle_size_mob = section_st.subtitle_font_size_mobile | default: 14
 %}
+{% liquid
+  assign strip_height = section_st.strip_height | default: 200
+%}
 {%- capture style -%}
   --section-pt: {{ section_st.padding_top }}; --section-pb: {{ section_st.padding_bottom }};
   --hero-heading-size-desk: {{ heading_size_desk }}px; --hero-heading-size-mob: {{ heading_size_mob }}px;
   --hero-subtitle-size-desk: {{ subtitle_size_desk }}px; --hero-subtitle-size-mob: {{ subtitle_size_mob }}px;
+  --hero-strip-height: {{ strip_height }}px;
   {% if column_gap > 0 %}--hero-cards-gap: {{ column_gap }}px;{% endif %}
 {%- endcapture -%}
 {%- capture col_style -%}
@@ -216,6 +220,17 @@
       "id": "infinite",
       "label": "t:sections.all.carousel_settings.infinite.label",
       "default": true
+    },
+    {
+      "type": "range",
+      "id": "strip_height",
+      "label": "Altura de la franja de texto (todas las cards igual)",
+      "min": 140,
+      "max": 280,
+      "step": 10,
+      "default": 200,
+      "unit": "px",
+      "info": "Misma altura en todas las tarjetas para un aspecto uniforme."
     },
     {
       "type": "header",

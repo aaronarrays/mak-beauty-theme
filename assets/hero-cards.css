@@ -51,18 +51,22 @@
   display: block;
 }
 
+/* Franja de texto: altura fija para que todas las cards midan igual */
 .hero-card__strip {
   flex: 0 0 auto;
-  min-height: 160px;
+  height: var(--hero-strip-height, 200px);
+  min-height: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   color: var(--hero-card-heading-color, #ffffff);
+  overflow: hidden;
 }
 
 .hero-card__strip-text {
   flex: 1 1 auto;
   min-height: 0;
+  overflow: hidden;
 }
 
 .hero-card__heading {
@@ -70,12 +74,20 @@
   line-height: 1.25;
   letter-spacing: 0.02em;
   color: var(--hero-card-heading-color, #ffffff);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .hero-card__subtitle {
   font-size: var(--hero-subtitle-size-desk, 1rem);
   line-height: 1.4;
   color: var(--hero-card-subtitle-color, rgba(255, 255, 255, 0.9));
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 @media screen and (max-width: 767.98px) {
