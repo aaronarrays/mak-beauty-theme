@@ -13,7 +13,7 @@
       "type": "breadcrumb",
       "settings": {
         "section_width": "container",
-        "color_scheme": "",
+        "color_scheme": "scheme-4faf0e4d-27f4-4d02-bc51-617383bab1a9",
         "next_prev": true
       }
     },
@@ -88,11 +88,11 @@
           "settings": {
             "delivery_design": "vertical",
             "delivery_content_icon": "truck",
-            "delivery_content": "<p>Estimate delivery times:<strong> 3-5 days International.</strong></p>",
+            "delivery_content": "<p>Pago 100% Seguro</p>",
             "discount_content_icon": "none",
             "discount_content": "",
             "return_content_icon": "free_shipping",
-            "return_content": "<p>Free shipping & returns: <strong>On all orders over $150.</strong></p>"
+            "return_content": "<p>Envío gratis y devoluciones: En todos los pedidos mayores a S/199.</p>"
           },
           "blocks": {}
         },
