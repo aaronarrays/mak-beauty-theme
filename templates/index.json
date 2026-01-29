@@ -568,14 +568,14 @@
         "collection_Ujy4rH": {
           "type": "collection",
           "settings": {
-            "collection": "",
+            "collection": "frontpage",
             "collection_title": ""
           }
         },
         "collection_eUKa9f": {
           "type": "collection",
           "settings": {
-            "collection": "",
+            "collection": "sol-de-janeiro",
             "collection_title": ""
           }
         }
@@ -590,7 +590,7 @@
         "color_scheme": "",
         "heading": "Trending this week",
         "description": "",
-        "show_view_all_button": false,
+        "show_view_all_button": true,
         "header_size": "medium",
         "header_alignment": "center",
         "tab_header_style": "horizontal",
