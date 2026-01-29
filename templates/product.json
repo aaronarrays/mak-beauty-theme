@@ -142,8 +142,8 @@
         "collapsible_row_eLaQpR": {
           "type": "_product-collapsible-row",
           "settings": {
-            "heading": "Shipping and Returns",
-            "content": "<p>We offer fast and reliable shipping for all our clothing items. Orders are processed within <strong>1-2 business days</strong> and shipped via standard delivery, which typically takes 3-5 business days.</p><p>Express shipping options are also available at checkout for an additional fee, ensuring your fashion essentials arrive even sooner. Enjoy <strong>free shipping</strong> on orders<strong> over $150</strong>. For any questions regarding your order, please contact our customer service team for assistance.</p>",
+            "heading": "Envíos y Devoluciones",
+            "content": "<p>Ofrecemos envíos rápidos y confiables para todos nuestros productos. Los pedidos se procesan en un plazo de 1 a 2 días hábiles y se envían mediante entrega estándar, que suele tardar de 3 a 5 días hábiles.</p>",
             "use_product_description": false,
             "open": false
           },
@@ -182,9 +182,9 @@
         "enable_on_desktop": true,
         "enable_on_mobile": true,
         "mobile_options": "hidden_thumbnail",
-        "padding_top": 0,
-        "padding_bottom": 0,
-        "reset_spacing": false
+        "padding_top": 60,
+        "padding_bottom": 60,
+        "reset_spacing": true
       }
     },
     "product-set": {
@@ -262,8 +262,8 @@
       "settings": {
         "section_width": "container",
         "color_scheme": "",
-        "heading": "People Also Bought",
-        "description": "Here’s some of our most similar products people are buying. Click to discover trending style.",
+        "heading": "Otros clientes también compraron",
+        "description": "Estos son algunos de los productos más similares que nuestra comunidad está amando.",
         "header_size": "medium",
         "header_alignment": "center",
         "items_to_show": 4,

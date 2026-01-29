@@ -20,7 +20,7 @@
             "image": "shopify://shop_images/svgexport-1.svg",
             "image_width": 200,
             "store_heading": "",
-            "store_description": "<p>Find a location nearest you to reduce shipping costs and make <br/>shopping easier. <a href=\"https://www.google.com/maps\" target=\"_blank\" title=\"https://www.google.com/maps\"><strong>Show on google maps.</strong></a></p>",
+            "store_description": "",
             "store_address": true,
             "store_phone": true,
             "store_email": true,
