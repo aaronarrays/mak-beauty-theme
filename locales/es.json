@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "accessibility": {
     "skip_to_text": "Saltar al contenido",
@@ -547,7 +556,7 @@
         },
         "add_to_cart": {
           "default": {
-            "label": "añadir a la cesta"
+            "label": "añadir a la Carrito"
           },
           "sold_out": {
             "label": "Agotado"
@@ -580,7 +589,7 @@
         "instock": "En stock",
         "outstock": "Agotado",
         "pre_order": "Hacer un pedido",
-        "add_to_cart": "añadir a la cesta"
+        "add_to_cart": "añadir a la Carrito"
       },
       "quantity": {
         "label": "Cantidad",
@@ -649,7 +658,7 @@
       "sold_out": "Agotado",
       "pre_order": "Hacer un pedido",
       "unavailable": "Indisponible",
-      "add_to_cart": "añadir a la cesta",
+      "add_to_cart": "añadir a la Carrito",
       "fake_sold": "{{ sold }} vendido en el último {{ hours }} horas",
       "xr_button": "Ver en tu espacio",
       "xr_button_label": "Ver en tu espacio, carga el elemento en la ventana de realidad aumentada",
