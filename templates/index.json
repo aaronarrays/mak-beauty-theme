@@ -126,10 +126,10 @@
       ],
       "settings": {
         "section_width": "fluid_container",
-        "color_scheme": "",
-        "heading": "",
-        "description": "",
-        "show_view_all_button": false,
+        "color_scheme": "default",
+        "heading": "Compra por categoría",
+        "description": "<p>Encuentra exactamente lo que buscas: desde el \"glow\" perfecto de <strong>Rhode</strong> hasta el cuidado capilar avanzado. <br/><em><strong>¡Tu próxima compra favorita está a un clic!</strong></em></p>",
+        "show_view_all_button": true,
         "header_size": "medium",
         "header_alignment": "center",
         "display_mode": "carousel",
@@ -166,7 +166,7 @@
       "name": "t:names.featured_collection",
       "settings": {
         "section_width": "fluid_container",
-        "color_scheme": "scheme-3d10de96-a479-49bd-819c-e044746b4f3e",
+        "color_scheme": "scheme-2b5c6c91-201d-4fb1-aba3-e6d562656976",
         "heading": "LOS MÁS VENDIDOS",
         "description": "",
         "show_view_all_button": false,
