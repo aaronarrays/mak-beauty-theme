@@ -724,7 +724,7 @@
               "type": "description",
               "name": "t:blocks.general.text.name",
               "settings": {
-                "text": "<p>Have a question?.</p>",
+                "text": "<p>¿Tienes alguna duda?</p>",
                 "font_size": 14,
                 "font_weight": "body_weight",
                 "spacing_bottom": 10
@@ -735,7 +735,7 @@
               "type": "heading",
               "name": "t:sections.all.contents.heading.label",
               "settings": {
-                "heading": "Help center",
+                "heading": "Centro de Ayuda",
                 "font_size": 36,
                 "font_weight": "heading_weight",
                 "uppercase": false,
@@ -747,35 +747,9 @@
               "type": "description",
               "name": "t:blocks.general.text.name",
               "settings": {
-                "text": "<p>If you have an issue or question that requires immediate assistance, you can click the button below to chat live with a Customer Service representative.</p>",
+                "text": "<p>Si tienes algún inconveniente o alguna pregunta que requiera asistencia inmediata, puedes hacer clic en el botón de abajo para chatear en vivo con un representante de Servicio al Cliente.<br/><br/><strong>Información de contacto: </strong>Nuestro equipo de soporte atiende de 8:00 a.m. a 7:30 p.m. todos los días. El tiempo promedio de respuesta es de 5 horas.</p>",
                 "font_size": 14,
                 "font_weight": "body_weight",
-                "spacing_bottom": 10
-              },
-              "blocks": {}
-            },
-            "description_bwhxWb": {
-              "type": "description",
-              "name": "t:blocks.general.text.name",
-              "settings": {
-                "text": "<p>Customer support team from: 8am to 7:30pm daily.Average answer time: 5h.</p>",
-                "font_size": 14,
-                "font_weight": "body_weight",
-                "spacing_bottom": 10
-              },
-              "blocks": {}
-            },
-            "button_HjeaYW": {
-              "type": "button",
-              "name": "t:sections.all.contents.button.label",
-              "settings": {
-                "show_full_width": false,
-                "first_button_label": "Button label",
-                "first_button_link": "",
-                "first_button_type": "primary",
-                "second_button_label": "",
-                "second_button_link": "",
-                "second_button_type": "primary",
                 "spacing_bottom": 10
               },
               "blocks": {}
@@ -784,9 +758,7 @@
           "block_order": [
             "description_gH4jx6",
             "heading_BCn8ie",
-            "description_VpbtWy",
-            "description_bwhxWb",
-            "button_HjeaYW"
+            "description_VpbtWy"
           ]
         },
         "group_faq_item_xBNF6a": {
@@ -833,8 +805,8 @@
               "type": "_faq-item",
               "name": "t:sections.faqs-page.blocks.question.name",
               "settings": {
-                "faq_title": "Frequently Asked Questions?",
-                "faq_content": "Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore."
+                "faq_title": "¿Tienen tienda física?",
+                "faq_content": "Nuestra tienda principal se encuentra en Jr. Atahualpa 183 (cerca a la clínica COA Dental)."
               },
               "blocks": {}
             },
@@ -842,8 +814,8 @@
               "type": "_faq-item",
               "name": "t:sections.faqs-page.blocks.question.name",
               "settings": {
-                "faq_title": "Frequently Asked Questions?",
-                "faq_content": "Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore."
+                "faq_title": "¿Cómo sé qué tono de maquillaje elegir?",
+                "faq_content": "Puedes contactarnos vía WhatsApp para recibir asesoría personalizada y ayudarte a encontrar tu combinación perfecta."
               },
               "blocks": {}
             }
@@ -865,7 +837,7 @@
       "name": "t:sections.help-center.name",
       "settings": {
         "section_width": "container",
-        "color_scheme": "",
+        "color_scheme": "default",
         "padding_top": 60,
         "padding_bottom": 60
       }
