@@ -47,6 +47,16 @@
           "settings": {},
           "blocks": {}
         },
+        "product_bloque_caracteristicas_Pyn3Rb": {
+          "type": "_product-bloque-caracteristicas",
+          "name": "Bloque de características",
+          "settings": {
+            "alt_text": "texto alt",
+            "margin_top": 0,
+            "margin_bottom": 20
+          },
+          "blocks": {}
+        },
         "variant_picker_tcCihG": {
           "type": "_product-variant-picker",
           "settings": {
@@ -147,6 +157,7 @@
         "title_G6tU8U",
         "review_and_sold_AAbJC9",
         "price_VJ4N8m",
+        "product_bloque_caracteristicas_Pyn3Rb",
         "variant_picker_tcCihG",
         "stock_countdown_JNK9zi",
         "buy_buttons_LcQGtR",
