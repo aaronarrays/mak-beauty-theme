@@ -7,7 +7,7 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
- {
+{
   "sections": {
     "banner": {
       "type": "main-collection-heading",
@@ -85,7 +85,7 @@
           "type": "categories",
           "settings": {
             "title": "Products Category",
-            "menu": "products-category"
+            "menu": ""
           }
         },
         "filter_giBtHK": {
@@ -99,21 +99,12 @@
             "collection": "shorts",
             "items_to_show": 3
           }
-        },
-        "image_banner_UUJxtT": {
-          "type": "image_banner",
-          "settings": {
-            "image": "shopify://shop_images/sidebar_banner.jpg",
-            "url": "shopify://collections",
-            "open_link": true
-          }
         }
       },
       "block_order": [
         "categories_LYDr6p",
         "filter_giBtHK",
-        "popular_product_Xwjqcf",
-        "image_banner_UUJxtT"
+        "popular_product_Xwjqcf"
       ],
       "settings": {
         "section_width": "fluid_container",
@@ -130,18 +121,150 @@
         "column_gap": 30,
         "pagination": "default",
         "button_show_more": "Load more",
-        "promotion_image": "shopify://shop_images/bannrx-category.jpg",
         "promotion_link": "shopify://collections/best-seller",
         "promotion_postion": 6,
         "items_per_row_mobile": "2",
         "padding_top": 0,
         "padding_bottom": 0
       }
+    },
+    "help_center_b9P63H": {
+      "type": "help-center",
+      "blocks": {
+        "message_faqs_p4aATw": {
+          "type": "_message-faqs",
+          "settings": {},
+          "blocks": {
+            "description_KFLqdT": {
+              "type": "description",
+              "name": "t:blocks.general.text.name",
+              "settings": {
+                "text": "<p>¿Tienes alguna duda?</p>",
+                "font_size": 14,
+                "font_weight": "body_weight",
+                "spacing_bottom": 10
+              },
+              "blocks": {}
+            },
+            "heading_i689GA": {
+              "type": "heading",
+              "name": "t:sections.all.contents.heading.label",
+              "settings": {
+                "heading": "Centro de Ayuda",
+                "font_size": 36,
+                "font_weight": "heading_weight",
+                "uppercase": false,
+                "spacing_bottom": 20
+              },
+              "blocks": {}
+            },
+            "description_qGQXYH": {
+              "type": "description",
+              "name": "t:blocks.general.text.name",
+              "settings": {
+                "text": "<p>Si tienes algún inconveniente o alguna pregunta que requiera asistencia inmediata, puedes hacer clic en el botón de abajo para chatear en vivo con un representante de Servicio al Cliente.<br/><br/><strong>Información de contacto: </strong>Nuestro equipo de soporte atiende de 8:00 a.m. a 7:30 p.m. todos los días. El tiempo promedio de respuesta es de 5 horas.</p>",
+                "font_size": 14,
+                "font_weight": "body_weight",
+                "spacing_bottom": 10
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "description_KFLqdT",
+            "heading_i689GA",
+            "description_qGQXYH"
+          ]
+        },
+        "group_faq_item_3n9VHG": {
+          "type": "_group-faq-item",
+          "settings": {},
+          "blocks": {
+            "faq_item_geNtQm": {
+              "type": "_faq-item",
+              "name": "t:sections.faqs-page.blocks.question.name",
+              "settings": {
+                "faq_title": "¿A qué destinos realizan envíos?",
+                "faq_content": "Realizamos envíos a todo el Perú."
+              },
+              "blocks": {}
+            },
+            "faq_item_kfmFAX": {
+              "type": "_faq-item",
+              "name": "t:sections.faqs-page.blocks.question.name",
+              "settings": {
+                "faq_title": "¿Cuál es el tiempo de entrega?",
+                "faq_content": "Contamos con un servicio de entrega rápida en 24 horas."
+              },
+              "blocks": {}
+            },
+            "faq_item_FPKM4x": {
+              "type": "_faq-item",
+              "name": "t:sections.faqs-page.blocks.question.name",
+              "settings": {
+                "faq_title": "¿Cómo obtengo el envío gratis?",
+                "faq_content": "Ofrecemos envíos gratuitos a todo el país por compras mayores a S/199."
+              },
+              "blocks": {}
+            },
+            "faq_item_JEyheJ": {
+              "type": "_faq-item",
+              "name": "t:sections.faqs-page.blocks.question.name",
+              "settings": {
+                "faq_title": "¿Los productos son originales?",
+                "faq_content": "Sí, en Mak Beauty garantizamos que todos nuestros productos son 100% originales, importados directamente desde marcas internacionales exclusivas como Rhode, Rare Beauty y Sol de Janeiro."
+              },
+              "blocks": {}
+            },
+            "faq_item_44CCfr": {
+              "type": "_faq-item",
+              "name": "t:sections.faqs-page.blocks.question.name",
+              "settings": {
+                "faq_title": "¿Tienen tienda física?",
+                "faq_content": "Nuestra tienda principal se encuentra en Jr. Atahualpa 183 (cerca a la clínica COA Dental)."
+              },
+              "blocks": {}
+            },
+            "faq_item_t9xD73": {
+              "type": "_faq-item",
+              "name": "t:sections.faqs-page.blocks.question.name",
+              "settings": {
+                "faq_title": "¿Cómo sé qué tono de maquillaje elegir?",
+                "faq_content": "Puedes contactarnos vía WhatsApp para recibir asesoría personalizada y ayudarte a encontrar tu combinación perfecta."
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "faq_item_geNtQm",
+            "faq_item_kfmFAX",
+            "faq_item_FPKM4x",
+            "faq_item_JEyheJ",
+            "faq_item_44CCfr",
+            "faq_item_t9xD73"
+          ]
+        }
+      },
+      "block_order": [
+        "message_faqs_p4aATw",
+        "group_faq_item_3n9VHG"
+      ],
+      "custom_css": [
+        "h2.mt-0.sec__content-heading.heading-letter-spacing.text-mb-.text-md-.mb-custom.fs-medium.heading_weight {color: pink;}"
+      ],
+      "name": "t:sections.help-center.name",
+      "settings": {
+        "section_width": "container",
+        "color_scheme": "default",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
     }
   },
   "order": [
     "banner",
     "subcollection",
-    "main"
+    "main",
+    "help_center_b9P63H"
   ]
 }
