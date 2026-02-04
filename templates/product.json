@@ -51,6 +51,8 @@
           "type": "_product-bloque-caracteristicas",
           "name": "Bloque de características",
           "settings": {
+            "image_desktop": "shopify://shop_images/Caracteristicas-generales-desktop-colores-1-01.jpg",
+            "image_mobile": "shopify://shop_images/Caracteristicas-generales-desktop-colores-1-02.jpg",
             "alt_text": "texto alt",
             "margin_top": 0,
             "margin_bottom": 20
