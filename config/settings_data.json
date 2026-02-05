@@ -53,13 +53,18 @@
     "enable_discount_code": true,
     "enable_gift_wrap": true,
     "choose_gift_wrap_product": "digital-gift-card",
-    "product_recommendations_heading": "You may also like...",
+    "product_recommendations_heading": "Te podría interesar",
     "minicart_type": "show_beside",
     "show_on_cart_page": true,
+    "product_recommendations_type": "select",
     "select_product_recommendations": [
-      "balloon-sleeve-blouse-square-neck",
-      "cotton-long-sleeve-striped-t-shirt",
-      "plain-cotton-undershirt-wide-neck"
+      "all-of-the-above-weightless-eyeshadow-stick",
+      "always-an-optimist-soft-radiance-setting-powder",
+      "brazilian-crush-cheirosa-40-bom-dia-hair-body-fragrance-mist",
+      "always-an-optimist-4-in-1-prime-set-mist",
+      "brazilian-crush-cheirosa-68-beija-flor™-hair-body-fragrance-mist",
+      "brazilian-crush-cheirosa-62-bum-bum-hair-body-fragrance-mist",
+      "cheirosa-59-perfume-mist"
     ],
     "show_estimate_shipping_rates": false,
     "show_delivery_day": false,
