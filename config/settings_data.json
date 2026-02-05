@@ -31,6 +31,7 @@
     "custom_badge_background": "#14854e",
     "show_wishlist": false,
     "show_compare": false,
+    "show_variant": false,
     "product_alignment": "center",
     "product_size": 15,
     "price_size": 15,
