@@ -11,12 +11,12 @@
   "accessibility": {
     "skip_to_text": "Saltar al contenido",
     "refresh_page": "Al elegir una selección, se actualiza la página completa.",
-    "unit_price_separator": "HACER",
+    "unit_price_separator": "CADA",
     "link_messages": {
       "new_window": "Se abre en una nueva ventana."
     },
     "error": "Error",
-    "close": "Cerca",
+    "close": "Cerrar",
     "complementary_products": "Productos complementarios",
     "promotion_banner": "Banner de promoción"
   },
@@ -70,7 +70,7 @@
     "continue_shopping": "Continuar comprando",
     "social": {
       "links": {
-        "twitter": "Gorjeo",
+        "twitter": "Twitter",
         "facebook": "Facebook",
         "pinterest": "Pinterest",
         "instagram": "Instagram",
@@ -89,10 +89,10 @@
       "next": "Próximo",
       "previous": "Anterior",
       "load_more": "Cargar más",
-      "result": "has visto {{ amount }} de {{ count }} resultado"
+      "result": "Has visto {{ amount }} de {{ count }} resultados"
     },
     "breadcrumb": {
-      "home": "Hogar"
+      "home": "Inicio"
     },
     "placeholder": {
       "label": "Sin imagen"
@@ -105,19 +105,19 @@
       "popular_products": "Productos populares",
       "view_all": "Ver todos los resultados",
       "results_with_count": {
-        "one": "Encontró {{ count }} resultado para \"{{ terms }}\"",
-        "other": "Encontró {{ count }} resultados para \"{{ terms }}\""
+        "one": "Has encontrado {{ count }} resultado para \"{{ terms }}\"",
+        "other": "Has encontrado {{ count }} resultados para \"{{ terms }}\""
       },
       "title": "busca en nuestra tienda"
     },
     "cart": {
-      "label": "Carro",
+      "label": "Carrito",
       "view": "Ver mi carrito ({{ count }})",
       "item_added": "Artículo añadido a tu carrito",
-      "title": "Carro de la compra",
+      "title": "Carrito de compras",
       "cart_edit": "Editar opción",
       "remove_title": "Eliminar",
-      "close": "Cerca",
+      "close": "Cerrar",
       "subtitle": "¡Su carrito está actualmente vacío!",
       "empty": "Tu carrito está vacío",
       "description": "Puedes consultar todos los productos disponibles y comprar algunos en la tienda.",
@@ -139,7 +139,7 @@
       "edit": "Editar este elemento",
       "subtotal": "Total parcial",
       "viewcart": "Ver carrito",
-      "checkout": "Verificar",
+      "checkout": "Finalizar compra",
       "save": "Ahorrar",
       "cancel": "Cancelar",
       "heading_payment": "Soporte de pago",
@@ -181,10 +181,10 @@
       }
     },
     "page_cart": {
-      "checkout": "Verificar"
+      "checkout": "Finalizar compra"
     },
     "collections": {
-      "label": "Recopilación",
+      "label": "Colecciones",
       "collection_count_multiple": "{{ number }} Productos",
       "collection_count_single": "{{ number }} Producto",
       "collection_count_multiple_noP": "({{ number }})",
@@ -201,7 +201,7 @@
       "plus": "Más"
     },
     "image_alt_default": "Imagen",
-    "banner": "Bandera",
+    "banner": "Banner",
     "view_all": "Ver todo",
     "policies_html": "Estoy de acuerdo con el <a href=\"/policies/privacy-policy\" target=\"_blank\" title=\"Privacy Policy\"><strong>política de privacidad</strong></a> del sitio web."
   },
@@ -217,7 +217,7 @@
       },
       "sharing": {
         "share": "Compartir",
-        "twitter": "Gorjeo",
+        "twitter": "Twitter",
         "facebook": "Facebook",
         "pinterest": "Pinterest"
       },
@@ -242,12 +242,12 @@
     "sidebar": {
       "clear_all": "Borrar todo",
       "selected": "Seleccionado",
-      "clear": "Claro",
+      "clear": "Limpiar",
       "apply": "Aplicar"
     },
     "pagination": {
       "load_more": "Cargar más",
-      "load_more_amount": "Demostración {{ amount }} de {{ count }} productos"
+      "load_more_amount": "Mostrando {{ amount }} de {{ count }} productos"
     },
     "toolbar": {
       "filter": "Filtrar",
@@ -336,17 +336,17 @@
   },
   "main_menu": {
     "horizontal": {
-      "close": "Cerca",
+      "close": "Cerrar",
       "title": "Menú"
     },
     "vertical": {
       "title": "Categorías",
-      "close": "Cerca",
+      "close": "Cerrar",
       "more": "Todas las categorías",
       "hide": "Ocultar categorías"
     },
     "categories": {
-      "close": "Cerca",
+      "close": "Cerrar",
       "title": "Categorías"
     },
     "currency": {
@@ -387,7 +387,8 @@
       "edit_address": "Editar dirección",
       "first_name": "Nombre de pila",
       "last_name": "Apellido",
-      "company": "Compañía",
+      "company": "DNI / Carné de extranjería",
+      "company_blank": "Introduce tu DNI / Carné de extranjería",
       "address1": "Dirección 1",
       "address2": "Dirección 2",
       "city": "Ciudad",
@@ -430,7 +431,7 @@
       "date_html": "colocado en {{ date }}",
       "cancelled_html": "Pedido cancelado el {{ date }}",
       "cancelled_reason": "Razón: {{ reason }}",
-      "billing_address": "Dirección de Envio",
+      "billing_address": "Dirección de facturación",
       "payment_status": "Estado de pago",
       "shipping_address": "Dirección de envío",
       "fulfillment_status": "Estado de cumplimiento",
@@ -526,7 +527,7 @@
       "removeCartItem": "Eliminar elemento exitosamente",
       "loading": "cargando",
       "label": {
-        "sale_label": "Venta",
+        "sale_label": "Oferta",
         "new_label": "Nuevo",
         "subscription": "Suscripción"
       },
@@ -556,7 +557,7 @@
         },
         "add_to_cart": {
           "default": {
-            "label": "añadir a la Carrito"
+            "label": "Añadir al carrito"
           },
           "sold_out": {
             "label": "Agotado"
@@ -589,7 +590,7 @@
         "instock": "En stock",
         "outstock": "Agotado",
         "pre_order": "Hacer un pedido",
-        "add_to_cart": "añadir a la Carrito"
+        "add_to_cart": "Añadir al carrito"
       },
       "quantity": {
         "label": "Cantidad",
@@ -599,7 +600,7 @@
         "minimum_of": "Mínimo de {{ quantity }}",
         "maximum_of": "Máximo de {{ quantity }}",
         "multiples_of": "Incrementos de {{ quantity }}",
-        "in_cart_html": "<span class=\"quantity-cart\">{{ quantity }}</span> en carro"
+        "in_cart_html": "<span class=\"quantity-cart\">{{ quantity }}</span> en carrito"
       },
       "countdown": {
         "days": "días",
@@ -608,7 +609,7 @@
         "secs": "segundos",
         "day": "d",
         "hour": "h",
-        "min": "metro",
+        "min": "min",
         "sec": "s"
       },
       "addons": {
@@ -658,7 +659,7 @@
       "sold_out": "Agotado",
       "pre_order": "Hacer un pedido",
       "unavailable": "Indisponible",
-      "add_to_cart": "añadir a la Carrito",
+      "add_to_cart": "Añadir al carrito",
       "fake_sold": "{{ sold }} vendido en el último {{ hours }} horas",
       "xr_button": "Ver en tu espacio",
       "xr_button_label": "Ver en tu espacio, carga el elemento en la ventana de realidad aumentada",
@@ -743,7 +744,7 @@
     },
     "collection_template": {
       "empty": "No se encontraron productos",
-      "title": "Recopilación",
+      "title": "Colección",
       "use_fewer_filters_html": " Utilice menos filtros o <a class=\"{{ class }}\" href=\"{{ link }}\">eliminar todo</a>"
     },
     "shopable_video": {
@@ -777,10 +778,10 @@
     "do_not_show_again": "¡No, gracias! "
   },
   "mobile_navbar": {
-    "shop": "Comercio",
-    "homepage": "Hogar",
+      "shop": "Tienda",
+      "homepage": "Inicio",
     "account": "Cuenta",
-    "cart": "Carro",
+      "cart": "Carrito",
     "wishlist": "Lista de deseos"
   },
   "rich_text": {
