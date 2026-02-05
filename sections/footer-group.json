@@ -38,8 +38,8 @@
         "link_list_iVhaPk": {
           "type": "link_list",
           "settings": {
-            "heading": "",
-            "menu": "main-menu",
+            "heading": "Categorias",
+            "menu": "categoria",
             "content_width": "25%"
           }
         }
