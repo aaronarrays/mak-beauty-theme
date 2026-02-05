@@ -1,12 +1,12 @@
 /*
-* ------------------------------------------------------------
-* IMPORTANT: The contents of this file are auto-generated.
-*
-* This file may be updated by the Shopify admin theme editor
-* or related systems. Please exercise caution as any changes
-* made to this file may be overwritten.
-* ------------------------------------------------------------
-*/
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "heading": {
@@ -14,8 +14,7 @@
       "blocks": {
         "breadcrumb_fkLpBa": {
           "type": "breadcrumb",
-          "settings": {
-          }
+          "settings": {}
         },
         "heading_f6yAbL": {
           "type": "heading",
@@ -27,7 +26,7 @@
         "description_Uyfq9Y": {
           "type": "description",
           "settings": {
-            "description": "<p>Revisa los artículos seleccionados antes de comprar. ¡Disfruta de una experiencia de compra fluida!<\/p>"
+            "description": "<p>Revisa los artículos seleccionados antes de comprar. ¡Disfruta de una experiencia de compra fluida!</p>"
           }
         }
       },
@@ -51,22 +50,22 @@
       "settings": {
         "section_width": "fluid_container",
         "enable_cart_note": true,
+        "enable_discount_code": false,
         "show_estimate_shipping": true,
         "icon_svg_1": "question",
         "heading_1": "¿Tienes preguntas?",
-        "description_1": "<p>¡Nuestros expertos están aquí para ayudarte! Llámanos gratis.<\/p>",
+        "description_1": "<p>¡Nuestros expertos están aquí para ayudarte! Llámanos gratis.</p>",
         "icon_svg_2": "secure",
         "heading_2": "Compras seguras",
-        "description_2": "<p>Todas las transacciones están protegidas por tecnología SSL.<\/p>",
+        "description_2": "<p>Todas las transacciones están protegidas por tecnología SSL.</p>",
         "icon_svg_3": "protection",
         "heading_3": "Protección de privacidad",
-        "description_3": "<p>Tu privacidad siempre es nuestra prioridad.<\/p>",
-        "heading_delivery": "Información de entrega",
-        "description_delivery": "<p>Devoluciones gratuitas en 15 días. Asegúrate de que los artículos estén en buen estado.<\/p>",
-        "heading_guarantee": "Garantía de hasta 30 días",
-        "description_guarantee": "<p>¿Problemas con tu pedido? Contáctanos dentro de los 30 días de recibirlo y te lo reemplazaremos gratis.<\/p>",
-        "heading_payment": "Métodos de pago",
-        "payment_image": "shopify:\/\/shop_images\/trust_payment.jpg",
+        "description_3": "<p>Tu privacidad siempre es nuestra prioridad.</p>",
+        "heading_delivery": "",
+        "description_delivery": "",
+        "heading_guarantee": "",
+        "description_guarantee": "",
+        "heading_payment": "",
         "payment_width": 340,
         "padding_top": 0,
         "padding_bottom": 0
@@ -74,8 +73,7 @@
     },
     "alireviews-section-dee47fb0-de47-4321-b713-a7ba7412ef32": {
       "type": "apps",
-      "settings": {
-      }
+      "settings": {}
     }
   },
   "order": [
