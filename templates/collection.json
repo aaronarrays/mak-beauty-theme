@@ -83,6 +83,7 @@
       "blocks": {
         "categories_LYDr6p": {
           "type": "categories",
+          "disabled": true,
           "settings": {
             "title": "Categorias",
             "menu": ""
