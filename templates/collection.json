@@ -83,10 +83,9 @@
       "blocks": {
         "categories_LYDr6p": {
           "type": "categories",
-          "disabled": true,
           "settings": {
             "title": "Categorias",
-            "menu": ""
+            "menu": "categoria"
           }
         },
         "filter_giBtHK": {
@@ -301,7 +300,7 @@
         "section_width": "container",
         "color_scheme": "default",
         "padding_top": 60,
-        "padding_bottom": 60
+        "padding_bottom": 0
       }
     },
     "icon_box_g9hBcF": {
