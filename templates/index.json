@@ -649,106 +649,6 @@
         "reset_spacing": true
       }
     },
-    "product_testimonials_KNN6XE": {
-      "type": "product-testimonials",
-      "blocks": {
-        "testimonials_items_FQz4eH": {
-          "type": "testimonials_items",
-          "settings": {
-            "author_rating": 5,
-            "author_text": "<p>¡Increíble experiencia! Buscaba los rubores de Rare Beauty por todo lado y aquí los encontré originales y a buen precio. El envío a provincia llegó súper rápido y todo muy bien protegido. ¡Mi nueva tienda favorita en Perú!</p>",
-            "select_product": "new-rare-beauty",
-            "author_name": "Camila R."
-          }
-        },
-        "testimonials_items_taknUR": {
-          "type": "testimonials_items",
-          "settings": {
-            "author_rating": 5,
-            "author_text": "<p>Me encanta la variedad de marcas internacionales que tienen, sobre todo lo de Rhode y Sol de Janeiro. El servicio al cliente por WhatsApp es súper amable y te ayudan con todas las dudas sobre los tonos. ¡100% recomendados! 💖</p>",
-            "select_product": "cheirosa-59-perfume-mist",
-            "author_name": "— Luciana M."
-          }
-        }
-      },
-      "block_order": [
-        "testimonials_items_FQz4eH",
-        "testimonials_items_taknUR"
-      ],
-      "settings": {
-        "section_width": "fluid_container",
-        "color_scheme": "scheme-3d10de96-a479-49bd-819c-e044746b4f3e",
-        "heading": "Lo que dicen nuestras Beauty Lovers",
-        "description": "<p>En Mak Beauty, tu confianza es nuestra prioridad. Descubre por qué cientos de clientes eligen <br/>nuestra curaduría de marcas internacionales para resaltar su belleza natural con productos 100% originales.</p>",
-        "header_alignment": "center",
-        "header_size": "medium",
-        "design": "default",
-        "show_image": false,
-        "show_verified_buyer": true,
-        "img_position": "left",
-        "image_ratio": "square",
-        "custom_ratio": "",
-        "img_width": 35,
-        "framed": true,
-        "rate_color": "#ff9c05",
-        "items_per_row": 2,
-        "column_gap": 30,
-        "show_arrow": true,
-        "carousel_pagination": "show_dots_on_mobile",
-        "infinite": true,
-        "autoplay": false,
-        "autorotate_speed": 5,
-        "reveal": false,
-        "items_per_row_mobile": 1,
-        "padding_top": 60,
-        "padding_bottom": 60,
-        "reset_spacing": true
-      }
-    },
-    "featured_collection_WJG4qT": {
-      "type": "featured-collection",
-      "custom_css": [
-        "h2.section__header-heading.heading-letter-spacing.mt-0.mb-0 {color: #ff77d4;}"
-      ],
-      "name": "t:names.featured_collection",
-      "settings": {
-        "section_width": "fluid_container",
-        "color_scheme": "scheme-2b5c6c91-201d-4fb1-aba3-e6d562656976",
-        "heading": "LO MÁS NUEVO",
-        "description": "",
-        "show_view_all_button": false,
-        "space_between_header": true,
-        "header_size": "medium",
-        "header_alignment": "center",
-        "enable_collection_deal": false,
-        "messages": "Hurry up! Offer ends in:",
-        "end_time": "09-22-2026",
-        "timer_style": "default",
-        "collections_type": "carousel",
-        "collection": "sol-de-janeiro",
-        "items_to_show": 8,
-        "items_per_row": 5,
-        "rows_on_desktop": 2,
-        "enable_load_more": false,
-        "button_label": "Load more",
-        "column_gap": 30,
-        "show_arrow": true,
-        "carousel_pagination": "show_dots_on_mobile",
-        "infinite": false,
-        "autoplay": true,
-        "autorotate_speed": 5,
-        "reveal": false,
-        "equal_height_adjustment": false,
-        "sticky_block": false,
-        "content_width": 30,
-        "block_position": "left",
-        "carousel_on_mobile": false,
-        "items_per_row_mobile": 2,
-        "padding_top": 60,
-        "padding_bottom": 60,
-        "reset_spacing": true
-      }
-    },
     "help_center_cQdyNq": {
       "type": "help-center",
       "blocks": {
@@ -880,6 +780,62 @@
         "padding_top": 60,
         "padding_bottom": 60
       }
+    },
+    "product_testimonials_KNN6XE": {
+      "type": "product-testimonials",
+      "blocks": {
+        "testimonials_items_FQz4eH": {
+          "type": "testimonials_items",
+          "settings": {
+            "author_rating": 5,
+            "author_text": "<p>¡Increíble experiencia! Buscaba los rubores de Rare Beauty por todo lado y aquí los encontré originales y a buen precio. El envío a provincia llegó súper rápido y todo muy bien protegido. ¡Mi nueva tienda favorita en Perú!</p>",
+            "select_product": "new-rare-beauty",
+            "author_name": "Camila R."
+          }
+        },
+        "testimonials_items_taknUR": {
+          "type": "testimonials_items",
+          "settings": {
+            "author_rating": 5,
+            "author_text": "<p>Me encanta la variedad de marcas internacionales que tienen, sobre todo lo de Rhode y Sol de Janeiro. El servicio al cliente por WhatsApp es súper amable y te ayudan con todas las dudas sobre los tonos. ¡100% recomendados! 💖</p>",
+            "select_product": "cheirosa-59-perfume-mist",
+            "author_name": "— Luciana M."
+          }
+        }
+      },
+      "block_order": [
+        "testimonials_items_FQz4eH",
+        "testimonials_items_taknUR"
+      ],
+      "settings": {
+        "section_width": "fluid_container",
+        "color_scheme": "scheme-3d10de96-a479-49bd-819c-e044746b4f3e",
+        "heading": "Lo que dicen nuestras Beauty Lovers",
+        "description": "<p>En Mak Beauty, tu confianza es nuestra prioridad. Descubre por qué cientos de clientes eligen <br/>nuestra curaduría de marcas internacionales para resaltar su belleza natural con productos 100% originales.</p>",
+        "header_alignment": "center",
+        "header_size": "medium",
+        "design": "default",
+        "show_image": false,
+        "show_verified_buyer": true,
+        "img_position": "left",
+        "image_ratio": "square",
+        "custom_ratio": "",
+        "img_width": 35,
+        "framed": true,
+        "rate_color": "#ff9c05",
+        "items_per_row": 2,
+        "column_gap": 30,
+        "show_arrow": true,
+        "carousel_pagination": "show_dots_on_mobile",
+        "infinite": true,
+        "autoplay": false,
+        "autorotate_speed": 5,
+        "reveal": false,
+        "items_per_row_mobile": 1,
+        "padding_top": 60,
+        "padding_bottom": 60,
+        "reset_spacing": true
+      }
     }
   },
   "order": [
@@ -888,13 +844,12 @@
     "featured_collection_TCP844",
     "scrolling_text_U3mttg",
     "multi_content_GYmhdq",
-    "icon_box_TRwJBD",
-    "hero_cards_TbEDdi",
     "featured_collection_nTcT4V",
+    "hero_cards_TbEDdi",
     "1769637672250e2bd9",
     "collection_tab_MHAJyc",
+    "icon_box_TRwJBD",
     "help_center_cQdyNq",
-    "featured_collection_WJG4qT",
     "product_testimonials_KNN6XE"
   ]
 }
