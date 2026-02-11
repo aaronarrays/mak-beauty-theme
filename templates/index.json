@@ -125,9 +125,7 @@
         "collection_ctTBpd",
         "collection_fyfMEN"
       ],
-      "custom_css": [
-        "h2.section__header-heading.heading-letter-spacing.mt-0.mb-10 {color: pink;}"
-      ],
+      "custom_css": [],
       "settings": {
         "section_width": "fluid_container",
         "color_scheme": "default",
@@ -167,9 +165,7 @@
     },
     "featured_collection_TCP844": {
       "type": "featured-collection",
-      "custom_css": [
-        "h2.section__header-heading.heading-letter-spacing.mt-0.mb-0 {color: pink;}"
-      ],
+      "custom_css": [],
       "name": "t:names.featured_collection",
       "settings": {
         "section_width": "fluid_container",
@@ -259,7 +255,7 @@
           "type": "_group-text",
           "name": "t:blocks.names.text",
           "settings": {
-            "color_scheme": "",
+            "color_scheme": "scheme-c78bfb21-5aff-497b-be68-98f01962f564",
             "content_width": "50%",
             "content_alignment": "start",
             "vertical_align": "start",
@@ -335,9 +331,7 @@
         "group_text_9mxGax",
         "group_media_content_mGtqNa"
       ],
-      "custom_css": [
-        "h2.mt-0.sec__content-heading.heading-letter-spacing.text-mb-.text-md-.mb-custom.fs-medium.subheading_weight {color: pink;}"
-      ],
+      "custom_css": [],
       "name": "t:sections.multi_content.name",
       "settings": {
         "section_width": "fluid_container",
