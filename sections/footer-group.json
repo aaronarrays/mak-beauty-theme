@@ -80,7 +80,7 @@
         "show_social": true,
         "payment_enable": true,
         "payment_width": 340,
-        "copyright_text": "<p>Powered by Ecom Project</p>",
+        "copyright_text": "<p>© 2026 Mak beauty. Powered by <a href=\"https://ecom-project.com/\" target=\"_blank\"><strong>Ecom Project.</strong></a></p>",
         "footer_heading_size": 16,
         "padding_top": 60,
         "padding_bottom": 45,
