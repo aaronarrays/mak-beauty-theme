@@ -50,8 +50,8 @@
       "settings": {
         "section_width": "fluid_container",
         "enable_cart_note": true,
-        "enable_discount_code": false,
-        "show_estimate_shipping": true,
+        "enable_discount_code": true,
+        "show_estimate_shipping": false,
         "icon_svg_1": "question",
         "heading_1": "¿Tienes preguntas?",
         "description_1": "<p>¡Nuestros expertos están aquí para ayudarte! Llámanos gratis./</p>",
@@ -65,11 +65,11 @@
         "description_delivery": "",
         "heading_guarantee": "",
         "description_guarantee": "",
-        "heading_payment": "Pagos 100% Seguros",
+        "heading_payment": "Métodos de Pago",
         "payment_image": "shopify://shop_images/Metodos-de-Pago-Mercado-Pago-Yape-1-blanco.png",
-        "payment_width": 340,
+        "payment_width": 280,
         "padding_top": 0,
-        "padding_bottom": 0
+        "padding_bottom": 60
       }
     },
     "alireviews-section-dee47fb0-de47-4321-b713-a7ba7412ef32": {
