@@ -53,6 +53,7 @@
     "show_message_when_remove": false,
     "action_after_add_cart": "open_drawer",
     "free_shipping_minimum": "149",
+    "show_duration_on_minicart_cart_page": false,
     "enable_discount_code": true,
     "enable_gift_wrap": true,
     "choose_gift_wrap_product": "digital-gift-card",
