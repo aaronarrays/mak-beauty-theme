@@ -56,7 +56,7 @@
           "name": "Fila de Iconos (Block)",
           "settings": {
             "alignment": "flex-start",
-            "bg_color": "transparent",
+            "bg_color": "rgba(0,0,0,0)",
             "inner_padding": 0,
             "border_thickness": 0,
             "border_style": "solid",
@@ -68,7 +68,7 @@
             "text_size": 12,
             "text_color": "#333333",
             "alignment_mobile": "center",
-            "bg_color_mobile": "transparent",
+            "bg_color_mobile": "rgba(0,0,0,0)",
             "inner_padding_mobile": 10,
             "border_thickness_mobile": 0,
             "border_radius_mobile": 0,
