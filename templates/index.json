@@ -128,7 +128,7 @@
       "custom_css": [],
       "settings": {
         "section_width": "fluid_container",
-        "color_scheme": "default",
+        "color_scheme": "scheme-29cb05bc-ad3c-44ac-b79b-748511cc42c7",
         "heading": "¿Qué estás buscando hoy?",
         "description": "<p>Encuentra exactamente lo que buscas: desde el \"glow\" perfecto de <strong>Rhode</strong> hasta el cuidado capilar avanzado</p>",
         "show_view_all_button": true,
@@ -255,7 +255,7 @@
           "type": "_group-text",
           "name": "t:blocks.names.text",
           "settings": {
-            "color_scheme": "scheme-c78bfb21-5aff-497b-be68-98f01962f564",
+            "color_scheme": "scheme-29cb05bc-ad3c-44ac-b79b-748511cc42c7",
             "content_width": "50%",
             "content_alignment": "start",
             "vertical_align": "start",
@@ -335,7 +335,7 @@
       "name": "t:sections.multi_content.name",
       "settings": {
         "section_width": "fluid_container",
-        "color_scheme": "default",
+        "color_scheme": "scheme-29cb05bc-ad3c-44ac-b79b-748511cc42c7",
         "heading": "",
         "description": "",
         "header_size": "medium",
@@ -547,13 +547,11 @@
         "collection_Ujy4rH",
         "collection_eUKa9f"
       ],
-      "custom_css": [
-        "h2.section__header-heading.heading-letter-spacing.mt-0.mb-10 {color: pink;}"
-      ],
+      "custom_css": [],
       "name": "t:sections.collection-tab.name",
       "settings": {
         "section_width": "fluid_container",
-        "color_scheme": "",
+        "color_scheme": "scheme-29cb05bc-ad3c-44ac-b79b-748511cc42c7",
         "heading": "Lo más viral de la semana",
         "description": "<p>Las marcas que están rompiendo internet, seleccionadas solo para ti. ¡No te quedes sin tus favoritos!</p>",
         "show_view_all_button": true,
@@ -764,13 +762,11 @@
         "message_faqs_g6dcet",
         "group_faq_item_xBNF6a"
       ],
-      "custom_css": [
-        "h2.mt-0.sec__content-heading.heading-letter-spacing.text-mb-.text-md-.mb-custom.fs-medium.heading_weight {color: pink;}"
-      ],
+      "custom_css": [],
       "name": "t:sections.help-center.name",
       "settings": {
         "section_width": "container",
-        "color_scheme": "default",
+        "color_scheme": "scheme-29cb05bc-ad3c-44ac-b79b-748511cc42c7",
         "padding_top": 60,
         "padding_bottom": 60
       }
