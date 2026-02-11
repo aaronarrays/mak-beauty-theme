@@ -39,7 +39,7 @@
         "review_and_sold_AAbJC9": {
           "type": "_product-review-sold",
           "settings": {
-            "show_review": true,
+            "show_review": false,
             "show_sold_products": true,
             "sold": "8,10,12,15,17,22",
             "hours": "10,12,15,16,18,20,24"
