@@ -73,7 +73,7 @@
             "border_thickness_mobile": 0,
             "border_radius_mobile": 0,
             "icon_width_mobile": 30,
-            "text_max_width_mobile": 100,
+            "text_max_width_mobile": 90,
             "icon_gap_mobile": 10,
             "text_size_mobile": 11,
             "padding_top": 10,
