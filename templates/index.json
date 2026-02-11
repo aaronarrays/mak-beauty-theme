@@ -80,7 +80,7 @@
         "collection_r7aTxN": {
           "type": "collection",
           "settings": {
-            "collection": "crop-top",
+            "collection": "maquillaje",
             "collection_image": "shopify://shop_images/6.png",
             "collection_title": "Maquillaje"
           }
@@ -88,7 +88,7 @@
         "collection_FUAzK4": {
           "type": "collection",
           "settings": {
-            "collection": "t-shirts",
+            "collection": "cuidado-de-la-piel",
             "collection_image": "shopify://shop_images/5.png",
             "collection_title": "Cuidado de la Piel (Skincare)"
           }
@@ -96,7 +96,7 @@
         "collection_kUA3MH": {
           "type": "collection",
           "settings": {
-            "collection": "blazers",
+            "collection": "cabello",
             "collection_image": "shopify://shop_images/1.png",
             "collection_title": "Cuidado del Cabello"
           }
@@ -104,17 +104,9 @@
         "collection_ctTBpd": {
           "type": "collection",
           "settings": {
-            "collection": "coats",
+            "collection": "fragancia",
             "collection_image": "shopify://shop_images/4.png",
             "collection_title": "Fragancias"
-          }
-        },
-        "collection_fyfMEN": {
-          "type": "collection",
-          "settings": {
-            "collection": "sweaters",
-            "collection_image": "shopify://shop_images/2.png",
-            "collection_title": "Fragancia"
           }
         }
       },
@@ -122,8 +114,7 @@
         "collection_r7aTxN",
         "collection_FUAzK4",
         "collection_kUA3MH",
-        "collection_ctTBpd",
-        "collection_fyfMEN"
+        "collection_ctTBpd"
       ],
       "custom_css": [],
       "settings": {
