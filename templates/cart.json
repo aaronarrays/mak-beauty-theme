@@ -65,7 +65,8 @@
         "description_delivery": "",
         "heading_guarantee": "",
         "description_guarantee": "",
-        "heading_payment": "",
+        "heading_payment": "Pagos 100% Seguros",
+        "payment_image": "shopify://shop_images/Metodos-de-Pago-Mercado-Pago-Yape-1-blanco.png",
         "payment_width": 340,
         "padding_top": 0,
         "padding_bottom": 0
