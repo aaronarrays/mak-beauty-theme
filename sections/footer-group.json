@@ -42,12 +42,21 @@
             "menu": "categoria",
             "content_width": "25%"
           }
+        },
+        "link_list_ppR7ny": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Legal",
+            "menu": "politicas",
+            "content_width": "16%"
+          }
         }
       },
       "block_order": [
         "store_info_tUhcyD",
         "link_list_JTq77M",
-        "link_list_iVhaPk"
+        "link_list_iVhaPk",
+        "link_list_ppR7ny"
       ],
       "settings": {
         "section_width": "fluid_container",
