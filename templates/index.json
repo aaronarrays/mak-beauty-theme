@@ -246,21 +246,21 @@
           "type": "logo",
           "settings": {
             "image": "shopify://shop_images/falabella_logo.png",
-            "link": ""
+            "link": "https://www.falabella.com.pe/falabella-pe/seller/Mak%20Beauty"
           }
         },
         "logo_6NCnQx": {
           "type": "logo",
           "settings": {
             "image": "shopify://shop_images/ripley_logo.png",
-            "link": ""
+            "link": "https://simple.ripley.com.pe/tienda/mak-beauty-6049151?srsltid=AfmBOoreEFq0lLMUddhIj0Vc59AE6g9oMNprzl1VO3ATUj2Ld5O2qIZ1&type=catalog"
           }
         },
         "logo_xdYyk3": {
           "type": "logo",
           "settings": {
             "image": "shopify://shop_images/inka_farma_logo.png",
-            "link": ""
+            "link": "https://inkafarma.pe/producto/Tinta-para-labios-Mini-Delight---rose-brown-Rare-Beauty-Maquillaje/1762208418746"
           }
         },
         "logo_K9qKCf": {
@@ -304,10 +304,16 @@
       "name": "Logo Marquee Slider",
       "settings": {
         "section_width": "full_width",
-        "color_scheme": "",
+        "color_scheme": "scheme-3d10de96-a479-49bd-819c-e044746b4f3e",
+        "heading": "Nuestra red de aliados estratégicos",
+        "heading_size_custom": 40,
+        "description": "<p>Llevamos la calidad de nuestros productos a los marketplaces más grandes del país. Encuéntranos también en sus plataformas oficiales.</p>",
+        "desc_size_custom": 18,
+        "text_alignment": "center",
         "direction": "left",
         "speed": 31,
         "image_width": 300,
+        "image_max_height": 185,
         "space_between_images": 0,
         "padding_top": 60,
         "padding_bottom": 60
