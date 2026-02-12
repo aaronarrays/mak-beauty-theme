@@ -532,11 +532,35 @@
             "collection": "sol-de-janeiro",
             "collection_title": ""
           }
+        },
+        "collection_GzftdW": {
+          "type": "collection",
+          "settings": {
+            "collection": "kbeauty",
+            "collection_title": ""
+          }
+        },
+        "collection_Kafxid": {
+          "type": "collection",
+          "settings": {
+            "collection": "fenty-beauty",
+            "collection_title": ""
+          }
+        },
+        "collection_Yjc86X": {
+          "type": "collection",
+          "settings": {
+            "collection": "milk-makeup",
+            "collection_title": ""
+          }
         }
       },
       "block_order": [
         "collection_Ujy4rH",
-        "collection_eUKa9f"
+        "collection_eUKa9f",
+        "collection_GzftdW",
+        "collection_Kafxid",
+        "collection_Yjc86X"
       ],
       "custom_css": [],
       "name": "t:sections.collection-tab.name",
