@@ -467,7 +467,7 @@
       "name": "Banner Dual (Pro)",
       "settings": {
         "image_desktop": "shopify://shop_images/BANNER_DESKTOP_-_MAKBEAUTY_jpg.jpg",
-        "link": ""
+        "link": "shopify://collections/all"
       }
     },
     "hero_cards_TbEDdi": {
