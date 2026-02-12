@@ -16,7 +16,7 @@
           "type": "slider_item",
           "settings": {
             "image": "shopify://shop_images/Frame_1.png",
-            "image_mobile": "shopify://shop_images/banner1_0b43b2f2-ee24-4fbd-8d2f-717403614b5e.png",
+            "image_mobile": "shopify://shop_images/Frame_1.png",
             "overlay_opacity": 0,
             "slider_effect": "effect_fadeindown",
             "subheading": "",
@@ -77,7 +77,7 @@
       "settings": {
         "section_width": "full_width",
         "slide_height": "adapt",
-        "desktop_height": 500,
+        "desktop_height": 450,
         "mobile_height": 470,
         "color_scheme": "scheme-2b5c6c91-201d-4fb1-aba3-e6d562656976",
         "slide_effect": "fade",

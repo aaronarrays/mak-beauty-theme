@@ -26,10 +26,6 @@
           "type": "shop",
           "settings": {}
         },
-        "wishlist_DHxNDy": {
-          "type": "wishlist",
-          "settings": {}
-        },
         "cart_8xqQBb": {
           "type": "cart",
           "settings": {}
@@ -39,7 +35,6 @@
         "homepage_xiQ8UP",
         "account_6ynFFp",
         "shop_MUxUGE",
-        "wishlist_DHxNDy",
         "cart_8xqQBb"
       ],
       "settings": {}
