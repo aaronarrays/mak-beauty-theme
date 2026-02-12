@@ -12,27 +12,28 @@
     "slideshow_EfEhrB": {
       "type": "slideshow",
       "blocks": {
-        "slider_item_KrXh9T": {
+        "slider_item_xfKXVY": {
           "type": "slider_item",
           "settings": {
             "image": "shopify://shop_images/Frame_1.png",
+            "image_mobile": "shopify://shop_images/banner1_0b43b2f2-ee24-4fbd-8d2f-717403614b5e.png",
             "overlay_opacity": 0,
             "slider_effect": "effect_fadeindown",
-            "subheading": "Subheading",
-            "heading": "Image slide",
-            "description": "<p>Tell your brand's story through images</p>",
-            "first_button_label": "Button label",
-            "first_button_link": "",
+            "subheading": "",
+            "heading": "El match perfecto sí existe",
+            "description": "<p>En este San Valentín, deja de buscar tu <br/>media naranja y encuentra tu <em>gloss</em> <br/>favorito. En <strong>MAK Beauty</strong> queremos que te<br/> enamores de ti misma primero.</p>",
+            "first_button_label": "QUIERO MI GLOW",
+            "first_button_link": "shopify://collections/all",
             "first_button_style": false,
             "second_button_label": "",
             "second_button_link": "",
             "second_button_style": false,
             "content_alignment": "left",
             "content_position": "bottom-left",
-            "content_width": "container",
+            "content_width": "fluid_container",
             "content_max_width": 100,
             "content_padding_block": 60,
-            "content_padding_inline": 30,
+            "content_padding_inline": 120,
             "show_content_background": false,
             "content_background": "#ffffff",
             "content_box_opacity": 100,
@@ -57,7 +58,7 @@
             "second_button_style": false,
             "content_alignment": "left",
             "content_position": "bottom-left",
-            "content_width": "container",
+            "content_width": "fluid_container",
             "content_max_width": 100,
             "content_padding_block": 60,
             "content_padding_inline": 30,
@@ -69,7 +70,7 @@
         }
       },
       "block_order": [
-        "slider_item_KrXh9T",
+        "slider_item_xfKXVY",
         "slider_item_LzjxbH"
       ],
       "name": "t:sections.slideshow.name",
