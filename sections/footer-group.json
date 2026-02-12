@@ -55,7 +55,7 @@
           "type": "claims_book",
           "settings": {
             "image": "shopify://shop_images/Libro_de_Reclamaciones.png",
-            "link": "",
+            "link": "shopify://pages/libro-de-reclamaciones",
             "image_width": 120,
             "content_width": "25%"
           }
