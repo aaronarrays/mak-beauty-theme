@@ -239,6 +239,14 @@
         "reset_spacing": true
       }
     },
+    "banner_dual_GixGy4": {
+      "type": "banner-dual",
+      "name": "Banner Dual (Pro)",
+      "settings": {
+        "image_desktop": "shopify://shop_images/ENTREGA_jpg.jpg",
+        "link": "shopify://collections/all"
+      }
+    },
     "scrolling_image_PfTmBB": {
       "type": "scrolling-image",
       "blocks": {
@@ -936,6 +944,7 @@
     "collection_list_VmEYkJ",
     "featured_collection_TCP844",
     "scrolling_text_U3mttg",
+    "banner_dual_GixGy4",
     "scrolling_image_PfTmBB",
     "multi_content_GYmhdq",
     "featured_collection_nTcT4V",
