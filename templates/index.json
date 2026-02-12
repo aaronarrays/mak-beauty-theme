@@ -239,6 +239,81 @@
         "reset_spacing": true
       }
     },
+    "scrolling_image_PfTmBB": {
+      "type": "scrolling-image",
+      "blocks": {
+        "logo_GmJDbF": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/falabella_logo.png",
+            "link": ""
+          }
+        },
+        "logo_6NCnQx": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/ripley_logo.png",
+            "link": ""
+          }
+        },
+        "logo_xdYyk3": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/inka_farma_logo.png",
+            "link": ""
+          }
+        },
+        "logo_K9qKCf": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/Mercadolibre_logo.png",
+            "link": ""
+          }
+        },
+        "logo_G3XW4V": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/rappi_logo.png",
+            "link": ""
+          }
+        },
+        "logo_KiMwXd": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/ntercop_logo.png",
+            "link": ""
+          }
+        },
+        "logo_NFX4y7": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/yape_logo.png",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "logo_GmJDbF",
+        "logo_6NCnQx",
+        "logo_xdYyk3",
+        "logo_K9qKCf",
+        "logo_G3XW4V",
+        "logo_KiMwXd",
+        "logo_NFX4y7"
+      ],
+      "name": "Logo Marquee Slider",
+      "settings": {
+        "section_width": "full_width",
+        "color_scheme": "",
+        "direction": "left",
+        "speed": 31,
+        "image_width": 300,
+        "space_between_images": 0,
+        "padding_top": 20,
+        "padding_bottom": 20,
+        "reset_spacing": false
+      }
+    },
     "multi_content_GYmhdq": {
       "type": "multi-content",
       "blocks": {
@@ -848,6 +923,7 @@
     "collection_list_VmEYkJ",
     "featured_collection_TCP844",
     "scrolling_text_U3mttg",
+    "scrolling_image_PfTmBB",
     "multi_content_GYmhdq",
     "featured_collection_nTcT4V",
     "hero_cards_TbEDdi",
