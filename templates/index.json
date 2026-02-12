@@ -462,6 +462,14 @@
         "reset_spacing": true
       }
     },
+    "banner_dual_wXG6rd": {
+      "type": "banner-dual",
+      "name": "Banner Dual (Pro)",
+      "settings": {
+        "image_desktop": "shopify://shop_images/BANNER_DESKTOP_-_MAKBEAUTY_jpg.jpg",
+        "link": ""
+      }
+    },
     "hero_cards_TbEDdi": {
       "type": "hero-cards",
       "blocks": {
@@ -931,6 +939,7 @@
     "scrolling_image_PfTmBB",
     "multi_content_GYmhdq",
     "featured_collection_nTcT4V",
+    "banner_dual_wXG6rd",
     "hero_cards_TbEDdi",
     "1769637672250e2bd9",
     "collection_tab_MHAJyc",
