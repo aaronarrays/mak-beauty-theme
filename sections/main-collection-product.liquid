@@ -166,7 +166,17 @@
                 data-view-mode="{{ products_column }}"
               >
                 {%- liquid
-                  assign banner_positions = section_st.promotion_postion
+                  assign collection_brand_image = collection.metafields.custom.imagen_de_marca.value
+                  if collection_brand_image != blank
+                    assign promotion_image_to_show = collection_brand_image
+                    assign promotion_position_to_use = 1
+                    assign use_brand_image = true
+                  else
+                    assign promotion_image_to_show = section_st.promotion_image
+                    assign promotion_position_to_use = section_st.promotion_postion
+                    assign use_brand_image = false
+                  endif
+                  assign banner_positions = promotion_position_to_use
                   assign cp = paginate.current_page | minus: 1
                   assign midnum = section_st.items_to_show | times: cp
                   assign found = false
@@ -179,24 +189,26 @@
                       assign found = true
                     endif
                   -%}
-                  {%- if found and section_st.promotion_image != blank and view != 'list' -%}
-                    {%- if section_st.promotion_postion == index -%}
+                  {%- if found and promotion_image_to_show != blank and view != 'list' -%}
+                    {%- if promotion_position_to_use == index -%}
                       <div
                         class="grid__item promotion block motion-item"
                       >
                         <div class="product__promotion-banner">
                           <a
-                            {% if section_st.promotion_link == blank %}
+                            {% if use_brand_image %}
+                              href="{{ collection.url }}"
+                            {% elsif section_st.promotion_link == blank %}
                               role="link" aria-disabled="true"
                             {% else %}
                               href="{{ section_st.promotion_link }}"
                             {% endif %}
-                            aria-label="{{ section_st.promotion_image.alt }}"
+                            aria-label="{{ promotion_image_to_show.alt | default: collection.title }}"
                           >
-                            {%- assign image_alt = section_st.promotion_image.alt | default: 'product' -%}
+                            {%- assign image_alt = promotion_image_to_show.alt | default: collection.title | default: 'product' -%}
                             {% render 'responsive-image',
                               type: 'other',
-                              image: section_st.promotion_image,
+                              image: promotion_image_to_show,
                               image_alt: image_alt,
                               class: 'rounded',
                               container: section_width,
