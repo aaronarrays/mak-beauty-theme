@@ -1,97 +1,102 @@
 {% schema %}
 {
-  "name": "Banner Adaptable Total",
+  "name": "Banner Adaptable Pro",
   "settings": [
     {
       "type": "image_picker",
       "id": "image_desktop",
-      "label": "Imagen Escritorio (1920x800px)"
+      "label": "Imagen Escritorio (Horizontal)"
     },
     {
       "type": "image_picker",
       "id": "image_mobile",
-      "label": "Imagen Móvil (800x1200px o similar)"
+      "label": "Imagen Móvil (Vertical/Cuadrada)"
     },
     {
       "type": "url",
       "id": "link",
       "label": "Enlace del banner"
-    },
-    {
-      "type": "checkbox",
-      "id": "full_width",
-      "label": "Ancho completo de pantalla",
-      "default": true
     }
   ],
   "presets": [
     {
-      "name": "Banner Adaptable Total"
+      "name": "Banner Adaptable Pro"
     }
   ]
 }
 {% endschema %}
 
 <style>
-  .banner-adapt-container {
+  .banner-mak-section {
     width: 100%;
+    display: block;
     margin: 0;
     padding: 0;
-    line-height: 0; /* Elimina espacios extraños debajo de la imagen */
+    overflow: hidden;
   }
 
-  .banner-adapt-container img {
+  .banner-mak-section a {
+    display: block;
     width: 100%;
-    height: auto; /* La altura se ajusta sola para NO recortar nada */
-    display: block;
+    line-height: 0;
   }
 
-  /* Si no quieres que sea ancho completo, limita el contenedor */
-  .banner-adapt-container.boxed {
-    max-width: 1200px;
-    margin: 0 auto;
+  .banner-mak-img {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    /* Evita cualquier tipo de repetición y asegura que se vea toda la imagen */
+    object-fit: contain; 
+    background-repeat: no-repeat !important;
   }
 
-  .mobile-hide {
+  /* Control de visibilidad */
+  .hide-mobile {
     display: block;
   }
-  .desktop-hide {
+  .hide-desktop {
     display: none;
   }
 
   @media screen and (max-width: 749px) {
-    .mobile-hide {
+    .hide-mobile {
       display: none;
     }
-    .desktop-hide {
+    .hide-desktop {
       display: block;
+    }
+    /* En móvil nos aseguramos que el contenedor no fuerce alturas */
+    .banner-mak-section {
+      height: auto !important;
     }
   }
 </style>
 
-<div class="banner-adapt-container {% unless section.settings.full_width %}boxed{% endunless %}">
+<div class="banner-mak-section">
   {% if section.settings.link != blank %}
     <a href="{{ section.settings.link }}">
   {% endif %}
 
-    {% if section.settings.image_desktop != blank %}
+    {%- if section.settings.image_desktop != blank -%}
       <img src="{{ section.settings.image_desktop | img_url: '2000x' }}" 
-           alt="{{ section.settings.image_desktop.alt }}" 
-           class="mobile-hide">
-    {% else %}
-      {{ 'lifestyle-1' | placeholder_svg_tag: 'mobile-hide' }}
-    {% endif %}
+           alt="{{ section.settings.image_desktop.alt | escape }}" 
+           class="banner-mak-img hide-mobile"
+           loading="lazy">
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'banner-mak-img hide-mobile' }}
+    {%- endif -%}
 
-    {% if section.settings.image_mobile != blank %}
+    {%- if section.settings.image_mobile != blank -%}
       <img src="{{ section.settings.image_mobile | img_url: '800x' }}" 
-           alt="{{ section.settings.image_mobile.alt }}" 
-           class="desktop-hide">
-    {% else %}
-      {% comment %} Si no hay imagen móvil, usamos la de escritorio pero con ancho adaptable {% endcomment %}
-      {% if section.settings.image_desktop != blank %}
-        <img src="{{ section.settings.image_desktop | img_url: '800x' }}" class="desktop-hide">
-      {% endif %}
-    {% endif %}
+           alt="{{ section.settings.image_mobile.alt | escape }}" 
+           class="banner-mak-img hide-desktop"
+           loading="lazy">
+    {%- else -%}
+      {%- if section.settings.image_desktop != blank -%}
+        <img src="{{ section.settings.image_desktop | img_url: '800x' }}" 
+             class="banner-mak-img hide-desktop">
+      {%- endif -%}
+    {%- endif -%}
 
   {% if section.settings.link != blank %}
     </a>
