@@ -12,34 +12,6 @@
     "slideshow_EfEhrB": {
       "type": "slideshow",
       "blocks": {
-        "slider_item_xfKXVY": {
-          "type": "slider_item",
-          "settings": {
-            "image": "shopify://shop_images/Frame_1.png",
-            "image_mobile": "shopify://shop_images/Frame_1.png",
-            "overlay_opacity": 0,
-            "slider_effect": "effect_fadeindown",
-            "subheading": "",
-            "heading": "El match perfecto sí existe",
-            "description": "<p>En este San Valentín, deja de buscar tu <br/>media naranja y encuentra tu <em>gloss</em> <br/>favorito. En <strong>MAK Beauty</strong> queremos que te<br/> enamores de ti misma primero.</p>",
-            "first_button_label": "Aprovechar Oferta",
-            "first_button_link": "shopify://collections/all",
-            "first_button_style": false,
-            "second_button_label": "",
-            "second_button_link": "",
-            "second_button_style": false,
-            "content_alignment": "left",
-            "content_position": "bottom-left",
-            "content_width": "fluid_container",
-            "content_max_width": 100,
-            "content_padding_block": 60,
-            "content_padding_inline": 120,
-            "show_content_background": false,
-            "content_background": "#ffffff",
-            "content_box_opacity": 100,
-            "content_alignment_mobile": "left"
-          }
-        },
         "slider_item_LzjxbH": {
           "type": "slider_item",
           "settings": {
@@ -70,7 +42,6 @@
         }
       },
       "block_order": [
-        "slider_item_xfKXVY",
         "slider_item_LzjxbH"
       ],
       "name": "t:sections.slideshow.name",
