@@ -12,6 +12,33 @@
     "slideshow_EfEhrB": {
       "type": "slideshow",
       "blocks": {
+        "slider_item_KrXh9T": {
+          "type": "slider_item",
+          "settings": {
+            "image": "shopify://shop_images/Frame_1.png",
+            "overlay_opacity": 0,
+            "slider_effect": "effect_fadeindown",
+            "subheading": "Subheading",
+            "heading": "Image slide",
+            "description": "<p>Tell your brand's story through images</p>",
+            "first_button_label": "Button label",
+            "first_button_link": "",
+            "first_button_style": false,
+            "second_button_label": "",
+            "second_button_link": "",
+            "second_button_style": false,
+            "content_alignment": "left",
+            "content_position": "bottom-left",
+            "content_width": "container",
+            "content_max_width": 100,
+            "content_padding_block": 60,
+            "content_padding_inline": 30,
+            "show_content_background": false,
+            "content_background": "#ffffff",
+            "content_box_opacity": 100,
+            "content_alignment_mobile": "left"
+          }
+        },
         "slider_item_LzjxbH": {
           "type": "slider_item",
           "settings": {
@@ -42,6 +69,7 @@
         }
       },
       "block_order": [
+        "slider_item_KrXh9T",
         "slider_item_LzjxbH"
       ],
       "name": "t:sections.slideshow.name",
