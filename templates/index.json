@@ -161,7 +161,7 @@
       "settings": {
         "section_width": "fluid_container",
         "color_scheme": "default",
-        "heading": "LOS MÁS VENDIDOS",
+        "heading": "Los Más Vendidos",
         "description": "",
         "show_view_all_button": false,
         "space_between_header": true,
@@ -427,7 +427,7 @@
       "settings": {
         "section_width": "fluid_container",
         "color_scheme": "scheme-4faf0e4d-27f4-4d02-bc51-617383bab1a9",
-        "heading": "LO MÁS NUEVO",
+        "heading": "Lo más nuevo",
         "description": "",
         "show_view_all_button": false,
         "space_between_header": true,
