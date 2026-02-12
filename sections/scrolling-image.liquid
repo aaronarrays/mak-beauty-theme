@@ -13,8 +13,11 @@
   --section-pb: {{ section_st.padding_bottom }}px;
   --speed: {{ section_st.speed }}s; 
   --image-width: {{ section_st.image_width }}px;
+  --image-max-height: {{ section_st.image_max_height }}px;
   --col-gap: {{ section_st.space_between_images }}px;
   --text-align: {{ section_st.text_alignment }};
+  --heading-size: {{ section_st.heading_size_custom }}px;
+  --desc-size: {{ section_st.desc_size_custom }}px;
 {%- endcapture -%}
 
 <div
@@ -26,49 +29,33 @@
     {%- if section_st.heading != blank or section_st.description != blank -%}
       <div class="marquee__header">
         {%- if section_st.heading != blank -%}
-          <h2 class="marquee__heading {{ section_st.heading_size }}">{{ section_st.heading | escape }}</h2>
+          <h2 class="marquee__heading" style="font-size: var(--heading-size);">
+            {{ section_st.heading | escape }}
+          </h2>
         {%- endif -%}
         {%- if section_st.description != blank -%}
-          <div class="marquee__description rte">
+          <div class="marquee__description rte" style="font-size: var(--desc-size);">
             {{ section_st.description }}
           </div>
         {%- endif -%}
       </div>
     {%- endif -%}
 
-    <div
-      class="marquee"
-      {% if section_st.direction == 'right' %}
-        data-direction="right"
-      {% endif %}
-    >
-      {%- for i in (0..9) -%}
+    <div class="marquee">
+      {%- for i in (0..5) -%}
         <div class="animation-marquee {% if section_st.direction == 'right' %}reverse{% endif %}">
           {%- for block in section.blocks -%}
             {% assign block_st = block.settings %}
-            
             <div class="marquee__item-image" {{ block.shopify_attributes }}>
-              {%- if block_st.link != blank -%}
-                <a href="{{ block_st.link }}" class="marquee__link">
-              {%- endif -%}
+              {%- if block_st.link != blank -%}<a href="{{ block_st.link }}" class="marquee__link">{%- endif -%}
 
               {%- if block_st.image != blank -%}
-                {{
-                  block_st.image
-                  | image_url: width: 600
-                  | image_tag:
-                    loading: 'lazy',
-                    class: 'marquee-image',
-                    widths: '200, 300, 400, 600',
-                    alt: block_st.image.alt | default: 'Brand logo'
-                }}
+                {{ block_st.image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'marquee-image', alt: block_st.image.alt }}
               {%- else -%}
                 {{ 'image' | placeholder_svg_tag: 'placeholder-svg marquee-image' }}
               {%- endif -%}
 
-              {%- if block_st.link != blank -%}
-                </a>
-              {%- endif -%}
+              {%- if block_st.link != blank -%}</a>{%- endif -%}
             </div>
           {%- endfor -%}
         </div>
@@ -83,82 +70,60 @@
     padding-bottom: var(--section-pb);
     overflow: hidden;
     width: 100%;
-    display: block;
   }
-
   .marquee__header {
     text-align: var(--text-align);
-    margin-bottom: 30px;
+    margin-bottom: 40px;
     padding: 0 20px;
   }
-
-  .marquee__heading {
-    margin: 0 0 10px 0;
+  .marquee__heading { 
+    margin: 0 0 15px 0; 
+    line-height: 1.2;
+    font-weight: bold;
   }
-
   .marquee__description {
-    max-width: 700px;
-    margin-left: {% if section.settings.text_alignment == 'center' %}auto{% elsif section.settings.text_alignment == 'right' %}auto{% else %}0{% endif %};
-    margin-right: {% if section.settings.text_alignment == 'center' %}auto{% elsif section.settings.text_alignment == 'left' %}auto{% else %}0{% endif %};
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.5;
   }
-
   .marquee {
     display: flex;
-    width: 100%;
     overflow: hidden;
-    white-space: nowrap;
-    user-select: none;
     gap: var(--col-gap);
   }
-
   .animation-marquee {
     display: flex;
     flex-shrink: 0;
     align-items: center;
-    justify-content: space-around;
     gap: var(--col-gap);
     animation: scrolling-left var(--speed) linear infinite;
+    padding-right: var(--col-gap);
   }
-
-  .animation-marquee.reverse {
-    animation-direction: reverse;
-  }
-
-  .marquee:hover .animation-marquee {
-    animation-play-state: paused;
-  }
+  .animation-marquee.reverse { animation-direction: reverse; }
+  .marquee:hover .animation-marquee { animation-play-state: paused; }
 
   .marquee__item-image {
     flex-shrink: 0;
+    width: var(--image-width);
     display: flex;
-    align-items: center;
     justify-content: center;
-    width: var(--image-width); 
-    min-width: var(--image-width); 
+    align-items: center;
   }
-
   .marquee-image {
     width: 100%;
     height: auto;
-    max-height: 80px; 
+    max-height: var(--image-max-height);
     object-fit: contain;
-    display: block;
   }
-
   @keyframes scrolling-left {
     0% { transform: translateX(0); }
-    100% { transform: translateX(calc(-100% - var(--col-gap))); }
+    100% { transform: translateX(-100%); }
   }
 </style>
 
 {% schema %}
 {
   "name": "Logo Marquee Slider",
-  "tag": "section",
-  "class": "section",
-  "disabled_on": {
-    "groups": ["header", "footer", "custom.overlay"]
-  },
   "settings": [
     {
       "type": "select",
@@ -167,8 +132,6 @@
       "default": "full_width",
       "options": [
         { "value": "container", "label": "Container" },
-        { "value": "fluid_container", "label": "Fluid container" },
-        { "value": "stretch_width", "label": "Stretch width" },
         { "value": "full_width", "label": "Full width" }
       ]
     },
@@ -189,21 +152,22 @@
       "default": "Nuestras Marcas"
     },
     {
-      "type": "select",
-      "id": "heading_size",
-      "label": "Heading size",
-      "options": [
-        { "value": "h2", "label": "Small" },
-        { "value": "h1", "label": "Medium" },
-        { "value": "h0", "label": "Large" }
-      ],
-      "default": "h1"
+      "type": "range",
+      "id": "heading_size_custom",
+      "label": "Heading Font Size",
+      "default": 40, "min": 20, "max": 100, "step": 2, "unit": "px"
     },
     {
       "type": "richtext",
       "id": "description",
       "label": "Description",
-      "default": "<p>Trabajamos con las mejores marcas del mercado para ofrecerte calidad garantizada.</p>"
+      "default": "<p>Trabajamos con las mejores marcas del mercado.</p>"
+    },
+    {
+      "type": "range",
+      "id": "desc_size_custom",
+      "label": "Description Font Size",
+      "default": 18, "min": 12, "max": 40, "step": 1, "unit": "px"
     },
     {
       "type": "text_alignment",
@@ -220,21 +184,13 @@
       "id": "direction",
       "label": "Direction",
       "default": "left",
-      "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "right", "label": "Right" }
-      ]
+      "options": [{ "value": "left", "label": "Left" }, { "value": "right", "label": "Right" }]
     },
     {
       "type": "range",
       "id": "speed",
-      "label": "Speed",
-      "info": "Lower is faster",
-      "default": 10,
-      "min": 2,
-      "max": 60,
-      "step": 1,
-      "unit": "s"
+      "label": "Speed (Lower is faster)",
+      "default": 20, "min": 5, "max": 100, "step": 1, "unit": "s"
     },
     {
       "type": "header",
@@ -243,22 +199,20 @@
     {
       "type": "range",
       "id": "image_width",
-      "label": "Image Width (Container)",
-      "default": 130,
-      "min": 50,
-      "max": 300,
-      "step": 5,
-      "unit": "px"
+      "label": "Max Width of Image Container",
+      "default": 200, "min": 50, "max": 500, "step": 10, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "image_max_height",
+      "label": "Max Height of Image",
+      "default": 100, "min": 20, "max": 300, "step": 5, "unit": "px"
     },
     {
       "type": "range",
       "id": "space_between_images",
-      "label": "Space between images",
-      "default": 50,
-      "min": 0,
-      "max": 300,
-      "step": 5,
-      "unit": "px"
+      "label": "Space between logos",
+      "default": 60, "min": 0, "max": 200, "step": 5, "unit": "px"
     },
     {
       "type": "header",
@@ -268,27 +222,13 @@
       "type": "range",
       "id": "padding_top",
       "label": "Top padding",
-      "default": 40,
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px"
+      "default": 40, "min": 0, "max": 100, "unit": "px"
     },
     {
       "type": "range",
       "id": "padding_bottom",
       "label": "Bottom padding",
-      "default": 40,
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px"
-    },
-    {
-      "type": "checkbox",
-      "id": "reset_spacing",
-      "label": "Remove default section spacing",
-      "default": false
+      "default": 40, "min": 0, "max": 100, "unit": "px"
     }
   ],
   "blocks": [
@@ -296,30 +236,11 @@
       "type": "logo",
       "name": "Image / Logo",
       "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Image (PNG/JPG)"
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Link (Optional)"
-        }
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "url", "id": "link", "label": "Link" }
       ]
     }
   ],
-  "presets": [
-    {
-      "name": "Logo Marquee Slider",
-      "blocks": [
-        { "type": "logo" },
-        { "type": "logo" },
-        { "type": "logo" },
-        { "type": "logo" },
-        { "type": "logo" }
-      ]
-    }
-  ]
+  "presets": [{ "name": "Logo Marquee Slider", "blocks": [{ "type": "logo" }, { "type": "logo" }, { "type": "logo" }] }]
 }
 {% endschema %}

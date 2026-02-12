@@ -309,9 +309,8 @@
         "speed": 31,
         "image_width": 300,
         "space_between_images": 0,
-        "padding_top": 20,
-        "padding_bottom": 20,
-        "reset_spacing": false
+        "padding_top": 60,
+        "padding_bottom": 60
       }
     },
     "multi_content_GYmhdq": {
