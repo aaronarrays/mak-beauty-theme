@@ -474,7 +474,8 @@
       "type": "banner-dual",
       "name": "Banner Dual (Pro)",
       "settings": {
-        "image_desktop": "shopify://shop_images/BANNER_DESKTOP_-_MAKBEAUTY_jpg.jpg",
+        "image_desktop": "shopify://shop_images/Mesa_de_trabajo_1.png",
+        "image_mobile": "shopify://shop_images/Mesa_de_trabajo_2.png",
         "link": "shopify://collections/all"
       }
     },
