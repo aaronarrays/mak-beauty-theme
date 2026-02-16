@@ -431,6 +431,9 @@
     },
     "featured_collection_nTcT4V": {
       "type": "featured-collection",
+      "custom_css": [
+        ".price {color: white;}"
+      ],
       "name": "t:names.featured_collection",
       "settings": {
         "section_width": "fluid_container",
