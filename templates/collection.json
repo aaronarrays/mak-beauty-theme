@@ -96,7 +96,7 @@
           "type": "popular_product",
           "settings": {
             "title": "Productos Destacados",
-            "collection": "frontpage",
+            "collection": "charlotte-tilbury",
             "items_to_show": 3
           }
         }
