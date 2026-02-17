@@ -36,7 +36,7 @@
         "heading_KFBPWL": {
           "type": "heading",
           "settings": {
-            "heading": "Best Store<br> Available to Everyone!",
+            "heading": "Mak Beauty Perú",
             "font_size": 50,
             "font_weight": "heading_weight",
             "uppercase": false,
@@ -47,7 +47,7 @@
         "text_QGr9pJ": {
           "type": "description",
           "settings": {
-            "text": "<p>Over 15 years of experience, we have meticulously curated collections that transcend fleeting trends, <br/>embodying a timeless elegance that resonates with our discerning clientele.</p>",
+            "text": "<p>En <strong>Mak Beauty</strong> creemos que la belleza es una forma de expresión personal, bienestar y confianza. Por eso, seleccionamos cuidadosamente productos de maquillaje, cuidado de la piel y cabello que combinan <strong>calidad, innovación y accesibilidad</strong>, pensados para acompañarte en tu día a día.</p><p>Desde Perú, trabajamos para ofrecer una experiencia de compra segura, cercana y confiable, con un catálogo que responde a las tendencias actuales sin perder de vista lo más importante: <strong>tu cuidado y satisfacción</strong>.</p>",
             "font_size": 15,
             "font_weight": "body_weight",
             "spacing_bottom": 10
@@ -91,6 +91,7 @@
             "color_scheme": "",
             "content_width": "50%",
             "media_type": "image",
+            "image": "shopify://shop_images/logo.jpg",
             "image_link": "",
             "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
             "autoplay": true,
@@ -117,21 +118,10 @@
             "content_padding_inline": 30
           },
           "blocks": {
-            "subheading_ChwTPm": {
-              "type": "subheading",
-              "settings": {
-                "subheading": "Our Factories",
-                "font_size": 15,
-                "font_weight": "heading_weight",
-                "uppercase": false,
-                "spacing_bottom": 8
-              },
-              "blocks": {}
-            },
             "heading_XFxiMn": {
               "type": "heading",
               "settings": {
-                "heading": "The Best Product",
+                "heading": "Nuestra misión",
                 "font_size": 36,
                 "font_weight": "heading_weight",
                 "uppercase": false,
@@ -143,33 +133,17 @@
               "type": "description",
               "name": "t:blocks.general.text.name",
               "settings": {
-                "text": "<p>We spend a lot of time finding the best factories around the world—the samefactories that make your favorite designer brands. We visit them regularly and build strong personal relationships with the owners. Each factory is audited for compliance to assess factors such as fair wages.</p>",
+                "text": "<p><br/>Nuestra misión es acercar productos de belleza de alta calidad a todas las personas, brindando una experiencia de compra simple, transparente y agradable, respaldada por un servicio al cliente atento y comprometido.<br/><br/></p>",
                 "font_size": 15,
                 "font_weight": "body_weight",
                 "spacing_bottom": 30
               },
               "blocks": {}
-            },
-            "button_rmHEqD": {
-              "type": "button",
-              "settings": {
-                "show_full_width": false,
-                "first_button_label": "Learn More",
-                "first_button_link": "shopify://collections",
-                "first_button_type": "primary",
-                "second_button_label": "",
-                "second_button_link": "",
-                "second_button_type": "primary",
-                "spacing_bottom": 10
-              },
-              "blocks": {}
             }
           },
           "block_order": [
-            "subheading_ChwTPm",
             "heading_XFxiMn",
-            "text_P34EpB",
-            "button_rmHEqD"
+            "text_P34EpB"
           ]
         }
       },
@@ -190,9 +164,9 @@
         "vertical_align": "center",
         "carousel_on_mobile": false,
         "items_per_row_mobile": 1,
-        "padding_top": 0,
-        "padding_bottom": 0,
-        "reset_spacing": false
+        "padding_top": 50,
+        "padding_bottom": 50,
+        "reset_spacing": true
       }
     },
     "multi_content_Y4j9Rm": {
@@ -210,21 +184,10 @@
             "content_padding_inline": 30
           },
           "blocks": {
-            "subheading_w7G4T9": {
-              "type": "subheading",
-              "settings": {
-                "subheading": "Our Products",
-                "font_size": 15,
-                "font_weight": "heading_weight",
-                "uppercase": false,
-                "spacing_bottom": 8
-              },
-              "blocks": {}
-            },
             "heading_R6cFPW": {
               "type": "heading",
               "settings": {
-                "heading": "The Best Product",
+                "heading": "Nuestra visión",
                 "font_size": 36,
                 "font_weight": "heading_weight",
                 "uppercase": false,
@@ -236,33 +199,17 @@
               "type": "description",
               "name": "t:blocks.general.text.name",
               "settings": {
-                "text": "<p>At Glozin, we’re not big on trends. We want you to wear our pieces for years, even decades, to come. That’s why we source the finest materials and factories for our timeless products— like our Grade-A cashmere sweaters, Italian shoes, and Peruvian Pima tees.</p>",
+                "text": "<p>Ser una tienda de belleza referente en el mercado peruano, reconocida por su <strong>variedad de marcas</strong>, su enfoque en el cuidado personal y la confianza que genera en cada compra.</p>",
                 "font_size": 15,
                 "font_weight": "body_weight",
                 "spacing_bottom": 30
               },
               "blocks": {}
-            },
-            "button_zUjnUP": {
-              "type": "button",
-              "settings": {
-                "show_full_width": false,
-                "first_button_label": "Learn More",
-                "first_button_link": "shopify://collections",
-                "first_button_type": "primary",
-                "second_button_label": "",
-                "second_button_link": "",
-                "second_button_type": "primary",
-                "spacing_bottom": 10
-              },
-              "blocks": {}
             }
           },
           "block_order": [
-            "subheading_w7G4T9",
             "heading_R6cFPW",
-            "text_GTCGpn",
-            "button_zUjnUP"
+            "text_GTCGpn"
           ]
         },
         "group_media_content_A9mxaX": {
@@ -271,6 +218,7 @@
             "color_scheme": "",
             "content_width": "50%",
             "media_type": "image",
+            "image": "shopify://shop_images/Kiko_Milano.jpg",
             "image_link": "",
             "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
             "autoplay": true,
@@ -303,9 +251,9 @@
         "vertical_align": "center",
         "carousel_on_mobile": false,
         "items_per_row_mobile": 1,
-        "padding_top": 0,
-        "padding_bottom": 0,
-        "reset_spacing": false
+        "padding_top": 50,
+        "padding_bottom": 50,
+        "reset_spacing": true
       }
     },
     "divider_BUBdbP": {
@@ -317,174 +265,6 @@
         "border_color": "#ebebeb",
         "reset_spacing": false
       }
-    },
-    "multi_content_zDKjFk": {
-      "type": "multi-content",
-      "blocks": {
-        "group_media_content_W3k6Fq": {
-          "type": "_group-media-content",
-          "settings": {
-            "color_scheme": "",
-            "content_width": "33.3333%",
-            "media_type": "image",
-            "image_link": "",
-            "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
-            "autoplay": true,
-            "video_ratio": "16/9",
-            "overlay_opacity": 0,
-            "content_type": "below",
-            "content_alignment": "center",
-            "content_position": "top-left",
-            "content_padding_block": 30,
-            "content_padding_inline": 10,
-            "content_mobile_image": false
-          },
-          "blocks": {
-            "heading_JkFEj4": {
-              "type": "heading",
-              "settings": {
-                "heading": "The Core of Us",
-                "font_size": 18,
-                "font_weight": "heading_weight",
-                "uppercase": false,
-                "spacing_bottom": 10
-              },
-              "blocks": {}
-            },
-            "text_Jbg8zi": {
-              "type": "description",
-              "name": "t:blocks.general.text.name",
-              "settings": {
-                "text": "<p>Adipisicing elit sed do eiusmod tempor labore et dolore dignissimos cumque. Excepteur sint occaecat cupidatat proident.</p>",
-                "font_size": 15,
-                "font_weight": "body_weight",
-                "spacing_bottom": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "heading_JkFEj4",
-            "text_Jbg8zi"
-          ]
-        },
-        "group_media_content_nhyaCi": {
-          "type": "_group-media-content",
-          "settings": {
-            "color_scheme": "",
-            "content_width": "33.3333%",
-            "media_type": "image",
-            "image_link": "",
-            "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
-            "autoplay": true,
-            "video_ratio": "16/9",
-            "overlay_opacity": 0,
-            "content_type": "below",
-            "content_alignment": "center",
-            "content_position": "top-left",
-            "content_padding_block": 30,
-            "content_padding_inline": 10,
-            "content_mobile_image": false
-          },
-          "blocks": {
-            "heading_K4n4E9": {
-              "type": "heading",
-              "settings": {
-                "heading": "Our Products",
-                "font_size": 18,
-                "font_weight": "heading_weight",
-                "uppercase": false,
-                "spacing_bottom": 10
-              },
-              "blocks": {}
-            },
-            "text_TehgJ8": {
-              "type": "description",
-              "name": "t:blocks.general.text.name",
-              "settings": {
-                "text": "<p>Adipisicing elit sed do eiusmod tempor labore et dolore dignissimos cumque. Excepteur sint occaecat cupidatat proident.</p>",
-                "font_size": 15,
-                "font_weight": "body_weight",
-                "spacing_bottom": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "heading_K4n4E9",
-            "text_TehgJ8"
-          ]
-        },
-        "group_media_content_63MXWi": {
-          "type": "_group-media-content",
-          "settings": {
-            "color_scheme": "",
-            "content_width": "33.3333%",
-            "media_type": "image",
-            "image_link": "",
-            "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
-            "autoplay": true,
-            "video_ratio": "16/9",
-            "overlay_opacity": 0,
-            "content_type": "below",
-            "content_alignment": "center",
-            "content_position": "top-left",
-            "content_padding_block": 30,
-            "content_padding_inline": 10,
-            "content_mobile_image": false
-          },
-          "blocks": {
-            "heading_4yqC3j": {
-              "type": "heading",
-              "settings": {
-                "heading": "Our Careers",
-                "font_size": 18,
-                "font_weight": "heading_weight",
-                "uppercase": false,
-                "spacing_bottom": 10
-              },
-              "blocks": {}
-            },
-            "text_LemnpM": {
-              "type": "description",
-              "name": "t:blocks.general.text.name",
-              "settings": {
-                "text": "<p>Adipisicing elit sed do eiusmod tempor labore et dolore dignissimos cumque. Excepteur sint occaecat cupidatat proident.</p>",
-                "font_size": 15,
-                "font_weight": "body_weight",
-                "spacing_bottom": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "heading_4yqC3j",
-            "text_LemnpM"
-          ]
-        }
-      },
-      "block_order": [
-        "group_media_content_W3k6Fq",
-        "group_media_content_nhyaCi",
-        "group_media_content_63MXWi"
-      ],
-      "name": "t:sections.multi_content.name",
-      "settings": {
-        "section_width": "container",
-        "color_scheme": "",
-        "heading": "",
-        "description": "",
-        "header_size": "medium",
-        "header_alignment": "center",
-        "column_gap": 30,
-        "equal_height_adjustment": false,
-        "vertical_align": "start",
-        "carousel_on_mobile": true,
-        "items_per_row_mobile": 1,
-        "padding_top": 0,
-        "padding_bottom": 0,
-        "reset_spacing": false
-      }
     }
   },
   "order": [
@@ -493,7 +273,6 @@
     "divider_7DLMey",
     "multi_content_dqCWgd",
     "multi_content_Y4j9Rm",
-    "divider_BUBdbP",
-    "multi_content_zDKjFk"
+    "divider_BUBdbP"
   ]
 }
