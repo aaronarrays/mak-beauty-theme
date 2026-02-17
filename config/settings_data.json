@@ -48,7 +48,7 @@
     "search_result": "products",
     "enable_search_suggestion": true,
     "popular_key_word": "Rare beauty, Rubor, Lashes, Skincare",
-    "collection_suggestion": "frontpage",
+    "collection_suggestion": "anastasia",
     "show_search_price": true,
     "show_message_when_remove": false,
     "action_after_add_cart": "open_drawer",
@@ -62,13 +62,12 @@
     "show_on_cart_page": true,
     "product_recommendations_type": "select",
     "select_product_recommendations": [
-      "all-of-the-above-weightless-eyeshadow-stick",
-      "always-an-optimist-soft-radiance-setting-powder",
-      "brazilian-crush-cheirosa-40-bom-dia-hair-body-fragrance-mist",
-      "always-an-optimist-4-in-1-prime-set-mist",
-      "brazilian-crush-cheirosa-68-beija-flor™-hair-body-fragrance-mist",
-      "brazilian-crush-cheirosa-62-bum-bum-hair-body-fragrance-mist",
-      "cheirosa-59-perfume-mist"
+      "2-iluminadores-sombras-en-polvo-morphe",
+      "247-glide-on-lapiz-labial",
+      "aceite-corporal-brasileno-firma-12-ml",
+      "aceite-corporal-beija-flor-sol-de-janeiro",
+      "aceite-corporal-glowmotions-copacabana-bronze-75-ml-sol-de-janeiro",
+      "aceite-corporal-glowmotions-rio-sunset-75-ml-sol-de-janeiro"
     ],
     "show_estimate_shipping_rates": false,
     "show_delivery_day": false,
