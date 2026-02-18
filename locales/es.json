@@ -778,10 +778,10 @@
     "do_not_show_again": "¡No, gracias! "
   },
   "mobile_navbar": {
-      "shop": "Tienda",
-      "homepage": "Inicio",
+    "shop": "Tienda",
+    "homepage": "Inicio",
     "account": "Cuenta",
-      "cart": "Carrito",
+    "cart": "Carrito",
     "wishlist": "Lista de deseos"
   },
   "rich_text": {
@@ -792,5 +792,12 @@
     "purchased": "comprado",
     "time_minutes": "hace minutos",
     "product_name": "Glozin de Blueskytechco"
+  },
+  "shopify": {
+    "checkout": {
+      "payment_gateway": {
+        "credit_card_label": "Tarjeta de crédito / débito"
+      }
+    }
   }
 }
