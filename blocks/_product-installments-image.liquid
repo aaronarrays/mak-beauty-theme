@@ -2,46 +2,70 @@
   assign block_st = block.settings
 %}
 
-<div class="product-installments-image"
+<div class="product-installments-banner-{{ block.id }}"
      {{ block.shopify_attributes }}
      style="margin-top: {{ block_st.margin_top }}px; margin-bottom: {{ block_st.margin_bottom }}px;">
 
   <style>
-    .product-installments-image img{
-      width:100%;
-      height:auto;
-      display:block;
-      border-radius: {{ block_st.border_radius }}px;
+    .product-installments-banner-{{ block.id }}{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:#f3f3f3;
+      border:1px solid #e5e5e5;
+      border-radius:8px;
+      padding:10px 14px;
+      font-size:14px;
+      line-height:1.4;
+      color:#333;
+    }
+
+    .product-installments-banner-{{ block.id }} img{
+      width:22px;
+      height:22px;
+      object-fit:contain;
+    }
+
+    .product-installments-banner-{{ block.id }} strong{
+      font-weight:600;
+    }
+
+    @media(max-width:768px){
+      .product-installments-banner-{{ block.id }}{
+        font-size:13px;
+        padding:8px 12px;
+      }
     }
   </style>
 
-  {% if block_st.installments_image != blank %}
-    <img
-      src="{{ block_st.installments_image | image_url: width: 1500 }}"
-      alt="Cuotas sin intereses"
+  {% if block_st.show_logo %}
+    <img 
+      src="{{ block_st.logo | image_url: width: 60 }}"
+      alt="Mercado Pago"
       loading="lazy">
   {% endif %}
+
+  <div>
+    Paga en <strong>3, 6, 9 o 12 cuotas</strong> sin intereses con Mercado Pago.
+  </div>
+
 </div>
 
 {% schema %}
 {
-  "name": "Imagen Cuotas",
+  "name": "Banner Cuotas",
   "tag": null,
   "settings": [
     {
-      "type": "image_picker",
-      "id": "installments_image",
-      "label": "Imagen de cuotas"
+      "type": "checkbox",
+      "id": "show_logo",
+      "label": "Mostrar logo",
+      "default": true
     },
     {
-      "type": "range",
-      "id": "border_radius",
-      "min": 0,
-      "max": 30,
-      "step": 2,
-      "unit": "px",
-      "label": "Border radius",
-      "default": 0
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo Mercado Pago"
     },
     {
       "type": "range",
@@ -66,7 +90,7 @@
   ],
   "presets": [
     {
-      "name": "Imagen Cuotas"
+      "name": "Banner Cuotas"
     }
   ]
 }

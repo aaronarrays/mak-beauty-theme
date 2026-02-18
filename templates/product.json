@@ -51,6 +51,15 @@
           "settings": {},
           "blocks": {}
         },
+        "product_installments_image_g8bhQM": {
+          "type": "_product-installments-image",
+          "name": "Imagen Cuotas",
+          "settings": {
+            "margin_top": 10,
+            "margin_bottom": 10
+          },
+          "blocks": {}
+        },
         "product_icon_row_znV6jt": {
           "type": "product-icon-row",
           "name": "Fila de Iconos (Block)",
@@ -184,6 +193,7 @@
         "judge_me_reviews_preview_badge_z4q3FJ",
         "review_and_sold_AAbJC9",
         "price_VJ4N8m",
+        "product_installments_image_g8bhQM",
         "product_icon_row_znV6jt",
         "variant_picker_tcCihG",
         "stock_countdown_JNK9zi",
