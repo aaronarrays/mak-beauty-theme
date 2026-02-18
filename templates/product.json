@@ -55,8 +55,8 @@
           "type": "_product-installments-image",
           "name": "Imagen Cuotas",
           "settings": {
-            "margin_top": 10,
-            "margin_bottom": 10
+            "margin_top": 0,
+            "margin_bottom": 20
           },
           "blocks": {}
         },
