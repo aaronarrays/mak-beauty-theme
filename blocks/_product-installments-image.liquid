@@ -2,15 +2,15 @@
   assign block_st = block.settings
 %}
 
-<div class="product-installments-image-{{ block.id }}"
+<div class="product-installments-image"
      {{ block.shopify_attributes }}
      style="margin-top: {{ block_st.margin_top }}px; margin-bottom: {{ block_st.margin_bottom }}px;">
 
   <style>
-    .product-installments-image-{{ block.id }} img{
-      width: 100%;
-      height: auto;
-      display: block;
+    .product-installments-image img{
+      width:100%;
+      height:auto;
+      display:block;
       border-radius: {{ block_st.border_radius }}px;
     }
   </style>
@@ -19,16 +19,14 @@
     <img
       src="{{ block_st.installments_image | image_url: width: 1500 }}"
       alt="Cuotas sin intereses"
-      loading="lazy"
-      width="1500"
-      height="auto">
+      loading="lazy">
   {% endif %}
-
 </div>
 
 {% schema %}
 {
   "name": "Imagen Cuotas",
+  "tag": null,
   "settings": [
     {
       "type": "image_picker",
@@ -64,6 +62,11 @@
       "unit": "px",
       "label": "Margen inferior",
       "default": 10
+    }
+  ],
+  "presets": [
+    {
+      "name": "Imagen Cuotas"
     }
   ]
 }
