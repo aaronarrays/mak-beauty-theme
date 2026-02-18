@@ -55,6 +55,8 @@
           "type": "_product-installments-image",
           "name": "Imagen Cuotas",
           "settings": {
+            "show_logo": true,
+            "logo": "shopify://shop_images/Mercado-Pago-Icon-Logo-Vector_svg.png",
             "margin_top": 0,
             "margin_bottom": 20
           },
