@@ -17,21 +17,21 @@
         "announcement_cLjGkP": {
           "type": "announcement",
           "settings": {
-            "text": "Envíos gratis a todo el Perú por compras mayores a S/149",
+            "text": "<strong>Envíos gratis a todo el Perú por compras mayores a S/149</strong>",
             "countdown_deadline": ""
           }
         },
         "announcement_kWpWi8": {
           "type": "announcement",
           "settings": {
-            "text": "Visita nuestra experiencia en compra internacional",
+            "text": "<strong>Visita nuestra experiencia en compra internacional</strong>",
             "countdown_deadline": ""
           }
         },
         "announcement_qhwmhW": {
           "type": "announcement",
           "settings": {
-            "text": "Obten los mejores descuentos en nuestros live de TIKTOK",
+            "text": "<strong>Obten los mejores descuentos en nuestros live de TIKTOK</strong>",
             "countdown_deadline": ""
           }
         }
