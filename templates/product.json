@@ -13,7 +13,7 @@
       "type": "breadcrumb",
       "custom_css": [
         ".heading-color {color: #111;}",
-        ".heading-color:hover {color: #FA9CCB;}"
+        ".heading-color:hover {color: #fa9ccb;}"
       ],
       "settings": {
         "section_width": "container",

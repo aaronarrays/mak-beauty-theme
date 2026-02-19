@@ -256,9 +256,9 @@
           "btn_primary_hover_color": "#111111",
           "btn_primary_hover_background": "#ffffff",
           "btn_primary_hover_background_gradient": "",
-          "btn_outline_color": "#111111",
+          "btn_outline_color": "#ffffff",
           "btn_outline_border_color": "#111111",
-          "button_link_color": "#111111",
+          "button_link_color": "#ffffff",
           "button_link_hover_color": "#111111"
         }
       },
