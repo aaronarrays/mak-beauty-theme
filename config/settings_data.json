@@ -55,7 +55,7 @@
     "free_shipping_minimum": "149",
     "show_duration_on_minicart_cart_page": false,
     "enable_discount_code": true,
-    "enable_gift_wrap": true,
+    "enable_gift_wrap": false,
     "choose_gift_wrap_product": "digital-gift-card",
     "product_recommendations_heading": "Te podría interesar",
     "minicart_type": "show_beside",
