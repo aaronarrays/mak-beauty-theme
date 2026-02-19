@@ -11,6 +11,9 @@
   "sections": {
     "breadcrumb": {
       "type": "breadcrumb",
+      "custom_css": [
+        ".heading-color {color: #eee;}"
+      ],
       "settings": {
         "section_width": "container",
         "color_scheme": "scheme-4faf0e4d-27f4-4d02-bc51-617383bab1a9",
