@@ -191,6 +191,19 @@
             "open": false
           },
           "blocks": {}
+        },
+        "product_complementary_products_dEMrWp": {
+          "type": "_product-complementary-products",
+          "name": "t:blocks.product.complementary_products.name",
+          "settings": {
+            "heading": "Va bien con...",
+            "product_list_limit": 3,
+            "products_per_page": 3,
+            "show_navigation": false,
+            "show_pagination": false,
+            "enable_quick_add": true
+          },
+          "blocks": {}
         }
       },
       "block_order": [
@@ -210,7 +223,8 @@
         "product_grouped_6epkNf",
         "more_colors_3zmxGq",
         "collapsible_row_m3g6f8",
-        "collapsible_row_eLaQpR"
+        "collapsible_row_eLaQpR",
+        "product_complementary_products_dEMrWp"
       ],
       "custom_css": [
         ".swatch-large {--swatch-width: 5.4rem;}",
