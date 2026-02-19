@@ -12,7 +12,8 @@
     "breadcrumb": {
       "type": "breadcrumb",
       "custom_css": [
-        ".heading-color {color: #eee;}"
+        ".heading-color {color: #111;}",
+        ".heading-color:hover {color: #FA9CCB;}"
       ],
       "settings": {
         "section_width": "container",
