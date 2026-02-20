@@ -33,7 +33,7 @@
         "title_G6tU8U": {
           "type": "_product-title",
           "settings": {
-            "show_vendor": false
+            "show_vendor": true
           },
           "blocks": {}
         },
