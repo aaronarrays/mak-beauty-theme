@@ -15,12 +15,12 @@
         "slider_item_LzjxbH": {
           "type": "slider_item",
           "settings": {
-            "image": "shopify://shop_images/Banner-principal-Mak-beauty-1.webp",
-            "image_mobile": "shopify://shop_images/Banner-principal-Mak-beauty-moviles-1.webp",
+            "image": "shopify://shop_images/BAMNER-1900_jpg_4d3a9d74-07f6-4bbe-9a66-f982eadb3c32.jpg",
+            "image_mobile": "shopify://shop_images/BANNER-600_jpg.jpg",
             "overlay_opacity": 0,
-            "slider_effect": "effect_fadein",
-            "subheading": "Encuentra las marcas más icónicas del maquillaje",
-            "heading": "Tu próximo look <br>favorito empieza aquí.",
+            "slider_effect": "effect_fadeindown",
+            "subheading": "",
+            "heading": "",
             "description": "",
             "first_button_label": "Aprovechar Ofertas",
             "first_button_link": "shopify://collections/all",
@@ -29,15 +29,15 @@
             "second_button_link": "",
             "second_button_style": false,
             "content_alignment": "left",
-            "content_position": "bottom-left",
-            "content_width": "fluid_container",
+            "content_position": "bottom-center",
+            "content_width": "full_width",
             "content_max_width": 100,
-            "content_padding_block": 60,
-            "content_padding_inline": 30,
+            "content_padding_block": 115,
+            "content_padding_inline": 60,
             "show_content_background": false,
             "content_background": "#ffffff",
             "content_box_opacity": 100,
-            "content_alignment_mobile": "left"
+            "content_alignment_mobile": "center"
           }
         }
       },
