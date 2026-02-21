@@ -475,6 +475,7 @@
     },
     "banner_dual_wXG6rd": {
       "type": "banner-dual",
+      "disabled": true,
       "name": "Banner Dual (Pro)",
       "settings": {
         "image_desktop": "shopify://shop_images/Mesa_de_trabajo_1.png",
