@@ -1,0 +1,595 @@
+<!-- 
+  SHOPIFY LIQUID TEMPLATE - Página personalizada para importar productos de Sephora
+  
+  CÓMO USAR EN SHOPIFY:
+  
+  1. Ve a tu admin de Shopify → Online Store → Themes → Edit code
+  2. En "Templates", crea una nueva template: page.sephora-import.liquid
+  3. Pega este código
+  4. Ve a Online Store → Pages → Add page
+  5. En el campo "Template suffix", selecciona "sephora-import"
+  6. Publica la página
+  
+  NOTA: Necesitas tener el servidor API corriendo (app.py) en tu servidor/VPS.
+  Cambia la variable API_BASE por la URL de tu servidor.
+-->
+
+{% comment %}
+  Sephora Product Importer Page
+  Permite a los clientes pegar un link de Sephora y ver el producto con precio local
+{% endcomment %}
+
+<style>
+  .sephora-importer {
+    --primary: #e63946;
+    --primary-dark: #c1121f;
+    --bg: #f5f5f5;
+    --card-bg: #fff;
+    --text: #1a1a2e;
+    --text-light: #6c757d;
+    --border: #e0e0e0;
+    --radius: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .si-search-bar {
+    background: var(--card-bg);
+    border-bottom: 2px solid var(--primary);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+  }
+
+  .si-search-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .si-search-group {
+    display: flex;
+    gap: 10px;
+  }
+
+  .si-search-group input {
+    flex: 1;
+    padding: 14px 18px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+  }
+
+  .si-search-group input:focus {
+    border-color: var(--primary);
+    outline: none;
+  }
+
+  .si-btn-search {
+    padding: 14px 28px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .si-btn-search:hover { background: var(--primary-dark); }
+  .si-btn-search:disabled { background: #ccc; cursor: not-allowed; }
+
+  .si-error {
+    display: none;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #856404;
+  }
+
+  .si-loading {
+    display: none;
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .si-loading.active { display: block; }
+
+  .si-spinner {
+    width: 40px; height: 40px;
+    border: 4px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: si-spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes si-spin { to { transform: rotate(360deg); } }
+
+  .si-empty {
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .si-empty .si-icon { font-size: 50px; margin-bottom: 16px; }
+  .si-empty h2 { font-size: 20px; margin-bottom: 8px; }
+  .si-empty p { color: var(--text-light); }
+
+  .si-product { display: none; }
+  .si-product.active { display: grid; grid-template-columns: 1fr 360px; gap: 24px; }
+
+  .si-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 24px;
+    border: 1px solid var(--border);
+  }
+
+  .si-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .si-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fafafa;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+  }
+
+  .si-gallery {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 0;
+    margin-bottom: 16px;
+  }
+
+  .si-gallery img {
+    width: 90px; height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .si-gallery img:hover { border-color: var(--primary); transform: scale(1.05); }
+
+  .si-variants {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .si-variant-card {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    text-align: center;
+    cursor: pointer;
+    min-width: 100px;
+    font-size: 12px;
+  }
+
+  .si-variant-card.selected { border-color: var(--primary); background: #fff5f5; }
+  .si-variant-card:hover { border-color: var(--primary); }
+
+  .si-inline { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .si-ship-title {
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .si-ship-notice {
+    background: #f8f9fa;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.5;
+  }
+
+  .si-ship-info {
+    background: #e8f5e9;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+
+  .si-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+
+  .si-price-total {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--primary);
+  }
+
+  .si-qty-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+
+  .si-qty-input {
+    width: 50px;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .si-btn-buy {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+
+  .si-btn-buy:hover { background: var(--primary-dark); }
+
+  .si-btn-cart {
+    display: block;
+    width: 100%;
+    text-align: center;
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .si-product.active { grid-template-columns: 1fr; }
+    .si-search-group { flex-direction: column; }
+    .si-inline { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="sephora-importer">
+  <!-- BARRA DE BÚSQUEDA -->
+  <div class="si-search-bar">
+    <div class="si-search-title">🔗 Pega el link del producto de Sephora</div>
+    <div class="si-search-group">
+      <input type="text" id="si-url" placeholder="https://www.sephora.com/product/...">
+      <button class="si-btn-search" id="si-btn" onclick="siScrape()">Buscar Producto</button>
+    </div>
+    <div class="si-error" id="si-error"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="si-loading" id="si-loading">
+    <div class="si-spinner"></div>
+    <p>Obteniendo información del producto...</p>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div class="si-empty" id="si-empty">
+    <div class="si-icon">🛍️</div>
+    <h2>Importa cualquier producto de Sephora</h2>
+    <p>Pega el link y nosotros nos encargamos de traértelo.</p>
+  </div>
+
+  <!-- PRODUCTO -->
+  <div class="si-product" id="si-product">
+    <div class="si-card">
+      <label class="si-label">Nombre del producto:</label>
+      <input type="text" class="si-input" id="si-name" readonly>
+
+      <label class="si-label">Imágenes:</label>
+      <div class="si-gallery" id="si-gallery"></div>
+
+      <div id="si-variants-wrap" style="display:none;">
+        <label class="si-label" id="si-variant-label">Variantes:</label>
+        <div class="si-variants" id="si-variants"></div>
+      </div>
+
+      <label class="si-label">Categoría:</label>
+      <select class="si-input" id="si-category">
+        <option>Makeup</option><option>Skincare</option><option>Hair</option>
+        <option>Fragrance</option><option>Tools & Brushes</option>
+      </select>
+
+      <div class="si-inline">
+        <div>
+          <label class="si-label">Shipping ($)</label>
+          <input type="number" class="si-input" id="si-shipping" value="0" onchange="siRecalc()">
+        </div>
+        <div>
+          <label class="si-label">Precio ($)</label>
+          <input type="number" class="si-input" id="si-price" value="0" readonly>
+        </div>
+      </div>
+
+      <label class="si-label">Indicaciones:</label>
+      <textarea class="si-input" id="si-notes" rows="3" placeholder="Instrucciones especiales..."></textarea>
+    </div>
+
+    <div class="si-card" style="position:sticky;top:20px;">
+      <div class="si-ship-title">Método de envío</div>
+      <div class="si-ship-notice">
+        Antes de confirmar tu pedido, asegúrate de revisar los detalles. 📈
+      </div>
+      <div class="si-ship-info">
+        <p style="margin-bottom:12px;font-size:13px;">Tú relájate y nosotros nos encargamos de todo. Realizamos la compra y lo llevamos a tu puerta. 🚀</p>
+        <div class="si-price-row">
+          <span style="font-size:14px;">Llega antes del</span>
+          <span style="font-weight:600;color:#2d6a4f;" id="si-arrival">--</span>
+        </div>
+        <div class="si-price-row" style="margin-top:10px;">
+          <span style="font-weight:600;">Precio Total</span>
+          <span class="si-price-total" id="si-total">S/ 0.00</span>
+        </div>
+      </div>
+
+      <div style="text-align:center;font-weight:600;margin-bottom:14px;">
+        ¿Lo quieres? ¡Lo traemos! 📦
+      </div>
+
+      <div class="si-qty-row">
+        <span>Cantidad:</span>
+        <input type="number" class="si-qty-input" id="si-qty" value="1" min="1" onchange="siRecalc()">
+        <span style="font-weight:700;font-size:18px;" id="si-qty-price">S/ 0.00</span>
+      </div>
+
+      <button class="si-btn-buy" onclick="siBuy()">Comprar ahora</button>
+      <a class="si-btn-cart" onclick="siAddCart()">Agregar al carrito</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ═══════════════════════════════════════════════════════════════
+  // CONFIGURACIÓN - CAMBIAR ESTOS VALORES ANTES DE USAR
+  // ═══════════════════════════════════════════════════════════════
+  // 👇 Cambia esta URL por la de tu servidor (Railway, Render, VPS, etc.)
+  const SI_API = 'https://web-production-56b31.up.railway.app';
+  // 👇 Tipo de cambio USD → tu moneda local
+  const SI_RATE = 3.75;
+  // 👇 Tu comisión (0.15 = 15%)
+  const SI_COMMISSION = 0.15;
+  // 👇 Símbolo de tu moneda
+  const SI_SYMBOL = 'S/';
+  // 👇 ID del producto genérico que creaste en Shopify (Paso 2.3)
+  //    Cópialo desde: Admin → Products → tu producto → variante → URL contiene el ID
+  const SHOPIFY_VARIANT_ID = 51967182143801;
+  // ═══════════════════════════════════════════════════════════════
+
+  let siProduct = null;
+
+  async function siScrape() {
+    const url = document.getElementById('si-url').value.trim();
+    const err = document.getElementById('si-error');
+    const btn = document.getElementById('si-btn');
+
+    err.style.display = 'none';
+    if (!url || !url.includes('sephora.com')) {
+      err.textContent = 'Pega un link válido de sephora.com';
+      err.style.display = 'block';
+      return;
+    }
+
+    document.getElementById('si-loading').classList.add('active');
+    document.getElementById('si-empty').style.display = 'none';
+    document.getElementById('si-product').classList.remove('active');
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(`${SI_API}/api/scrape`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        err.textContent = data.error || 'Error al obtener producto.';
+        err.style.display = 'block';
+        document.getElementById('si-empty').style.display = 'block';
+        return;
+      }
+
+      siProduct = data;
+      siRender(data);
+    } catch(e) {
+      err.textContent = 'Error de conexión con el servidor.';
+      err.style.display = 'block';
+      document.getElementById('si-empty').style.display = 'block';
+    } finally {
+      document.getElementById('si-loading').classList.remove('active');
+      btn.disabled = false;
+    }
+  }
+
+  document.getElementById('si-url').addEventListener('keydown', e => {
+    if (e.key === 'Enter') siScrape();
+  });
+
+  function siRender(d) {
+    document.getElementById('si-name').value = d.name || '';
+
+    // Imágenes
+    const g = document.getElementById('si-gallery');
+    g.innerHTML = '';
+    (d.images || []).forEach(u => {
+      const img = document.createElement('img');
+      img.src = u; img.loading = 'lazy';
+      img.onerror = function(){ this.style.display='none'; };
+      g.appendChild(img);
+    });
+
+    // Variantes
+    const vw = document.getElementById('si-variants-wrap');
+    const vg = document.getElementById('si-variants');
+    if (d.color_variants && d.color_variants.length) {
+      vw.style.display = 'block';
+      vg.innerHTML = '';
+      d.color_variants.forEach((v, i) => {
+        const c = document.createElement('div');
+        c.className = 'si-variant-card' + (v.selected ? ' selected' : '');
+        let label = (v.label || `Color ${i+1}`).replace(/^Select\s*/i,'');
+        c.textContent = label;
+        c.onclick = () => {
+          document.querySelectorAll('.si-variant-card').forEach(x=>x.classList.remove('selected'));
+          c.classList.add('selected');
+        };
+        vg.appendChild(c);
+      });
+    } else {
+      vw.style.display = 'none';
+    }
+
+    document.getElementById('si-price').value = d.price_numeric || 0;
+
+    // Arrival date
+    const arr = new Date();
+    arr.setDate(arr.getDate() + 21);
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    document.getElementById('si-arrival').textContent = `${arr.getDate()} de ${meses[arr.getMonth()]} del ${arr.getFullYear()}`;
+
+    siRecalc();
+    document.getElementById('si-product').classList.add('active');
+    document.getElementById('si-empty').style.display = 'none';
+  }
+
+  function siRecalc() {
+    const p = parseFloat(document.getElementById('si-price').value) || 0;
+    const s = parseFloat(document.getElementById('si-shipping').value) || 0;
+    const q = parseInt(document.getElementById('si-qty').value) || 1;
+    const total = ((p + s + p * SI_COMMISSION) * q * SI_RATE).toFixed(2);
+    document.getElementById('si-total').textContent = `${SI_SYMBOL} ${total}`;
+    document.getElementById('si-qty-price').textContent = `${SI_SYMBOL} ${total}`;
+  }
+
+  function siBuy() {
+    if (!siProduct) return;
+    const variant = document.querySelector('.si-variant-card.selected');
+    const notes = document.getElementById('si-notes').value;
+    const qty = document.getElementById('si-qty').value;
+    const total = document.getElementById('si-total').textContent;
+    const category = document.getElementById('si-category').value;
+    
+    if (SHOPIFY_VARIANT_ID === 0) {
+      alert('⚠️ Configura SHOPIFY_VARIANT_ID en el template.\nVe al paso 2.3 de la guía.');
+      return;
+    }
+
+    // Agregar al carrito de Shopify con propiedades personalizadas
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: SHOPIFY_VARIANT_ID,
+        quantity: parseInt(qty),
+        properties: {
+          '_Producto Sephora': siProduct.name,
+          '_Marca': siProduct.brand || '',
+          '_Color/Variante': variant ? variant.textContent.trim() : 'N/A',
+          '_Link Sephora': siProduct.url,
+          '_Precio USD': '$' + (siProduct.price_numeric || 0),
+          '_Precio Total Local': total,
+          '_Categoría': category,
+          '_Indicaciones': notes || 'Sin indicaciones'
+        }
+      })
+    })
+    .then(r => {
+      if (!r.ok) throw new Error('Error al agregar al carrito');
+      return r.json();
+    })
+    .then(d => {
+      // Ir directo al checkout
+      window.location.href = '/checkout';
+    })
+    .catch(e => {
+      alert('Error al procesar el pedido. Intenta de nuevo.');
+      console.error(e);
+    });
+  }
+
+  function siAddCart() {
+    if (!siProduct) return;
+    const variant = document.querySelector('.si-variant-card.selected');
+    const notes = document.getElementById('si-notes').value;
+    const qty = document.getElementById('si-qty').value;
+    const total = document.getElementById('si-total').textContent;
+
+    if (SHOPIFY_VARIANT_ID === 0) {
+      alert('⚠️ Configura SHOPIFY_VARIANT_ID en el template.\nVe al paso 2.3 de la guía.');
+      return;
+    }
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: SHOPIFY_VARIANT_ID,
+        quantity: parseInt(qty),
+        properties: {
+          '_Producto Sephora': siProduct.name,
+          '_Marca': siProduct.brand || '',
+          '_Color/Variante': variant ? variant.textContent.trim() : 'N/A',
+          '_Link Sephora': siProduct.url,
+          '_Precio USD': '$' + (siProduct.price_numeric || 0),
+          '_Precio Total Local': total,
+          '_Indicaciones': notes || 'Sin indicaciones'
+        }
+      })
+    })
+    .then(r => {
+      if (!r.ok) throw new Error('Error');
+      return r.json();
+    })
+    .then(d => {
+      alert('✅ Producto agregado al carrito.');
+      // Opcional: actualizar el ícono del carrito
+      try {
+        document.querySelectorAll('[data-cart-count], .cart-count, .cart-count-bubble span')
+          .forEach(el => el.textContent = parseInt(el.textContent || 0) + parseInt(qty));
+      } catch(e) {}
+    })
+    .catch(e => {
+      alert('Error al agregar al carrito.');
+      console.error(e);
+    });
+  }
+</script>
