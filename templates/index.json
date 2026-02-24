@@ -497,7 +497,7 @@
             "button_effect": "diagonal_shine",
             "button_bg_color": "#000000",
             "button_font_size": 13,
-            "button_font_size_mobile": 14,
+            "button_font_size_mobile": 13,
             "strip_background": "#e3d5ca",
             "heading_color": "#000000",
             "subtitle_color": "#000000",
