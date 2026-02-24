@@ -797,6 +797,13 @@
     "checkout": {
       "payment_gateway": {
         "credit_card_label": "Tarjeta de crédito / débito"
+      },
+      "contact": {
+        "company_label": "DNI / Carné de extranjería",
+        "optional_company_label": "DNI / Carné de extranjería"
+      },
+      "field_errors": {
+        "address_company_blank": "Introduce tu DNI / Carnet de extranjería"
       }
     }
   }
