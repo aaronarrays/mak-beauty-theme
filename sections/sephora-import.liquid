@@ -714,29 +714,24 @@
 </div>
 
 <script>
-  // ═══════════════════════════════════════════════════════════════
-  //  CONFIGURACIÓN — Mak Beauty — Importador Sephora
-  // ═══════════════════════════════════════════════════════════════
   const MK_API = 'https://overhuge-nondiscriminatively-ada.ngrok-free.dev';
-  const MK_RATE = 3.75;          // USD → PEN
-  const MK_COMMISSION = 0.15;    // 15%
+  const MK_RATE = 3.75;
+  const MK_COMMISSION = 0.15;
   const MK_SYMBOL = 'S/';
   const MK_VARIANT_ID = 51967182143801;
-  // ═══════════════════════════════════════════════════════════════
 
   let mkData = null;
   let mkQtyVal = 1;
 
-  // — Buscar producto —
   async function mkBuscar() {
     const url = document.getElementById('mk-url').value.trim();
-    const alert = document.getElementById('mk-alert');
+    const alertEl = document.getElementById('mk-alert');
     const btn = document.getElementById('mk-btn');
 
-    alert.style.display = 'none';
+    alertEl.style.display = 'none';
     if (!url || !url.includes('sephora.com')) {
-      alert.textContent = 'Por favor ingresa un enlace válido de sephora.com';
-      alert.style.display = 'block';
+      alertEl.textContent = 'Por favor ingresa un enlace válido de sephora.com';
+      alertEl.style.display = 'block';
       return;
     }
 
@@ -755,8 +750,8 @@
       const data = await res.json();
 
       if (!data.success) {
-        alert.textContent = data.error || 'No pudimos obtener el producto. Verifica el enlace.';
-        alert.style.display = 'block';
+        alertEl.textContent = data.error || 'No pudimos obtener el producto. Verifica el enlace.';
+        alertEl.style.display = 'block';
         document.getElementById('mk-welcome').style.display = '';
         return;
       }
@@ -764,8 +759,8 @@
       mkData = data;
       mkRender(data);
     } catch(e) {
-      alert.textContent = 'Error de conexión. Intenta de nuevo en unos segundos.';
-      alert.style.display = 'block';
+      alertEl.textContent = 'Error de conexión. Intenta de nuevo en unos segundos.';
+      alertEl.style.display = 'block';
       document.getElementById('mk-welcome').style.display = '';
     } finally {
       document.getElementById('mk-loading').classList.remove('visible');
@@ -778,64 +773,58 @@
     if (e.key === 'Enter') mkBuscar();
   });
 
-  // — Renderizar producto —
   function mkRender(d) {
     // Marca y nombre
     document.getElementById('mk-brand').textContent = d.brand || '';
     document.getElementById('mk-title').textContent = d.name || '';
 
-    // Imagen principal
-    const imgs = d.images || [];
     const mainImg = document.getElementById('mk-main-img');
-    if (imgs.length > 0) {
-      mainImg.src = imgs[0];
-    }
-
-    // Miniaturas
     const thumbs = document.getElementById('mk-thumbs');
     thumbs.innerHTML = '';
-    const mainImg = document.getElementById('mk-main-img');
 
     const variants = d.color_variants || [];
     const imgs = d.images || [];
 
-    const thumbSources = variants.length > 0 
-        ? variants.map((v, i) => ({ url: v.image, label: v.label, index: i })).filter(x => x.url)
-        : imgs.map((u, i) => ({ url: u, label: '', index: i }));
+    // Preferir imágenes de variantes, si no usar carrusel
+    const thumbSources = variants.length > 0
+      ? variants.map((v, i) => ({ url: v.image, label: v.label, index: i })).filter(x => x.url)
+      : imgs.map((u, i) => ({ url: u, label: '', index: i }));
 
+    // Imagen principal
     if (thumbSources.length > 0) {
-        mainImg.src = thumbSources[0].url.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
+      mainImg.src = thumbSources[0].url.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
     } else if (imgs.length > 0) {
-        mainImg.src = imgs[0];
+      mainImg.src = imgs[0];
     }
 
+    // Miniaturas
     thumbSources.forEach((item, i) => {
-        const img = document.createElement('img');
-        img.src = item.url;
-        img.className = 'mk-thumb' + (i === 0 ? ' active' : '');
-        img.loading = 'lazy';
-        img.title = item.label || '';
-        img.onclick = () => {
-            mainImg.src = item.url.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
-            thumbs.querySelectorAll('.mk-thumb').forEach(t => t.classList.remove('active'));
-            img.classList.add('active');
-            if (variants.length > 0) {
-                document.querySelectorAll('.mk-tone').forEach((t, idx) => {
-                    t.classList.toggle('picked', idx === item.index);
-                });
-            }
-        };
-        img.onerror = function() { this.style.display = 'none'; };
-        thumbs.appendChild(img);
+      const img = document.createElement('img');
+      img.src = item.url;
+      img.className = 'mk-thumb' + (i === 0 ? ' active' : '');
+      img.loading = 'lazy';
+      img.title = item.label || '';
+      img.onclick = () => {
+        mainImg.src = item.url.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
+        thumbs.querySelectorAll('.mk-thumb').forEach(t => t.classList.remove('active'));
+        img.classList.add('active');
+        if (variants.length > 0) {
+          document.querySelectorAll('.mk-tone').forEach((t, idx) => {
+            t.classList.toggle('picked', idx === item.index);
+          });
+        }
+      };
+      img.onerror = function() { this.style.display = 'none'; };
+      thumbs.appendChild(img);
     });
 
     // Variantes / Tonos
     const tw = document.getElementById('mk-tones-wrap');
     const tg = document.getElementById('mk-tones');
-    if (d.color_variants && d.color_variants.length > 0) {
+    if (variants.length > 0) {
       tw.style.display = '';
       tg.innerHTML = '';
-      d.color_variants.forEach((v, i) => {
+      variants.forEach((v, i) => {
         const chip = document.createElement('div');
         chip.className = 'mk-tone' + (v.selected ? ' picked' : '');
         let lbl = (v.label || `Tono ${i+1}`).replace(/^Select\s*/i, '');
@@ -843,14 +832,15 @@
         chip.onclick = () => {
           tg.querySelectorAll('.mk-tone').forEach(x => x.classList.remove('picked'));
           chip.classList.add('picked');
-          // Cambiar imagen principal si tiene imagen
           if (v.image) {
-              mainImg.src = v.image.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
-              thumbs.querySelectorAll('.mk-thumb').forEach((t, idx) => {
-                  t.classList.toggle('active', idx === i);
-              });
+            mainImg.src = v.image.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
+            thumbs.querySelectorAll('.mk-thumb').forEach((t, idx) => {
+              t.classList.toggle('active', idx === i);
+            });
           }
-      };
+        };
+        tg.appendChild(chip);
+      });
     } else {
       tw.style.display = 'none';
     }
@@ -874,7 +864,6 @@
     document.getElementById('mk-welcome').style.display = 'none';
   }
 
-  // — Recalcular precio —
   function mkRecalc() {
     const p = parseFloat(document.getElementById('mk-price').value) || 0;
     const s = parseFloat(document.getElementById('mk-shipping').value) || 0;
@@ -882,14 +871,12 @@
     document.getElementById('mk-total').textContent = `${MK_SYMBOL} ${total}`;
   }
 
-  // — Cantidad +/– —
   function mkQty(delta) {
     mkQtyVal = Math.max(1, mkQtyVal + delta);
     document.getElementById('mk-qty').textContent = mkQtyVal;
     mkRecalc();
   }
 
-  // — Propiedades del pedido —
   function mkProps() {
     const tone = document.querySelector('.mk-tone.picked');
     const notes = document.getElementById('mk-notes').value;
@@ -907,42 +894,30 @@
     };
   }
 
-  // — Comprar ahora —
   function mkComprar() {
     if (!mkData) return;
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: MK_VARIANT_ID,
-        quantity: mkQtyVal,
-        properties: mkProps()
-      })
+      body: JSON.stringify({ id: MK_VARIANT_ID, quantity: mkQtyVal, properties: mkProps() })
     })
     .then(r => { if (!r.ok) throw new Error(); return r.json(); })
     .then(() => { window.location.href = '/checkout'; })
     .catch(() => { window.alert('Ocurrió un error. Intenta de nuevo.'); });
   }
 
-  // — Añadir al carrito —
   function mkAgregar() {
     if (!mkData) return;
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: MK_VARIANT_ID,
-        quantity: mkQtyVal,
-        properties: mkProps()
-      })
+      body: JSON.stringify({ id: MK_VARIANT_ID, quantity: mkQtyVal, properties: mkProps() })
     })
     .then(r => { if (!r.ok) throw new Error(); return r.json(); })
     .then(() => {
-      // Toast
       const toast = document.getElementById('mk-toast');
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 3000);
-      // Actualizar contador del carrito si existe
       try {
         document.querySelectorAll('[data-cart-count], .cart-count, .cart-count-bubble span')
           .forEach(el => el.textContent = parseInt(el.textContent || 0) + mkQtyVal);
@@ -950,10 +925,12 @@
     })
     .catch(() => { window.alert('Error al agregar al carrito.'); });
   }
-window.mkBuscar = mkBuscar;
-window.mkQty = mkQty;
-window.mkComprar = mkComprar;
-window.mkAgregar = mkAgregar;  
+
+  window.mkBuscar = mkBuscar;
+  window.mkQty = mkQty;
+  window.mkComprar = mkComprar;
+  window.mkAgregar = mkAgregar;
+  window.mkRecalc = mkRecalc;
 </script>
 
 {% schema %}
