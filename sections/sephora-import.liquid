@@ -794,18 +794,39 @@
     // Miniaturas
     const thumbs = document.getElementById('mk-thumbs');
     thumbs.innerHTML = '';
-    imgs.forEach((u, i) => {
-      const img = document.createElement('img');
-      img.src = u;
-      img.className = 'mk-thumb' + (i === 0 ? ' active' : '');
-      img.loading = 'lazy';
-      img.onclick = () => {
-        mainImg.src = u;
-        thumbs.querySelectorAll('.mk-thumb').forEach(t => t.classList.remove('active'));
-        img.classList.add('active');
-      };
-      img.onerror = function() { this.style.display = 'none'; };
-      thumbs.appendChild(img);
+    const mainImg = document.getElementById('mk-main-img');
+
+    const variants = d.color_variants || [];
+    const imgs = d.images || [];
+
+    const thumbSources = variants.length > 0 
+        ? variants.map((v, i) => ({ url: v.image, label: v.label, index: i })).filter(x => x.url)
+        : imgs.map((u, i) => ({ url: u, label: '', index: i }));
+
+    if (thumbSources.length > 0) {
+        mainImg.src = thumbSources[0].url.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
+    } else if (imgs.length > 0) {
+        mainImg.src = imgs[0];
+    }
+
+    thumbSources.forEach((item, i) => {
+        const img = document.createElement('img');
+        img.src = item.url;
+        img.className = 'mk-thumb' + (i === 0 ? ' active' : '');
+        img.loading = 'lazy';
+        img.title = item.label || '';
+        img.onclick = () => {
+            mainImg.src = item.url.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
+            thumbs.querySelectorAll('.mk-thumb').forEach(t => t.classList.remove('active'));
+            img.classList.add('active');
+            if (variants.length > 0) {
+                document.querySelectorAll('.mk-tone').forEach((t, idx) => {
+                    t.classList.toggle('picked', idx === item.index);
+                });
+            }
+        };
+        img.onerror = function() { this.style.display = 'none'; };
+        thumbs.appendChild(img);
     });
 
     // Variantes / Tonos
