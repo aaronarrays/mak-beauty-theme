@@ -794,7 +794,6 @@
     // Miniaturas
     const thumbs = document.getElementById('mk-thumbs');
     thumbs.innerHTML = '';
-    const mainImg = document.getElementById('mk-main-img');
     imgs.forEach((u, i) => {
       const img = document.createElement('img');
       img.src = u;
@@ -810,12 +809,6 @@
     });
 
     // Variantes / Tonos
-    const variants = d.color_variants || [];
-    const imgs = d.images || [];
-    const thumbSources = variants.length > 0 
-    ? variants.map((v, i) => ({ url: v.image, label: v.label, index: i })).filter(x => x.url)
-    : imgs.map((u, i) => ({ url: u, label: '', index: i }));
-    
     const tw = document.getElementById('mk-tones-wrap');
     const tg = document.getElementById('mk-tones');
     if (d.color_variants && d.color_variants.length > 0) {
@@ -827,16 +820,16 @@
         let lbl = (v.label || `Tono ${i+1}`).replace(/^Select\s*/i, '');
         chip.textContent = lbl;
         chip.onclick = () => {
-            tg.querySelectorAll('.mk-tone').forEach(x => x.classList.remove('picked'));
-            chip.classList.add('picked');
-            // Cambiar imagen principal si tiene imagen
-            if (v.image) {
-                mainImg.src = v.image.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
-                thumbs.querySelectorAll('.mk-thumb').forEach((t, idx) => {
-                    t.classList.toggle('active', idx === i);
-                });
-            }
-        };
+          tg.querySelectorAll('.mk-tone').forEach(x => x.classList.remove('picked'));
+          chip.classList.add('picked');
+          // Cambiar imagen principal si tiene imagen
+          if (v.image) {
+              mainImg.src = v.image.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
+              thumbs.querySelectorAll('.mk-thumb').forEach((t, idx) => {
+                  t.classList.toggle('active', idx === i);
+              });
+          }
+      };
     } else {
       tw.style.display = 'none';
     }
