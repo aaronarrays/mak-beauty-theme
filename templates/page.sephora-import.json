@@ -7,12 +7,12 @@
  * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
-{
-  "sections": {
-    "main": {
-      "type": "sephora-import",
-      "settings": {}
-    }
-  },
-  "order": ["main"]
-}
+  {
+    "sections": {
+      "main": {
+        "type": "sephora-import",
+        "settings": {}
+      }
+    },
+    "order": ["main"]
+  }

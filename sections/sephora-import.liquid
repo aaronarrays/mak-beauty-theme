@@ -715,7 +715,7 @@
   // ═══════════════════════════════════════════════════════════════
   //  CONFIGURACIÓN — Mak Beauty — Importador Sephora
   // ═══════════════════════════════════════════════════════════════
-  const MK_API = 'https://web-production-56b31.up.railway.app';
+  const MK_API = 'https://overhuge-nondiscriminatively-ada.ngrok-free.dev';
   const MK_RATE = 3.75;          // USD → PEN
   const MK_COMMISSION = 0.15;    // 15%
   const MK_SYMBOL = 'S/';
@@ -747,7 +747,7 @@
     try {
       const res = await fetch(`${MK_API}/api/scrape`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
         body: JSON.stringify({ url })
       });
       const data = await res.json();
