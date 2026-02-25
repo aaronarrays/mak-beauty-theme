@@ -820,16 +820,11 @@
         let lbl = (v.label || `Tono ${i+1}`).replace(/^Select\s*/i, '');
         chip.textContent = lbl;
         chip.onclick = () => {
-    tg.querySelectorAll('.mk-tone').forEach(x => x.classList.remove('picked'));
-    chip.classList.add('picked');
-    // Cambiar imagen principal si tiene imagen
-    if (v.image) {
-        mainImg.src = v.image.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
-        thumbs.querySelectorAll('.mk-thumb').forEach((t, idx) => {
-            t.classList.toggle('active', idx === i);
-        });
-    }
-    };
+          tg.querySelectorAll('.mk-tone').forEach(x => x.classList.remove('picked'));
+          chip.classList.add('picked');
+        };
+        tg.appendChild(chip);
+      });
     } else {
       tw.style.display = 'none';
     }
