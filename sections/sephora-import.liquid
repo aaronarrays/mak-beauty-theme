@@ -264,16 +264,14 @@
   .mk-thumbs::-webkit-scrollbar { height: 4px; }
   .mk-thumbs::-webkit-scrollbar-thumb { background: var(--mk-pink-soft); border-radius: 4px; }
 
-  .mk-thumb {
-    width: 64px;
-    height: 64px;
+.mk-thumb {
+    width: 48px;
+    height: 48px;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 50%;
     border: 2px solid var(--mk-border);
-    flex-shrink: 0;
-    cursor: pointer;
     transition: border-color 0.2s, transform 0.15s;
-  }
+}
 
   .mk-thumb:hover, .mk-thumb.active {
     border-color: var(--mk-pink);
