@@ -810,6 +810,12 @@
     });
 
     // Variantes / Tonos
+    const variants = d.color_variants || [];
+    const imgs = d.images || [];
+    const thumbSources = variants.length > 0 
+    ? variants.map((v, i) => ({ url: v.image, label: v.label, index: i })).filter(x => x.url)
+    : imgs.map((u, i) => ({ url: u, label: '', index: i }));
+    
     const tw = document.getElementById('mk-tones-wrap');
     const tg = document.getElementById('mk-tones');
     if (d.color_variants && d.color_variants.length > 0) {
