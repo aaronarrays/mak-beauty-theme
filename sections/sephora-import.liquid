@@ -1,0 +1,937 @@
+{% comment %}
+  SECCIÓN: Importador de productos Sephora — Mak Beauty
+  
+  INSTALACIÓN EN SHOPIFY (OS 2.0):
+  
+  1. Admin → Online Store → Themes → Edit code
+  2. En "Sections", clic en "Add a new section" → nombre: sephora-import
+  3. Borra el contenido predeterminado y pega TODO este archivo
+  4. Guarda
+  5. Crea el template JSON (ver archivo templates/page.sephora-import.json)
+  6. Ve a Online Store → Pages → Add page
+  7. En "Theme template", selecciona "sephora-import"
+  8. Publica la página
+{% endcomment %}
+
+<style>
+  /* ═══════════════════════════════════════ */
+  /*  Mak Beauty — Importador Sephora       */
+  /* ═══════════════════════════════════════ */
+  .mk-importer {
+    --mk-pink: #E48DA5;
+    --mk-pink-dark: #D4729A;
+    --mk-pink-light: #FDF2F5;
+    --mk-pink-soft: #F8D7E0;
+    --mk-accent: #C96B8B;
+    --mk-text: #2D2D2D;
+    --mk-text-muted: #7A7A7A;
+    --mk-bg: #FAFAFA;
+    --mk-white: #FFFFFF;
+    --mk-border: #F0E0E5;
+    --mk-success: #7CB69D;
+    --mk-radius: 16px;
+    --mk-shadow: 0 4px 20px rgba(228, 141, 165, 0.12);
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+    color: var(--mk-text);
+  }
+
+  /* — Header de la sección — */
+  .mk-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .mk-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--mk-text);
+    margin: 0 0 6px;
+  }
+
+  .mk-header p {
+    font-size: 14px;
+    color: var(--mk-text-muted);
+    margin: 0;
+  }
+
+  /* — Barra de búsqueda — */
+  .mk-search {
+    background: var(--mk-white);
+    border-radius: var(--mk-radius);
+    padding: 24px;
+    box-shadow: var(--mk-shadow);
+    margin-bottom: 28px;
+    border: 1px solid var(--mk-border);
+  }
+
+  .mk-search-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--mk-pink-dark);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .mk-search-row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .mk-search-input {
+    flex: 1;
+    padding: 14px 20px;
+    border: 2px solid var(--mk-border);
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    background: var(--mk-bg);
+  }
+
+  .mk-search-input:focus {
+    border-color: var(--mk-pink);
+    outline: none;
+    background: var(--mk-white);
+  }
+
+  .mk-search-input::placeholder {
+    color: #C0A8B0;
+  }
+
+  .mk-btn-buscar {
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--mk-pink), var(--mk-pink-dark));
+    color: var(--mk-white);
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s;
+    white-space: nowrap;
+  }
+
+  .mk-btn-buscar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(212, 114, 154, 0.4);
+  }
+
+  .mk-btn-buscar:disabled {
+    background: #D4C5CA;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .mk-alert {
+    display: none;
+    background: #FFF8E1;
+    border: 1px solid #FFD54F;
+    border-radius: 10px;
+    padding: 10px 16px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #8D6E00;
+  }
+
+  /* — Estado cargando — */
+  .mk-loading {
+    display: none;
+    text-align: center;
+    padding: 70px 20px;
+  }
+
+  .mk-loading.visible { display: block; }
+
+  .mk-loader {
+    width: 44px;
+    height: 44px;
+    border: 4px solid var(--mk-pink-soft);
+    border-top-color: var(--mk-pink-dark);
+    border-radius: 50%;
+    animation: mk-rotate 0.7s linear infinite;
+    margin: 0 auto 18px;
+  }
+
+  .mk-loading p {
+    font-size: 14px;
+    color: var(--mk-text-muted);
+  }
+
+  @keyframes mk-rotate { to { transform: rotate(360deg); } }
+
+  /* — Estado vacío — */
+  .mk-welcome {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--mk-white);
+    border-radius: var(--mk-radius);
+    border: 2px dashed var(--mk-border);
+  }
+
+  .mk-welcome-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--mk-pink-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+  }
+
+  .mk-welcome h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--mk-text);
+  }
+
+  .mk-welcome p {
+    font-size: 14px;
+    color: var(--mk-text-muted);
+    margin: 0;
+    max-width: 380px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* — Producto grid — */
+  .mk-product { display: none; }
+
+  .mk-product.visible {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .mk-panel {
+    background: var(--mk-white);
+    border-radius: var(--mk-radius);
+    box-shadow: var(--mk-shadow);
+    padding: 28px;
+    border: 1px solid var(--mk-border);
+  }
+
+  /* — Imagen principal — */
+  .mk-main-img-wrap {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--mk-bg);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mk-main-img-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  /* — Miniaturas — */
+  .mk-thumbs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin-bottom: 20px;
+  }
+
+  .mk-thumbs::-webkit-scrollbar { height: 4px; }
+  .mk-thumbs::-webkit-scrollbar-thumb { background: var(--mk-pink-soft); border-radius: 4px; }
+
+  .mk-thumb {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid var(--mk-border);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+
+  .mk-thumb:hover, .mk-thumb.active {
+    border-color: var(--mk-pink);
+    transform: scale(1.06);
+  }
+
+  /* — Info producto — */
+  .mk-brand {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mk-pink-dark);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .mk-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--mk-text);
+    margin: 0 0 16px;
+    line-height: 1.3;
+  }
+
+  .mk-field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mk-text-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .mk-field {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--mk-border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--mk-bg);
+    margin-bottom: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+
+  .mk-field:focus {
+    border-color: var(--mk-pink);
+    outline: none;
+  }
+
+  /* — Variantes/Tonos — */
+  .mk-tones-wrap { margin-bottom: 18px; }
+
+  .mk-tones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .mk-tone {
+    border: 2px solid var(--mk-border);
+    border-radius: 10px;
+    padding: 8px 16px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    font-weight: 500;
+    background: var(--mk-white);
+    transition: all 0.2s;
+    min-width: 80px;
+  }
+
+  .mk-tone:hover { border-color: var(--mk-pink); background: var(--mk-pink-light); }
+  .mk-tone.picked { border-color: var(--mk-pink-dark); background: var(--mk-pink-light); color: var(--mk-pink-dark); font-weight: 600; }
+
+  /* — Grid inline — */
+  .mk-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* — Panel lateral (resumen) — */
+  .mk-summary {
+    position: sticky;
+    top: 20px;
+  }
+
+  .mk-summary-badge {
+    display: inline-block;
+    background: var(--mk-pink-light);
+    color: var(--mk-pink-dark);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+  }
+
+  .mk-guarantees {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .mk-guarantee {
+    flex: 1;
+    text-align: center;
+    padding: 12px 6px;
+    background: var(--mk-pink-light);
+    border-radius: 12px;
+  }
+
+  .mk-guarantee-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+
+  .mk-guarantee-text {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--mk-text-muted);
+    line-height: 1.3;
+  }
+
+  .mk-delivery-box {
+    background: linear-gradient(135deg, #F0FAF4, #E8F5EE);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid #C8E6D0;
+  }
+
+  .mk-delivery-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+  }
+
+  .mk-delivery-date {
+    font-weight: 700;
+    color: #3D8B5E;
+    font-size: 14px;
+  }
+
+  /* — Precio — */
+  .mk-price-box {
+    background: var(--mk-pink-light);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+
+  .mk-price-label {
+    font-size: 12px;
+    color: var(--mk-text-muted);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .mk-price-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--mk-pink-dark);
+    letter-spacing: -0.5px;
+  }
+
+  .mk-price-usd {
+    font-size: 13px;
+    color: var(--mk-text-muted);
+    text-decoration: line-through;
+    margin-top: 2px;
+  }
+
+  /* — Cantidad — */
+  .mk-qty-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .mk-qty-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--mk-border);
+    background: var(--mk-white);
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    color: var(--mk-text);
+    font-family: inherit;
+  }
+
+  .mk-qty-btn:hover {
+    border-color: var(--mk-pink);
+    background: var(--mk-pink-light);
+  }
+
+  .mk-qty-num {
+    font-size: 20px;
+    font-weight: 700;
+    min-width: 30px;
+    text-align: center;
+  }
+
+  /* — Botones — */
+  .mk-btn-comprar {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--mk-pink), var(--mk-pink-dark));
+    color: var(--mk-white);
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: transform 0.15s, box-shadow 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .mk-btn-comprar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 114, 154, 0.35);
+  }
+
+  .mk-btn-carrito {
+    width: 100%;
+    padding: 14px;
+    background: var(--mk-white);
+    color: var(--mk-pink-dark);
+    border: 2px solid var(--mk-pink);
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 14px;
+  }
+
+  .mk-btn-carrito:hover {
+    background: var(--mk-pink-light);
+  }
+
+  .mk-secure {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--mk-text-muted);
+  }
+
+  /* — Notas — */
+  .mk-notes-section {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--mk-border);
+  }
+
+  /* — Toast notification — */
+  .mk-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--mk-white);
+    border: 2px solid var(--mk-success);
+    border-radius: 14px;
+    padding: 16px 24px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    display: none;
+    z-index: 9999;
+    animation: mk-slideUp 0.3s ease-out;
+    font-family: inherit;
+  }
+
+  .mk-toast.show { display: flex; align-items: center; gap: 10px; }
+
+  .mk-toast-icon { font-size: 22px; }
+  .mk-toast-text { font-size: 14px; font-weight: 600; color: var(--mk-text); }
+
+  @keyframes mk-slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* — Responsive — */
+  @media (max-width: 820px) {
+    .mk-product.visible { grid-template-columns: 1fr; }
+    .mk-search-row { flex-direction: column; }
+    .mk-row2 { grid-template-columns: 1fr; }
+    .mk-summary { position: static; }
+    .mk-header h2 { font-size: 22px; }
+  }
+</style>
+
+<div class="mk-importer">
+  <!-- ENCABEZADO -->
+  <div class="mk-header">
+    <h2>Pedido por Encargo desde USA</h2>
+    <p>Encuentra tu producto favorito de Sephora y nosotros lo traemos hasta tu puerta</p>
+  </div>
+
+  <!-- BARRA DE BÚSQUEDA -->
+  <div class="mk-search">
+    <div class="mk-search-label">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      Ingresa el enlace del producto
+    </div>
+    <div class="mk-search-row">
+      <input type="text" class="mk-search-input" id="mk-url" placeholder="https://www.sephora.com/product/...">
+      <button class="mk-btn-buscar" id="mk-btn" onclick="mkBuscar()">Buscar</button>
+    </div>
+    <div class="mk-alert" id="mk-alert"></div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="mk-loading" id="mk-loading">
+    <div class="mk-loader"></div>
+    <p>Consultando disponibilidad...</p>
+  </div>
+
+  <!-- ESTADO VACÍO -->
+  <div class="mk-welcome" id="mk-welcome">
+    <div class="mk-welcome-icon">✨</div>
+    <h3>Tu próximo favorito te espera</h3>
+    <p>Copia el enlace de cualquier producto de sephora.com y pégalo arriba. Nosotros hacemos el resto.</p>
+  </div>
+
+  <!-- PRODUCTO -->
+  <div class="mk-product" id="mk-product">
+    <!-- PANEL IZQUIERDO -->
+    <div class="mk-panel">
+      <!-- Imagen principal -->
+      <div class="mk-main-img-wrap" id="mk-main-img-wrap">
+        <img id="mk-main-img" src="" alt="Producto" width="500" height="500">
+      </div>
+
+      <!-- Miniaturas -->
+      <div class="mk-thumbs" id="mk-thumbs"></div>
+
+      <!-- Info del producto -->
+      <div class="mk-brand" id="mk-brand"></div>
+      <h3 class="mk-title" id="mk-title"></h3>
+
+      <!-- Tonos / Variantes -->
+      <div class="mk-tones-wrap" id="mk-tones-wrap" style="display:none;">
+        <label class="mk-field-label" id="mk-tones-label">Tono / Variante</label>
+        <div class="mk-tones" id="mk-tones"></div>
+      </div>
+
+      <!-- Campos -->
+      <label class="mk-field-label">Categoría</label>
+      <select class="mk-field" id="mk-category">
+        <option>Maquillaje</option><option>Cuidado de la Piel</option><option>Cabello</option>
+        <option>Fragancia</option><option>Accesorios</option>
+      </select>
+
+      <div class="mk-row2">
+        <div>
+          <label class="mk-field-label">Envío USA ($)</label>
+          <input type="number" class="mk-field" id="mk-shipping" value="0" min="0" step="0.01" onchange="mkRecalc()">
+        </div>
+        <div>
+          <label class="mk-field-label">Precio original ($)</label>
+          <input type="number" class="mk-field" id="mk-price" value="0" readonly>
+        </div>
+      </div>
+
+      <div class="mk-notes-section">
+        <label class="mk-field-label">Indicaciones especiales</label>
+        <textarea class="mk-field" id="mk-notes" rows="2" placeholder="Color exacto, talla, presentación..."></textarea>
+      </div>
+    </div>
+
+    <!-- PANEL DERECHO (RESUMEN) -->
+    <div class="mk-panel mk-summary">
+      <span class="mk-summary-badge">Pedido por encargo</span>
+
+      <!-- Garantías -->
+      <div class="mk-guarantees">
+        <div class="mk-guarantee">
+          <div class="mk-guarantee-icon">🛡️</div>
+          <div class="mk-guarantee-text">100%<br>Original</div>
+        </div>
+        <div class="mk-guarantee">
+          <div class="mk-guarantee-icon">🌿</div>
+          <div class="mk-guarantee-text">Libre de<br>Crueldad</div>
+        </div>
+        <div class="mk-guarantee">
+          <div class="mk-guarantee-icon">📦</div>
+          <div class="mk-guarantee-text">Envío<br>Seguro</div>
+        </div>
+      </div>
+
+      <!-- Entrega -->
+      <div class="mk-delivery-box">
+        <div class="mk-delivery-row">
+          <span>Entrega estimada</span>
+          <span class="mk-delivery-date" id="mk-arrival">--</span>
+        </div>
+      </div>
+
+      <!-- Precio -->
+      <div class="mk-price-box">
+        <div class="mk-price-label">Precio total con envío</div>
+        <div class="mk-price-value" id="mk-total">S/ 0.00</div>
+        <div class="mk-price-usd" id="mk-price-usd"></div>
+      </div>
+
+      <!-- Cantidad -->
+      <div class="mk-qty-row">
+        <button class="mk-qty-btn" onclick="mkQty(-1)">−</button>
+        <span class="mk-qty-num" id="mk-qty">1</span>
+        <button class="mk-qty-btn" onclick="mkQty(1)">+</button>
+      </div>
+
+      <!-- Botones -->
+      <button class="mk-btn-comprar" onclick="mkComprar()">Comprar ahora</button>
+      <button class="mk-btn-carrito" onclick="mkAgregar()">Añadir al carrito</button>
+
+      <div class="mk-secure">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Pago 100% seguro · Garantía de autenticidad
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="mk-toast" id="mk-toast">
+    <span class="mk-toast-icon">✅</span>
+    <span class="mk-toast-text">Producto agregado al carrito</span>
+  </div>
+</div>
+
+<script>
+  // ═══════════════════════════════════════════════════════════════
+  //  CONFIGURACIÓN — Mak Beauty — Importador Sephora
+  // ═══════════════════════════════════════════════════════════════
+  const MK_API = 'https://web-production-56b31.up.railway.app';
+  const MK_RATE = 3.75;          // USD → PEN
+  const MK_COMMISSION = 0.15;    // 15%
+  const MK_SYMBOL = 'S/';
+  const MK_VARIANT_ID = 51967182143801;
+  // ═══════════════════════════════════════════════════════════════
+
+  let mkData = null;
+  let mkQtyVal = 1;
+
+  // — Buscar producto —
+  async function mkBuscar() {
+    const url = document.getElementById('mk-url').value.trim();
+    const alert = document.getElementById('mk-alert');
+    const btn = document.getElementById('mk-btn');
+
+    alert.style.display = 'none';
+    if (!url || !url.includes('sephora.com')) {
+      alert.textContent = 'Por favor ingresa un enlace válido de sephora.com';
+      alert.style.display = 'block';
+      return;
+    }
+
+    document.getElementById('mk-loading').classList.add('visible');
+    document.getElementById('mk-welcome').style.display = 'none';
+    document.getElementById('mk-product').classList.remove('visible');
+    btn.disabled = true;
+    btn.textContent = 'Buscando...';
+
+    try {
+      const res = await fetch(`${MK_API}/api/scrape`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+      const data = await res.json();
+
+      if (!data.success) {
+        alert.textContent = data.error || 'No pudimos obtener el producto. Verifica el enlace.';
+        alert.style.display = 'block';
+        document.getElementById('mk-welcome').style.display = '';
+        return;
+      }
+
+      mkData = data;
+      mkRender(data);
+    } catch(e) {
+      alert.textContent = 'Error de conexión. Intenta de nuevo en unos segundos.';
+      alert.style.display = 'block';
+      document.getElementById('mk-welcome').style.display = '';
+    } finally {
+      document.getElementById('mk-loading').classList.remove('visible');
+      btn.disabled = false;
+      btn.textContent = 'Buscar';
+    }
+  }
+
+  document.getElementById('mk-url').addEventListener('keydown', e => {
+    if (e.key === 'Enter') mkBuscar();
+  });
+
+  // — Renderizar producto —
+  function mkRender(d) {
+    // Marca y nombre
+    document.getElementById('mk-brand').textContent = d.brand || '';
+    document.getElementById('mk-title').textContent = d.name || '';
+
+    // Imagen principal
+    const imgs = d.images || [];
+    const mainImg = document.getElementById('mk-main-img');
+    if (imgs.length > 0) {
+      mainImg.src = imgs[0];
+    }
+
+    // Miniaturas
+    const thumbs = document.getElementById('mk-thumbs');
+    thumbs.innerHTML = '';
+    imgs.forEach((u, i) => {
+      const img = document.createElement('img');
+      img.src = u;
+      img.className = 'mk-thumb' + (i === 0 ? ' active' : '');
+      img.loading = 'lazy';
+      img.onclick = () => {
+        mainImg.src = u;
+        thumbs.querySelectorAll('.mk-thumb').forEach(t => t.classList.remove('active'));
+        img.classList.add('active');
+      };
+      img.onerror = function() { this.style.display = 'none'; };
+      thumbs.appendChild(img);
+    });
+
+    // Variantes / Tonos
+    const tw = document.getElementById('mk-tones-wrap');
+    const tg = document.getElementById('mk-tones');
+    if (d.color_variants && d.color_variants.length > 0) {
+      tw.style.display = '';
+      tg.innerHTML = '';
+      d.color_variants.forEach((v, i) => {
+        const chip = document.createElement('div');
+        chip.className = 'mk-tone' + (v.selected ? ' picked' : '');
+        let lbl = (v.label || `Tono ${i+1}`).replace(/^Select\s*/i, '');
+        chip.textContent = lbl;
+        chip.onclick = () => {
+          tg.querySelectorAll('.mk-tone').forEach(x => x.classList.remove('picked'));
+          chip.classList.add('picked');
+        };
+        tg.appendChild(chip);
+      });
+    } else {
+      tw.style.display = 'none';
+    }
+
+    // Precio
+    document.getElementById('mk-price').value = d.price_numeric || 0;
+    document.getElementById('mk-price-usd').textContent = 'USD $' + (d.price_numeric || 0).toFixed(2);
+
+    // Fecha de entrega
+    const arr = new Date();
+    arr.setDate(arr.getDate() + 21);
+    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    document.getElementById('mk-arrival').textContent = `${arr.getDate()} ${meses[arr.getMonth()]} ${arr.getFullYear()}`;
+
+    // Resetear cantidad
+    mkQtyVal = 1;
+    document.getElementById('mk-qty').textContent = '1';
+
+    mkRecalc();
+    document.getElementById('mk-product').classList.add('visible');
+    document.getElementById('mk-welcome').style.display = 'none';
+  }
+
+  // — Recalcular precio —
+  function mkRecalc() {
+    const p = parseFloat(document.getElementById('mk-price').value) || 0;
+    const s = parseFloat(document.getElementById('mk-shipping').value) || 0;
+    const total = ((p + s + p * MK_COMMISSION) * mkQtyVal * MK_RATE).toFixed(2);
+    document.getElementById('mk-total').textContent = `${MK_SYMBOL} ${total}`;
+  }
+
+  // — Cantidad +/– —
+  function mkQty(delta) {
+    mkQtyVal = Math.max(1, mkQtyVal + delta);
+    document.getElementById('mk-qty').textContent = mkQtyVal;
+    mkRecalc();
+  }
+
+  // — Propiedades del pedido —
+  function mkProps() {
+    const tone = document.querySelector('.mk-tone.picked');
+    const notes = document.getElementById('mk-notes').value;
+    const total = document.getElementById('mk-total').textContent;
+    const category = document.getElementById('mk-category').value;
+    return {
+      '_Producto Sephora': mkData.name,
+      '_Marca': mkData.brand || '',
+      '_Color/Variante': tone ? tone.textContent.trim() : 'N/A',
+      '_Link Sephora': mkData.url,
+      '_Precio USD': '$' + (mkData.price_numeric || 0),
+      '_Precio Total Local': total,
+      '_Categoría': category,
+      '_Indicaciones': notes || 'Sin indicaciones'
+    };
+  }
+
+  // — Comprar ahora —
+  function mkComprar() {
+    if (!mkData) return;
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: MK_VARIANT_ID,
+        quantity: mkQtyVal,
+        properties: mkProps()
+      })
+    })
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(() => { window.location.href = '/checkout'; })
+    .catch(() => { window.alert('Ocurrió un error. Intenta de nuevo.'); });
+  }
+
+  // — Añadir al carrito —
+  function mkAgregar() {
+    if (!mkData) return;
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: MK_VARIANT_ID,
+        quantity: mkQtyVal,
+        properties: mkProps()
+      })
+    })
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(() => {
+      // Toast
+      const toast = document.getElementById('mk-toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+      // Actualizar contador del carrito si existe
+      try {
+        document.querySelectorAll('[data-cart-count], .cart-count, .cart-count-bubble span')
+          .forEach(el => el.textContent = parseInt(el.textContent || 0) + mkQtyVal);
+      } catch(e) {}
+    })
+    .catch(() => { window.alert('Error al agregar al carrito.'); });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Importador Sephora",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Importador Sephora"
+    }
+  ]
+}
+{% endschema %}
