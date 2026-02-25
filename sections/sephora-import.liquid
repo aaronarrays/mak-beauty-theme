@@ -286,7 +286,6 @@
     line-height: 1.2;
     word-break: break-word;
 }
-
   /* — Info producto — */
   .mk-brand {
     font-size: 12px;
@@ -813,25 +812,37 @@
     }
 
     // Miniaturas
-    thumbSources.forEach((item, i) => {
-      const img = document.createElement('img');
-      img.src = item.url;
-      img.className = 'mk-thumb' + (i === 0 ? ' active' : '');
-      img.loading = 'lazy';
-      img.title = item.label || '';
-      img.onclick = () => {
+   thumbSources.forEach((item, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'mk-thumb-wrap';
+
+    const img = document.createElement('img');
+    img.src = item.url;
+    img.className = 'mk-thumb' + (i === 0 ? ' active' : '');
+    img.loading = 'lazy';
+
+    const name = document.createElement('span');
+    name.className = 'mk-thumb-name';
+    // Limpiar el label: quitar color hex y texto extra
+    name.textContent = (item.label || '').replace(/^Select\s*/i, '').split('-')[0].trim();
+
+    wrap.appendChild(img);
+    wrap.appendChild(name);
+
+    wrap.onclick = () => {
         mainImg.src = item.url.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
         thumbs.querySelectorAll('.mk-thumb').forEach(t => t.classList.remove('active'));
         img.classList.add('active');
         if (variants.length > 0) {
-          document.querySelectorAll('.mk-tone').forEach((t, idx) => {
-            t.classList.toggle('picked', idx === item.index);
-          });
+            document.querySelectorAll('.mk-tone').forEach((t, idx) => {
+                t.classList.toggle('picked', idx === item.index);
+            });
         }
-      };
-      img.onerror = function() { this.style.display = 'none'; };
-      thumbs.appendChild(img);
-    });
+    };
+
+    img.onerror = function() { wrap.style.display = 'none'; };
+    thumbs.appendChild(wrap);
+});
 
     // Variantes / Tonos
     const tw = document.getElementById('mk-tones-wrap');
