@@ -225,8 +225,9 @@
 
   /* — Imagen principal — */
 .mk-main-img-wrap {
-    width: 300px;
-    height: 300px;
+    width: 20%;
+    max-width: 300px;
+    aspect-ratio: 1/1;
     border-radius: 14px;
     overflow: hidden;
     background: var(--mk-bg);
@@ -243,16 +244,13 @@
   }
 
   /* — Miniaturas — */
-.mk-thumbs {
+  .mk-thumbs {
     display: flex;
     gap: 8px;
     overflow-x: auto;
     padding-bottom: 6px;
     margin-bottom: 20px;
-    max-width: 300px;
-    margin-left: auto;
-    margin-right: auto;
-}
+  }
 
   .mk-thumbs::-webkit-scrollbar { height: 4px; }
   .mk-thumbs::-webkit-scrollbar-thumb { background: var(--mk-pink-soft); border-radius: 4px; }
