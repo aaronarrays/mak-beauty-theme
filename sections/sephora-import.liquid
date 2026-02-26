@@ -305,7 +305,7 @@
 
   <div class="mk-loading" id="mk-loading">
     <div class="mk-loader"></div>
-    <p>Consultando disponibilidad...</p>
+    <p id="mk-loading-msg">Conectando con Sephora...</p>
   </div>
 
   <div class="mk-welcome" id="mk-welcome">
@@ -429,7 +429,7 @@
 
   let mkData = null, mkQtyVal = 1;
 
-  /* ── Buscar ── */
+  /* ── Buscar con streaming progresivo ── */
   async function mkBuscar() {
     const url = document.getElementById('mk-url').value.trim();
     const al  = document.getElementById('mk-alert');
@@ -439,43 +439,125 @@
       al.textContent = 'Por favor ingresa un enlace válido de sephora.com';
       al.style.display = 'block'; return;
     }
+    const loadMsg = document.getElementById('mk-loading-msg');
+    loadMsg.textContent = 'Conectando con Sephora...';
     document.getElementById('mk-loading').classList.add('visible');
     document.getElementById('mk-welcome').style.display = 'none';
     document.getElementById('mk-product').classList.remove('visible');
     btn.disabled = true; btn.textContent = 'Buscando...';
 
+    // Intentar SSE primero, fallback a POST normal
     try {
-      const res = await fetch(`${MK_API}/api/scrape`, {
+      const res = await fetch(`${MK_API}/api/scrape-stream`, {
         method: 'POST',
-        headers: { 'Content-Type':'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url })
       });
-      const data = await res.json();
-      if (!data.success) {
-        al.textContent = data.error || 'No pudimos obtener el producto.';
-        al.style.display = 'block';
-        document.getElementById('mk-welcome').style.display = ''; return;
+
+      if (!res.ok || !res.headers.get('content-type')?.includes('text/event-stream')) {
+        // Fallback a POST normal
+        await mkBuscarClassic(url);
+        return;
       }
-      mkData = data;
-      mkRender(data);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      mkData = { success: false, url: url, images: [], color_variants: [] };
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        // Parsear eventos SSE del buffer
+        const events = buffer.split('\n\n');
+        buffer = events.pop(); // último fragmento incompleto
+
+        for (const evt of events) {
+          if (!evt.trim()) continue;
+          let eventType = 'message', eventData = '';
+          for (const line of evt.split('\n')) {
+            if (line.startsWith('event: ')) eventType = line.slice(7).trim();
+            if (line.startsWith('data: ')) eventData = line.slice(6);
+          }
+          if (!eventData) continue;
+
+          try {
+            const payload = JSON.parse(eventData);
+
+            if (eventType === 'basic') {
+              loadMsg.textContent = 'Obteniendo imágenes...';
+              Object.assign(mkData, payload);
+              mkRenderBasic(mkData);
+            }
+            else if (eventType === 'images') {
+              loadMsg.textContent = 'Cargando variantes...';
+              mkData.images = payload.images || [];
+              mkRenderImages(mkData);
+            }
+            else if (eventType === 'variants') {
+              mkData.color_variants = payload.color_variants || [];
+              mkRenderVariants(mkData);
+            }
+            else if (eventType === 'complete') {
+              mkData = payload;
+              mkData.success = true;
+              // Render final completo
+              mkRenderFinal(mkData);
+            }
+            else if (eventType === 'error') {
+              al.textContent = payload.error || 'Error al obtener producto.';
+              al.style.display = 'block';
+              document.getElementById('mk-welcome').style.display = '';
+            }
+          } catch(e) { console.warn('SSE parse error:', e); }
+        }
+      }
     } catch(e) {
-      console.error('mkBuscar error:', e);
-      al.textContent = 'Error: ' + (e.message || 'Conexión fallida') + '. Intenta de nuevo.';
-      al.style.display = 'block';
-      document.getElementById('mk-welcome').style.display = '';
+      console.warn('SSE failed, trying classic:', e);
+      try { await mkBuscarClassic(url); } catch(e2) {
+        console.error('mkBuscar error:', e2);
+        al.textContent = 'Error: ' + (e2.message || 'Conexión fallida') + '. Intenta de nuevo.';
+        al.style.display = 'block';
+        document.getElementById('mk-welcome').style.display = '';
+      }
     } finally {
       document.getElementById('mk-loading').classList.remove('visible');
       btn.disabled = false; btn.textContent = 'Buscar Producto';
     }
   }
+
+  /* ── Fallback clásico (POST normal) ── */
+  async function mkBuscarClassic(url) {
+    const al = document.getElementById('mk-alert');
+    const res = await fetch(`${MK_API}/api/scrape`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ url })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      al.textContent = data.error || 'No pudimos obtener el producto.';
+      al.style.display = 'block';
+      document.getElementById('mk-welcome').style.display = ''; return;
+    }
+    mkData = data;
+    mkRenderBasic(data);
+    mkRenderImages(data);
+    mkRenderVariants(data);
+    mkRenderFinal(data);
+  }
+
   document.getElementById('mk-url').addEventListener('keydown', e => { if (e.key === 'Enter') mkBuscar(); });
 
-  /* ── Render ── */
-  function mkRender(d) {
+  /* ═══════ RENDER PROGRESIVO ═══════ */
+
+  /* ── Fase 1: Info básica ── */
+  function mkRenderBasic(d) {
     document.getElementById('mk-brand').textContent = d.brand || '';
     document.getElementById('mk-title').textContent = d.name || '';
 
-    // Rating
     const ratingEl = document.getElementById('mk-rating');
     if (d.rating) {
       const full = Math.floor(d.rating);
@@ -484,48 +566,35 @@
       ratingEl.style.display = '';
     } else { ratingEl.style.display = 'none'; }
 
-    // Precio inline
     document.getElementById('mk-price-inline').textContent = d.price || '';
 
-      // Detectar si variantes son tamaños (no colores)
-      const isSize = (d.color_variants || []).some(v => /oz|ml|g\b|fl/i.test(v.label || ''));
+    // Categoría automática
+    const cat = (d.category || '').toLowerCase();
+    const catSel = document.getElementById('mk-category');
+    if (cat.includes('skin') || cat.includes('piel')) catSel.value = 'Cuidado de la Piel';
+    else if (cat.includes('hair') || cat.includes('cabel')) catSel.value = 'Cabello';
+    else if (cat.includes('fragr') || cat.includes('perfum')) catSel.value = 'Fragancia';
+    else catSel.value = 'Maquillaje';
+
+    // Fecha entrega
+    const arr = new Date(); arr.setDate(arr.getDate() + 21);
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    document.getElementById('mk-arrival').textContent = `${arr.getDate()} de ${meses[arr.getMonth()]} del ${arr.getFullYear()}`;
+
+    mkQtyVal = 1; document.getElementById('mk-qty').textContent = '1';
+    mkRecalc();
+    // Mostrar producto inmediatamente con lo que hay
+    document.getElementById('mk-product').classList.add('visible');
+    document.getElementById('mk-welcome').style.display = 'none';
+  }
+
+  /* ── Fase 2: Imágenes ── */
+  function mkRenderImages(d) {
     const mainImg = document.getElementById('mk-main-img');
     const gThumbs = document.getElementById('mk-gallery-thumbs');
-    const swRow   = document.getElementById('mk-swatches-row');
-    gThumbs.innerHTML = ''; swRow.innerHTML = '';
+    const imgs = d.images || [];
+    gThumbs.innerHTML = '';
 
-    const variants = d.color_variants || [];
-    const imgs     = d.images || [];
-
-    /**
-     * Convierte una URL de swatch (+sw) en la imagen completa del SKU.
-     * Sephora usa: /productimages/sku/s{SKUID}+sw.jpg  → swatch
-     *              /productimages/sku/s{SKUID}.jpg      → imagen completa
-     * Si no tiene +sw, devuelve la URL tal cual.
-     */
-    function mkSwatchToFull(swatchUrl) {
-      if (!swatchUrl) return '';
-      // Quitar +sw para obtener la imagen completa del SKU
-      return swatchUrl.replace(/\+sw/gi, '');
-    }
-
-    /**
-     * Muestra una imagen en el main, con fallback al swatch directo si falla.
-     */
-    function mkShowImage(url, fallbackUrl) {
-      mainImg.onerror = function() {
-        // Si la imagen completa falla, mostrar swatch expandido o primera imagen
-        mainImg.onerror = null;
-        if (fallbackUrl && fallbackUrl !== url) {
-          mainImg.src = fallbackUrl;
-        } else if (imgs.length > 0) {
-          mainImg.src = imgs[0];
-        }
-      };
-      mainImg.src = url;
-    }
-
-    // ── Galería thumbnails verticales ──
     if (imgs.length > 0) {
       mainImg.src = imgs[0];
       document.getElementById('mk-img-count').textContent = imgs.length + ' fotos';
@@ -543,30 +612,70 @@
         gThumbs.appendChild(t);
       });
     }
+  }
+
+  /* ── Fase 3: Variantes ── */
+  function mkRenderVariants(d) {
+    const variants = d.color_variants || [];
+    const imgs = d.images || [];
+    const mainImg = document.getElementById('mk-main-img');
+    const gThumbs = document.getElementById('mk-gallery-thumbs');
+    const swRow = document.getElementById('mk-swatches-row');
+    swRow.innerHTML = '';
+
+    // Detectar si son tamaños
+    const isSize = variants.some(v => /oz|ml|g\b|fl/i.test(v.label || ''));
+
+    /**
+     * Convierte swatch URL o SKU image a imagen completa -main-zoom
+     */
+    function mkToFullImage(url) {
+      if (!url) return '';
+      // Si ya es -main-zoom, devolver tal cual
+      if (url.includes('-main-zoom')) return url;
+      // Si es swatch (+sw), convertir: s2925568+sw.jpg → s2925568-main-zoom.jpg
+      if (url.includes('+sw')) {
+        return url.replace(/\+sw\.[^.]+$/, '-main-zoom.jpg');
+      }
+      // Si es otra URL de SKU sin sufijo, intentar agregar -main-zoom
+      const m = url.match(/\/s(\d+)\./);
+      if (m) {
+        return `https://www.sephora.com/productimages/sku/s${m[1]}-main-zoom.jpg`;
+      }
+      return url;
+    }
+
+    function mkShowImage(url, fallbackUrl) {
+      mainImg.onerror = function() {
+        mainImg.onerror = null;
+        if (fallbackUrl && fallbackUrl !== url) mainImg.src = fallbackUrl;
+        else if (imgs.length > 0) mainImg.src = imgs[0];
+      };
+      mainImg.src = url;
+    }
 
     // ── Swatches circulares ──
-    if (variants.length > 0 && variants.some(v => v.image)) {
+    const hasSwatchImages = variants.some(v => v.swatch || v.image);
+    if (variants.length > 0 && hasSwatchImages) {
       swRow.style.display = 'flex';
       variants.forEach((v, i) => {
-        if (!v.image) return;
+        const swatchSrc = v.swatch || v.image;
+        if (!swatchSrc) return;
         const c = document.createElement('div');
         c.className = 'mk-swatch-circle' + (v.selected?' active':'');
         const im = document.createElement('img');
-        im.src = v.image; im.className = 'mk-swatch-img'; im.loading = 'lazy';
+        im.src = swatchSrc; im.className = 'mk-swatch-img'; im.loading = 'lazy';
         const nm = document.createElement('span');
         nm.className = 'mk-swatch-name';
         nm.textContent = (v.label||'').split(' ').slice(0,2).join(' ');
         c.appendChild(im); c.appendChild(nm);
         c.onclick = () => {
-          // Intentar mostrar imagen completa del SKU, con fallback al swatch
-          const fullUrl = mkSwatchToFull(v.image);
-          mkShowImage(fullUrl, v.image);
+          const fullUrl = mkToFullImage(v.image || swatchSrc);
+          mkShowImage(fullUrl, swatchSrc);
           swRow.querySelectorAll('.mk-swatch-circle').forEach(x => x.classList.remove('active'));
           c.classList.add('active');
           document.querySelectorAll('.mk-tone').forEach((t,idx) => t.classList.toggle('picked', idx===i));
-          // Quitar active de thumbnails de galería
           gThumbs.querySelectorAll('.mk-gallery-thumb').forEach(x => x.classList.remove('active'));
-          // Actualizar precio si la variante tiene precio propio
           if (v.price && v.price > 0) {
             mkData.price_numeric = v.price;
             document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2);
@@ -589,7 +698,6 @@
         const ch = document.createElement('div');
         let lbl = (v.label || `Tono ${i+1}`).replace(/^Select\s*/i, '');
         ch.className = 'mk-tone' + (v.selected?' picked':'') + (v.out_of_stock?' oos':'');
-        // Mostrar precio si la variante lo tiene
         if (v.price && v.price > 0) {
           ch.innerHTML = lbl + ' <span class="mk-variant-price">$' + v.price.toFixed(2) + '</span>';
         } else {
@@ -600,13 +708,12 @@
             tg.querySelectorAll('.mk-tone').forEach(x => x.classList.remove('picked'));
             ch.classList.add('picked');
             swRow.querySelectorAll('.mk-swatch-circle').forEach((c,idx) => c.classList.toggle('active',idx===i));
-            // Quitar active de thumbnails de galería
             gThumbs.querySelectorAll('.mk-gallery-thumb').forEach(x => x.classList.remove('active'));
+            // Mostrar imagen completa del SKU
             if (v.image) {
-              const fullUrl = mkSwatchToFull(v.image);
-              mkShowImage(fullUrl, v.image);
+              const fullUrl = mkToFullImage(v.image);
+              mkShowImage(fullUrl, v.swatch || v.image);
             }
-            // Actualizar precio si la variante tiene precio propio
             if (v.price && v.price > 0) {
               mkData.price_numeric = v.price;
               document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2);
@@ -617,35 +724,21 @@
         }
         tg.appendChild(ch);
       });
-      // Color/Size label
       const sel = variants.find(v => v.selected);
       if (sel) {
         mkUpdateColorLabel(sel.label, isSize);
-        // Si la variante seleccionada tiene precio, usarlo
         if (sel.price && sel.price > 0) {
           mkData.price_numeric = sel.price;
           document.getElementById('mk-price-inline').textContent = '$' + sel.price.toFixed(2);
         }
       }
     } else { tw.style.display = 'none'; }
+  }
 
-    // Fecha entrega
-    const arr = new Date(); arr.setDate(arr.getDate() + 21);
-    const m = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-    document.getElementById('mk-arrival').textContent = `${arr.getDate()} de ${m[arr.getMonth()]} del ${arr.getFullYear()}`;
-
-    // Categoría automática
-    const cat = (d.category || '').toLowerCase();
-    const catSel = document.getElementById('mk-category');
-    if (cat.includes('skin') || cat.includes('piel')) catSel.value = 'Cuidado de la Piel';
-    else if (cat.includes('hair') || cat.includes('cabel')) catSel.value = 'Cabello';
-    else if (cat.includes('fragr') || cat.includes('perfum')) catSel.value = 'Fragancia';
-    else catSel.value = 'Maquillaje';
-
-    mkQtyVal = 1; document.getElementById('mk-qty').textContent = '1';
+  /* ── Fase final: datos completos ── */
+  function mkRenderFinal(d) {
+    mkData = d;
     mkRecalc();
-    document.getElementById('mk-product').classList.add('visible');
-    document.getElementById('mk-welcome').style.display = 'none';
   }
 
   function mkUpdateColorLabel(lbl, isSize) {
@@ -664,7 +757,7 @@
 
     const prod   = price * q;
     const tax    = prod * MK_TAX_RATE;
-    const sShip  = 0; // Sephora free shipping
+    const sShip  = 0;
     const usa    = prod + tax + sShip;
     const intl   = MK_INTL_SHIP;
     const imp    = 0;
