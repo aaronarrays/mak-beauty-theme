@@ -469,6 +469,9 @@
     btn.disabled = true; btn.textContent = 'Buscando...';
     mkVariantImagesCache = {};
 
+    let gotProduct = false; // safety flag
+    let gotError = false;
+
     try {
       const res = await fetch(`${MK_API}/api/scrape-stream`, {
         method: 'POST',
@@ -476,7 +479,17 @@
         body: JSON.stringify({ url })
       });
       if (!res.ok || !res.headers.get('content-type')?.includes('text/event-stream')) {
-        await mkBuscarClassic(url); return;
+        // Intentar respuesta JSON directa (no SSE)
+        try {
+          const data = await res.json();
+          if (data && data.error) {
+            al.textContent = data.error;
+            al.style.display = 'block'; gotError = true;
+          }
+        } catch(_) {}
+        if (!gotError) await mkBuscarClassic(url);
+        gotProduct = document.getElementById('mk-product').classList.contains('visible');
+        return;
       }
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -503,6 +516,7 @@
               loadMsg.textContent = 'Obteniendo imágenes...';
               Object.assign(mkData, payload);
               mkRenderBasic(mkData);
+              gotProduct = true;
             } else if (eventType === 'images') {
               loadMsg.textContent = 'Cargando variantes...';
               mkData.images = payload.images || [];
@@ -513,24 +527,35 @@
             } else if (eventType === 'complete') {
               mkData = payload; mkData.success = true;
               mkRecalc();
+              gotProduct = true;
             } else if (eventType === 'error') {
               al.textContent = payload.error || 'Error al obtener producto.';
               al.style.display = 'block';
-              document.getElementById('mk-welcome').style.display = '';
+              gotError = true;
             }
           } catch(e) { console.warn('SSE parse:', e); }
         }
       }
     } catch(e) {
       console.warn('SSE failed:', e);
-      try { await mkBuscarClassic(url); } catch(e2) {
-        al.textContent = 'Error: ' + (e2.message || 'Conexión fallida');
-        al.style.display = 'block';
-        document.getElementById('mk-welcome').style.display = '';
+      if (!gotProduct) {
+        try { await mkBuscarClassic(url); gotProduct = document.getElementById('mk-product').classList.contains('visible'); } catch(e2) {
+          al.textContent = 'Error de conexión. El servidor puede estar iniciando, intenta en 30 segundos.';
+          al.style.display = 'block';
+          gotError = true;
+        }
       }
     } finally {
       document.getElementById('mk-loading').classList.remove('visible');
       btn.disabled = false; btn.textContent = 'Buscar Producto';
+      // SAFETY NET: si no se renderizó nada, re-mostrar welcome
+      if (!gotProduct) {
+        document.getElementById('mk-welcome').style.display = '';
+        if (!gotError) {
+          al.textContent = 'No se pudo conectar con el servidor. Puede estar iniciando — intenta de nuevo en unos segundos.';
+          al.style.display = 'block';
+        }
+      }
     }
   }
 
