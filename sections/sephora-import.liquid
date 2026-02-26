@@ -128,23 +128,51 @@
     color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 20px;
   }
 
-  /* — Swatches circulares — */
-  .mk-swatches-row {
-    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
-    margin-bottom: 20px; padding: 12px 0; border-top: 1px solid var(--mk-border);
-    border-bottom: 1px solid var(--mk-border);
+  /* — Gallery loading overlay — */
+  .mk-gallery-main { position: relative; }
+  .mk-gallery-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.88); backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center;
+    flex-direction: column; gap: 10px; border-radius: 14px; z-index: 5;
   }
-  .mk-swatch-circle { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
-  .mk-swatch-img {
-    width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
-    border: 2px solid var(--mk-border); transition: all 0.2s;
+  .mk-gallery-overlay.visible { display: flex; }
+  .mk-gallery-overlay .mk-go-spinner {
+    width: 36px; height: 36px; border: 3px solid var(--mk-pink-soft);
+    border-top-color: var(--mk-pink-dark); border-radius: 50%;
+    animation: mk-spin 0.6s linear infinite;
   }
-  .mk-swatch-circle:hover .mk-swatch-img,
-  .mk-swatch-circle.active .mk-swatch-img { border-color: var(--mk-pink-dark); transform: scale(1.1); }
-  .mk-swatch-name {
-    font-size: 9px; color: var(--mk-text-muted); text-align: center;
-    max-width: 50px; line-height: 1.2; word-break: break-word;
+  .mk-gallery-overlay .mk-go-text {
+    font-size: 12px; color: var(--mk-text-muted); font-weight: 500;
   }
+
+  /* — Unified variant grid (swatches + chips combined) — */
+  .mk-variants-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    margin-bottom: 18px; max-height: 340px; overflow-y: auto;
+    scrollbar-width: thin; scrollbar-color: var(--mk-pink-soft) transparent;
+  }
+  .mk-variants-grid::-webkit-scrollbar { width: 4px; }
+  .mk-variants-grid::-webkit-scrollbar-thumb { background: var(--mk-pink-soft); border-radius: 4px; }
+  .mk-variant-card {
+    border: 2px solid var(--mk-border); border-radius: 12px;
+    padding: 10px 6px; text-align: center; cursor: pointer;
+    transition: all 0.2s; background: var(--mk-white);
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    min-height: 60px; justify-content: center;
+  }
+  .mk-variant-card:hover { border-color: var(--mk-pink); background: var(--mk-pink-light); }
+  .mk-variant-card.picked { border-color: var(--mk-pink-dark); background: var(--mk-pink-light); box-shadow: 0 0 0 1px var(--mk-pink-dark); }
+  .mk-variant-card.oos { opacity: 0.4; text-decoration: line-through; cursor: not-allowed; }
+  .mk-variant-card.loading { pointer-events: none; opacity: 0.6; }
+  .mk-vc-img {
+    width: 38px; height: 38px; border-radius: 50%; object-fit: cover;
+    border: 2px solid var(--mk-border); flex-shrink: 0;
+  }
+  .mk-variant-card.picked .mk-vc-img { border-color: var(--mk-pink-dark); }
+  .mk-vc-label { font-size: 12px; font-weight: 600; line-height: 1.25; color: var(--mk-text); }
+  .mk-vc-desc { font-size: 10px; color: var(--mk-text-muted); line-height: 1.2; }
+  .mk-vc-price { font-size: 11px; color: var(--mk-pink-dark); font-weight: 700; }
 
   /* — Info — */
   .mk-brand {
@@ -172,17 +200,7 @@
   }
   .mk-field:focus { border-color: var(--mk-pink); outline: none; }
 
-  /* — Variantes chips — */
-  .mk-tones-wrap { margin-bottom: 18px; }
-  .mk-tones { display: flex; flex-wrap: wrap; gap: 8px; }
-  .mk-tone {
-    border: 2px solid var(--mk-border); border-radius: 10px; padding: 8px 14px;
-    text-align: center; cursor: pointer; font-size: 12px; font-family: inherit;
-    font-weight: 500; background: var(--mk-white); transition: all 0.2s;
-  }
-  .mk-tone:hover { border-color: var(--mk-pink); background: var(--mk-pink-light); }
-  .mk-tone.picked { border-color: var(--mk-pink-dark); background: var(--mk-pink-light); color: var(--mk-pink-dark); font-weight: 600; }
-  .mk-tone.oos { opacity: 0.4; text-decoration: line-through; cursor: not-allowed; }
+  /* (variant chips merged into mk-variants-grid above) */
 
   /* ═══════ PANEL DERECHO ═══════ */
   .mk-summary { position: sticky; top: 20px; }
@@ -323,10 +341,12 @@
         <div class="mk-gallery-main">
           <img id="mk-main-img" src="" alt="Producto">
           <span class="mk-img-count" id="mk-img-count"></span>
+          <div class="mk-gallery-overlay" id="mk-gallery-overlay">
+            <div class="mk-go-spinner"></div>
+            <span class="mk-go-text">Cargando imágenes...</span>
+          </div>
         </div>
       </div>
-
-      <div class="mk-swatches-row" id="mk-swatches-row" style="display:none;"></div>
 
       <div class="mk-brand" id="mk-brand"></div>
       <h3 class="mk-title" id="mk-title"></h3>
@@ -334,9 +354,9 @@
       <div class="mk-price-inline" id="mk-price-inline"></div>
       <div class="mk-color-label" id="mk-color-label" style="display:none;"></div>
 
-      <div class="mk-tones-wrap" id="mk-tones-wrap" style="display:none;">
-        <label class="mk-field-label" id="mk-tones-label">Tono / Variante</label>
-        <div class="mk-tones" id="mk-tones"></div>
+      <div id="mk-variants-wrap" style="display:none;">
+        <label class="mk-field-label" id="mk-variants-label">Tono / Variante</label>
+        <div class="mk-variants-grid" id="mk-variants-grid"></div>
       </div>
 
       <label class="mk-field-label">Categoría</label>
@@ -420,16 +440,18 @@
   //  CONFIGURACIÓN
   // ═══════════════════════════════════════════════════════════════
   const MK_API = 'https://web-production-56b31.up.railway.app';
-  const MK_RATE       = 3.45;    // USD → PEN
-  const MK_TAX_RATE   = 0.07;    // 7 % sales tax USA
-  const MK_INTL_SHIP  = 20.00;   // envío int. base USD
-  const MK_COMMISSION = 0.15;    // 15 % procesamiento
+  const MK_RATE       = 3.45;
+  const MK_TAX_RATE   = 0.07;
+  const MK_INTL_SHIP  = 20.00;
+  const MK_COMMISSION = 0.15;
   const MK_SYMBOL     = 'S/';
   const MK_VARIANT_ID = 51967182143801;
 
   let mkData = null, mkQtyVal = 1;
+  let mkVariantImagesCache = {};  // { skuId: [urls] }
+  let mkCurrentFetchController = null;
 
-  /* ── Buscar con streaming progresivo ── */
+  /* ═══════ BUSCAR CON SSE ═══════ */
   async function mkBuscar() {
     const url = document.getElementById('mk-url').value.trim();
     const al  = document.getElementById('mk-alert');
@@ -445,21 +467,17 @@
     document.getElementById('mk-welcome').style.display = 'none';
     document.getElementById('mk-product').classList.remove('visible');
     btn.disabled = true; btn.textContent = 'Buscando...';
+    mkVariantImagesCache = {};
 
-    // Intentar SSE primero, fallback a POST normal
     try {
       const res = await fetch(`${MK_API}/api/scrape-stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url })
       });
-
       if (!res.ok || !res.headers.get('content-type')?.includes('text/event-stream')) {
-        // Fallback a POST normal
-        await mkBuscarClassic(url);
-        return;
+        await mkBuscarClassic(url); return;
       }
-
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
@@ -469,11 +487,8 @@
         const { done, value } = await reader.read();
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
-
-        // Parsear eventos SSE del buffer
         const events = buffer.split('\n\n');
-        buffer = events.pop(); // último fragmento incompleto
-
+        buffer = events.pop();
         for (const evt of events) {
           if (!evt.trim()) continue;
           let eventType = 'message', eventData = '';
@@ -482,43 +497,34 @@
             if (line.startsWith('data: ')) eventData = line.slice(6);
           }
           if (!eventData) continue;
-
           try {
             const payload = JSON.parse(eventData);
-
             if (eventType === 'basic') {
               loadMsg.textContent = 'Obteniendo imágenes...';
               Object.assign(mkData, payload);
               mkRenderBasic(mkData);
-            }
-            else if (eventType === 'images') {
+            } else if (eventType === 'images') {
               loadMsg.textContent = 'Cargando variantes...';
               mkData.images = payload.images || [];
-              mkRenderImages(mkData);
-            }
-            else if (eventType === 'variants') {
+              mkRenderImages(mkData.images);
+            } else if (eventType === 'variants') {
               mkData.color_variants = payload.color_variants || [];
               mkRenderVariants(mkData);
-            }
-            else if (eventType === 'complete') {
-              mkData = payload;
-              mkData.success = true;
-              // Render final completo
-              mkRenderFinal(mkData);
-            }
-            else if (eventType === 'error') {
+            } else if (eventType === 'complete') {
+              mkData = payload; mkData.success = true;
+              mkRecalc();
+            } else if (eventType === 'error') {
               al.textContent = payload.error || 'Error al obtener producto.';
               al.style.display = 'block';
               document.getElementById('mk-welcome').style.display = '';
             }
-          } catch(e) { console.warn('SSE parse error:', e); }
+          } catch(e) { console.warn('SSE parse:', e); }
         }
       }
     } catch(e) {
-      console.warn('SSE failed, trying classic:', e);
+      console.warn('SSE failed:', e);
       try { await mkBuscarClassic(url); } catch(e2) {
-        console.error('mkBuscar error:', e2);
-        al.textContent = 'Error: ' + (e2.message || 'Conexión fallida') + '. Intenta de nuevo.';
+        al.textContent = 'Error: ' + (e2.message || 'Conexión fallida');
         al.style.display = 'block';
         document.getElementById('mk-welcome').style.display = '';
       }
@@ -528,12 +534,10 @@
     }
   }
 
-  /* ── Fallback clásico (POST normal) ── */
   async function mkBuscarClassic(url) {
     const al = document.getElementById('mk-alert');
     const res = await fetch(`${MK_API}/api/scrape`, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json' },
+      method: 'POST', headers: { 'Content-Type':'application/json' },
       body: JSON.stringify({ url })
     });
     const data = await res.json();
@@ -544,227 +548,220 @@
     }
     mkData = data;
     mkRenderBasic(data);
-    mkRenderImages(data);
+    mkRenderImages(data.images || []);
     mkRenderVariants(data);
-    mkRenderFinal(data);
+    mkRecalc();
   }
 
   document.getElementById('mk-url').addEventListener('keydown', e => { if (e.key === 'Enter') mkBuscar(); });
 
   /* ═══════ RENDER PROGRESIVO ═══════ */
 
-  /* ── Fase 1: Info básica ── */
   function mkRenderBasic(d) {
     document.getElementById('mk-brand').textContent = d.brand || '';
     document.getElementById('mk-title').textContent = d.name || '';
-
     const ratingEl = document.getElementById('mk-rating');
     if (d.rating) {
-      const full = Math.floor(d.rating);
-      const half = d.rating - full >= 0.3 ? '½' : '';
-      ratingEl.innerHTML = `<span class="stars">${'★'.repeat(full)}${half}${'☆'.repeat(5 - full - (half?1:0))}</span> ${d.rating} · ${d.review_count || 0} reseñas`;
+      const full = Math.floor(d.rating), half = d.rating - full >= 0.3 ? '½' : '';
+      ratingEl.innerHTML = `<span class="stars">${'★'.repeat(full)}${half}${'☆'.repeat(5-full-(half?1:0))}</span> ${d.rating} · ${d.review_count||0} reseñas`;
       ratingEl.style.display = '';
-    } else { ratingEl.style.display = 'none'; }
-
+    } else ratingEl.style.display = 'none';
     document.getElementById('mk-price-inline').textContent = d.price || '';
-
-    // Categoría automática
-    const cat = (d.category || '').toLowerCase();
-    const catSel = document.getElementById('mk-category');
-    if (cat.includes('skin') || cat.includes('piel')) catSel.value = 'Cuidado de la Piel';
-    else if (cat.includes('hair') || cat.includes('cabel')) catSel.value = 'Cabello';
-    else if (cat.includes('fragr') || cat.includes('perfum')) catSel.value = 'Fragancia';
-    else catSel.value = 'Maquillaje';
-
-    // Fecha entrega
+    const cat = (d.category||'').toLowerCase();
+    const cs = document.getElementById('mk-category');
+    if (cat.includes('skin')||cat.includes('piel')) cs.value = 'Cuidado de la Piel';
+    else if (cat.includes('hair')||cat.includes('cabel')) cs.value = 'Cabello';
+    else if (cat.includes('fragr')||cat.includes('perfum')) cs.value = 'Fragancia';
+    else cs.value = 'Maquillaje';
     const arr = new Date(); arr.setDate(arr.getDate() + 21);
-    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-    document.getElementById('mk-arrival').textContent = `${arr.getDate()} de ${meses[arr.getMonth()]} del ${arr.getFullYear()}`;
-
+    const m = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    document.getElementById('mk-arrival').textContent = `${arr.getDate()} de ${m[arr.getMonth()]} del ${arr.getFullYear()}`;
     mkQtyVal = 1; document.getElementById('mk-qty').textContent = '1';
     mkRecalc();
-    // Mostrar producto inmediatamente con lo que hay
     document.getElementById('mk-product').classList.add('visible');
     document.getElementById('mk-welcome').style.display = 'none';
   }
 
-  /* ── Fase 2: Imágenes ── */
-  function mkRenderImages(d) {
+  /* ── Imágenes de galería ── */
+  function mkRenderImages(imgs) {
     const mainImg = document.getElementById('mk-main-img');
     const gThumbs = document.getElementById('mk-gallery-thumbs');
-    const imgs = d.images || [];
     gThumbs.innerHTML = '';
-
-    if (imgs.length > 0) {
-      mainImg.src = imgs[0];
-      document.getElementById('mk-img-count').textContent = imgs.length + ' fotos';
-      imgs.forEach((url, i) => {
-        const t = document.createElement('img');
-        t.src = url; t.className = 'mk-gallery-thumb' + (i===0?' active':'');
-        t.loading = 'lazy';
-        t.onclick = () => {
-          mainImg.onerror = null;
-          mainImg.src = url;
-          gThumbs.querySelectorAll('.mk-gallery-thumb').forEach(x => x.classList.remove('active'));
-          t.classList.add('active');
-        };
-        t.onerror = function(){ this.style.display='none'; };
-        gThumbs.appendChild(t);
-      });
-    }
+    if (!imgs || imgs.length === 0) return;
+    mainImg.src = imgs[0];
+    document.getElementById('mk-img-count').textContent = imgs.length + ' fotos';
+    imgs.forEach((url, i) => {
+      const t = document.createElement('img');
+      t.src = url; t.className = 'mk-gallery-thumb' + (i===0?' active':'');
+      t.loading = 'lazy';
+      t.onclick = () => {
+        mainImg.onerror = null; mainImg.src = url;
+        gThumbs.querySelectorAll('.mk-gallery-thumb').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+      };
+      t.onerror = function(){ this.style.display='none'; };
+      gThumbs.appendChild(t);
+    });
   }
 
-  /* ── Fase 3: Variantes ── */
+  /* ── Variantes (grid unificado) ── */
   function mkRenderVariants(d) {
     const variants = d.color_variants || [];
-    const imgs = d.images || [];
-    const mainImg = document.getElementById('mk-main-img');
-    const gThumbs = document.getElementById('mk-gallery-thumbs');
-    const swRow = document.getElementById('mk-swatches-row');
-    swRow.innerHTML = '';
+    const grid = document.getElementById('mk-variants-grid');
+    const wrap = document.getElementById('mk-variants-wrap');
+    grid.innerHTML = '';
+    if (variants.length === 0) { wrap.style.display = 'none'; return; }
 
-    // Detectar si son tamaños
-    const isSize = variants.some(v => /oz|ml|g\b|fl/i.test(v.label || ''));
+    const isSize = variants.some(v => /oz|ml|g\b|fl/i.test(v.label||''));
+    wrap.style.display = '';
+    document.getElementById('mk-variants-label').textContent = isSize ? 'Tamaño / Presentación' : 'Tono / Variante';
 
-    /**
-     * Convierte swatch URL o SKU image a imagen completa -main-zoom
-     */
-    function mkToFullImage(url) {
-      if (!url) return '';
-      // Si ya es -main-zoom, devolver tal cual
-      if (url.includes('-main-zoom')) return url;
-      // Si es swatch (+sw), convertir: s2925568+sw.jpg → s2925568-main-zoom.jpg
-      if (url.includes('+sw')) {
-        return url.replace(/\+sw\.[^.]+$/, '-main-zoom.jpg');
+    // Ajustar columnas según cantidad
+    if (variants.length <= 4) grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    else grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+
+    variants.forEach((v, i) => {
+      const card = document.createElement('div');
+      const lbl = (v.label||`Variante ${i+1}`).replace(/^Select\s*/i,'');
+      card.className = 'mk-variant-card' + (v.selected?' picked':'') + (v.out_of_stock?' oos':'');
+      card.dataset.idx = i;
+
+      // Contenido de la card
+      let html = '';
+      const swatchSrc = v.swatch || v.image;
+      if (swatchSrc) {
+        html += `<img class="mk-vc-img" src="${swatchSrc}" loading="lazy" onerror="this.style.display='none'">`;
       }
-      // Si es otra URL de SKU sin sufijo, intentar agregar -main-zoom
-      const m = url.match(/\/s(\d+)\./);
-      if (m) {
-        return `https://www.sephora.com/productimages/sku/s${m[1]}-main-zoom.jpg`;
+      // Separar nombre y descripción heurísticamente
+      const words = lbl.split(' ');
+      let name = lbl, desc = '';
+      if (words.length > 2) {
+        name = words.slice(0,2).join(' ');
+        desc = words.slice(2).join(' ');
       }
-      return url;
+      html += `<span class="mk-vc-label">${name}</span>`;
+      if (desc) html += `<span class="mk-vc-desc">${desc}</span>`;
+      if (v.price && v.price > 0) html += `<span class="mk-vc-price">$${v.price.toFixed(2)}</span>`;
+      card.innerHTML = html;
+
+      if (!v.out_of_stock) {
+        card.onclick = () => mkSelectVariant(i);
+      }
+      grid.appendChild(card);
+    });
+
+    // Seleccionar la variante activa
+    const sel = variants.find(v => v.selected);
+    if (sel) {
+      mkUpdateColorLabel(sel.label, isSize);
+      if (sel.price && sel.price > 0) {
+        mkData.price_numeric = sel.price;
+        document.getElementById('mk-price-inline').textContent = '$' + sel.price.toFixed(2);
+      }
     }
-
-    function mkShowImage(url, fallbackUrl) {
-      mainImg.onerror = function() {
-        mainImg.onerror = null;
-        if (fallbackUrl && fallbackUrl !== url) mainImg.src = fallbackUrl;
-        else if (imgs.length > 0) mainImg.src = imgs[0];
-      };
-      mainImg.src = url;
-    }
-
-    // ── Swatches circulares ──
-    const hasSwatchImages = variants.some(v => v.swatch || v.image);
-    if (variants.length > 0 && hasSwatchImages) {
-      swRow.style.display = 'flex';
-      variants.forEach((v, i) => {
-        const swatchSrc = v.swatch || v.image;
-        if (!swatchSrc) return;
-        const c = document.createElement('div');
-        c.className = 'mk-swatch-circle' + (v.selected?' active':'');
-        const im = document.createElement('img');
-        im.src = swatchSrc; im.className = 'mk-swatch-img'; im.loading = 'lazy';
-        const nm = document.createElement('span');
-        nm.className = 'mk-swatch-name';
-        nm.textContent = (v.label||'').split(' ').slice(0,2).join(' ');
-        c.appendChild(im); c.appendChild(nm);
-        c.onclick = () => {
-          const fullUrl = mkToFullImage(v.image || swatchSrc);
-          mkShowImage(fullUrl, swatchSrc);
-          swRow.querySelectorAll('.mk-swatch-circle').forEach(x => x.classList.remove('active'));
-          c.classList.add('active');
-          document.querySelectorAll('.mk-tone').forEach((t,idx) => t.classList.toggle('picked', idx===i));
-          gThumbs.querySelectorAll('.mk-gallery-thumb').forEach(x => x.classList.remove('active'));
-          if (v.price && v.price > 0) {
-            mkData.price_numeric = v.price;
-            document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2);
-          }
-          mkUpdateColorLabel(v.label, isSize);
-          mkRecalc();
-        };
-        im.onerror = function(){ c.style.display='none'; };
-        swRow.appendChild(c);
-      });
-    } else { swRow.style.display = 'none'; }
-
-    // ── Variantes chips ──
-    const tw = document.getElementById('mk-tones-wrap');
-    const tg = document.getElementById('mk-tones');
-    if (variants.length > 0) {
-      tw.style.display = ''; tg.innerHTML = '';
-      document.getElementById('mk-tones-label').textContent = isSize ? 'Tamaño / Presentación' : 'Tono / Variante';
-      variants.forEach((v, i) => {
-        const ch = document.createElement('div');
-        let lbl = (v.label || `Tono ${i+1}`).replace(/^Select\s*/i, '');
-        ch.className = 'mk-tone' + (v.selected?' picked':'') + (v.out_of_stock?' oos':'');
-        if (v.price && v.price > 0) {
-          ch.innerHTML = lbl + ' <span class="mk-variant-price">$' + v.price.toFixed(2) + '</span>';
-        } else {
-          ch.textContent = lbl;
-        }
-        if (!v.out_of_stock) {
-          ch.onclick = () => {
-            tg.querySelectorAll('.mk-tone').forEach(x => x.classList.remove('picked'));
-            ch.classList.add('picked');
-            swRow.querySelectorAll('.mk-swatch-circle').forEach((c,idx) => c.classList.toggle('active',idx===i));
-            gThumbs.querySelectorAll('.mk-gallery-thumb').forEach(x => x.classList.remove('active'));
-            // Mostrar imagen completa del SKU
-            if (v.image) {
-              const fullUrl = mkToFullImage(v.image);
-              mkShowImage(fullUrl, v.swatch || v.image);
-            }
-            if (v.price && v.price > 0) {
-              mkData.price_numeric = v.price;
-              document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2);
-            }
-            mkUpdateColorLabel(lbl, isSize);
-            mkRecalc();
-          };
-        }
-        tg.appendChild(ch);
-      });
-      const sel = variants.find(v => v.selected);
-      if (sel) {
-        mkUpdateColorLabel(sel.label, isSize);
-        if (sel.price && sel.price > 0) {
-          mkData.price_numeric = sel.price;
-          document.getElementById('mk-price-inline').textContent = '$' + sel.price.toFixed(2);
-        }
-      }
-    } else { tw.style.display = 'none'; }
   }
 
-  /* ── Fase final: datos completos ── */
-  function mkRenderFinal(d) {
-    mkData = d;
+  /* ── Seleccionar variante + scrape de imágenes ── */
+  async function mkSelectVariant(idx) {
+    const variants = mkData.color_variants || [];
+    const v = variants[idx];
+    if (!v || v.out_of_stock) return;
+
+    const isSize = variants.some(vr => /oz|ml|g\b|fl/i.test(vr.label||''));
+    const lbl = (v.label||'').replace(/^Select\s*/i,'');
+
+    // Marcar card activa
+    const grid = document.getElementById('mk-variants-grid');
+    grid.querySelectorAll('.mk-variant-card').forEach(c => c.classList.remove('picked'));
+    const card = grid.querySelector(`[data-idx="${idx}"]`);
+    if (card) card.classList.add('picked');
+
+    // Actualizar precio y label
+    if (v.price && v.price > 0) {
+      mkData.price_numeric = v.price;
+      document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2);
+    }
+    mkUpdateColorLabel(lbl, isSize);
     mkRecalc();
+
+    // Mostrar la imagen principal inmediata (main-zoom del SKU)
+    const mainImg = document.getElementById('mk-main-img');
+    if (v.image) {
+      const fullUrl = mkToFullImage(v.image);
+      mainImg.onerror = function() {
+        mainImg.onerror = null;
+        if (v.swatch) mainImg.src = v.swatch;
+      };
+      mainImg.src = fullUrl;
+    }
+
+    // Si no tiene sku_id, no podemos buscar más imágenes
+    if (!v.sku_id) return;
+
+    // ¿Ya tenemos las imágenes en cache local?
+    if (mkVariantImagesCache[v.sku_id]) {
+      mkRenderImages(mkVariantImagesCache[v.sku_id]);
+      return;
+    }
+
+    // Mostrar overlay de carga en galería
+    const overlay = document.getElementById('mk-gallery-overlay');
+    overlay.classList.add('visible');
+    if (card) card.classList.add('loading');
+
+    // Cancelar fetch anterior si existe
+    if (mkCurrentFetchController) {
+      try { mkCurrentFetchController.abort(); } catch(e) {}
+    }
+    mkCurrentFetchController = new AbortController();
+
+    try {
+      const res = await fetch(`${MK_API}/api/variant-images`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: mkData.url, sku_id: v.sku_id }),
+        signal: mkCurrentFetchController.signal
+      });
+      const data = await res.json();
+      if (data.success && data.images && data.images.length > 0) {
+        mkVariantImagesCache[v.sku_id] = data.images;
+        mkRenderImages(data.images);
+      }
+    } catch(e) {
+      if (e.name !== 'AbortError') console.warn('variant-images error:', e);
+    } finally {
+      overlay.classList.remove('visible');
+      if (card) card.classList.remove('loading');
+      mkCurrentFetchController = null;
+    }
+  }
+
+  /* ── Helpers de imagen ── */
+  function mkToFullImage(url) {
+    if (!url) return '';
+    if (url.includes('-main-zoom')) return url;
+    if (url.includes('+sw')) return url.replace(/\+sw\.[^.]+$/, '-main-zoom.jpg');
+    const m = url.match(/\/s(\d+)\./);
+    if (m) return `https://www.sephora.com/productimages/sku/s${m[1]}-main-zoom.jpg`;
+    return url;
   }
 
   function mkUpdateColorLabel(lbl, isSize) {
     const el = document.getElementById('mk-color-label');
     if (lbl) {
-      const prefix = isSize ? 'Tamaño' : 'Color';
-      el.innerHTML = `${prefix}: <strong>${lbl.replace(/^Select\s*/i,'')}</strong>`;
+      el.innerHTML = `${isSize?'Tamaño':'Color'}: <strong>${lbl.replace(/^Select\s*/i,'')}</strong>`;
       el.style.display = '';
-    } else { el.style.display = 'none'; }
+    } else el.style.display = 'none';
   }
 
   /* ── Recalcular precios ── */
   function mkRecalc() {
     const price = mkData ? (mkData.price_numeric || 0) : 0;
     const q = mkQtyVal;
-
-    const prod   = price * q;
-    const tax    = prod * MK_TAX_RATE;
-    const sShip  = 0;
-    const usa    = prod + tax + sShip;
-    const intl   = MK_INTL_SHIP;
-    const imp    = 0;
-    const traida = intl + imp;
-    const proc   = prod * MK_COMMISSION;
-    const usd    = usa + traida + proc;
-    const pen    = usd * MK_RATE;
+    const prod = price * q, tax = prod * MK_TAX_RATE, sShip = 0;
+    const usa = prod + tax + sShip, intl = MK_INTL_SHIP, imp = 0;
+    const traida = intl + imp, proc = prod * MK_COMMISSION;
+    const usd = usa + traida + proc, pen = usd * MK_RATE;
 
     document.getElementById('bd-prod').textContent      = `$ ${prod.toFixed(2)}`;
     document.getElementById('bd-tax').textContent        = `$ ${tax.toFixed(2)}`;
@@ -783,11 +780,13 @@
   function mkQty(d) { mkQtyVal = Math.max(1, mkQtyVal + d); document.getElementById('mk-qty').textContent = mkQtyVal; mkRecalc(); }
 
   function mkProps() {
-    const tone = document.querySelector('.mk-tone.picked');
+    const card = document.querySelector('.mk-variant-card.picked .mk-vc-label');
+    const desc = document.querySelector('.mk-variant-card.picked .mk-vc-desc');
+    const variantText = card ? (card.textContent + (desc ? ' ' + desc.textContent : '')) : 'N/A';
     return {
       '_Producto Sephora': mkData.name,
       '_Marca': mkData.brand || '',
-      '_Color/Variante': tone ? tone.textContent.trim() : 'N/A',
+      '_Color/Variante': variantText,
       '_Link Sephora': mkData.url,
       '_Precio USD': document.getElementById('bd-usd').textContent,
       '_Precio Total': document.getElementById('bd-pen').textContent,
