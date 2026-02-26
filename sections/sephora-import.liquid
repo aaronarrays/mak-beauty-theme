@@ -419,9 +419,9 @@
   //  CONFIGURACIÓN
   // ═══════════════════════════════════════════════════════════════
   const MK_API = 'https://overhuge-nondiscriminatively-ada.ngrok-free.dev';
-  const MK_RATE       = 3.75;    // USD → PEN
+  const MK_RATE       = 3.45;    // USD → PEN
   const MK_TAX_RATE   = 0.07;    // 7 % sales tax USA
-  const MK_INTL_SHIP  = 19.00;   // envío int. base USD
+  const MK_INTL_SHIP  = 20.00;   // envío int. base USD
   const MK_COMMISSION = 0.15;    // 15 % procesamiento
   const MK_SYMBOL     = 'S/';
   const MK_VARIANT_ID = 51967182143801;
@@ -493,6 +493,34 @@
     const variants = d.color_variants || [];
     const imgs     = d.images || [];
 
+    /**
+     * Convierte una URL de swatch (+sw) en la imagen completa del SKU.
+     * Sephora usa: /productimages/sku/s{SKUID}+sw.jpg  → swatch
+     *              /productimages/sku/s{SKUID}.jpg      → imagen completa
+     * Si no tiene +sw, devuelve la URL tal cual.
+     */
+    function mkSwatchToFull(swatchUrl) {
+      if (!swatchUrl) return '';
+      // Quitar +sw para obtener la imagen completa del SKU
+      return swatchUrl.replace(/\+sw/gi, '');
+    }
+
+    /**
+     * Muestra una imagen en el main, con fallback al swatch directo si falla.
+     */
+    function mkShowImage(url, fallbackUrl) {
+      mainImg.onerror = function() {
+        // Si la imagen completa falla, mostrar swatch expandido o primera imagen
+        mainImg.onerror = null;
+        if (fallbackUrl && fallbackUrl !== url) {
+          mainImg.src = fallbackUrl;
+        } else if (imgs.length > 0) {
+          mainImg.src = imgs[0];
+        }
+      };
+      mainImg.src = url;
+    }
+
     // ── Galería thumbnails verticales ──
     if (imgs.length > 0) {
       mainImg.src = imgs[0];
@@ -502,6 +530,7 @@
         t.src = url; t.className = 'mk-gallery-thumb' + (i===0?' active':'');
         t.loading = 'lazy';
         t.onclick = () => {
+          mainImg.onerror = null;
           mainImg.src = url;
           gThumbs.querySelectorAll('.mk-gallery-thumb').forEach(x => x.classList.remove('active'));
           t.classList.add('active');
@@ -525,10 +554,14 @@
         nm.textContent = (v.label||'').split(' ').slice(0,2).join(' ');
         c.appendChild(im); c.appendChild(nm);
         c.onclick = () => {
-          mainImg.src = v.image.replace('+sw','').replace('_swatch','_zoom');
+          // Intentar mostrar imagen completa del SKU, con fallback al swatch
+          const fullUrl = mkSwatchToFull(v.image);
+          mkShowImage(fullUrl, v.image);
           swRow.querySelectorAll('.mk-swatch-circle').forEach(x => x.classList.remove('active'));
           c.classList.add('active');
           document.querySelectorAll('.mk-tone').forEach((t,idx) => t.classList.toggle('picked', idx===i));
+          // Quitar active de thumbnails de galería
+          gThumbs.querySelectorAll('.mk-gallery-thumb').forEach(x => x.classList.remove('active'));
           mkUpdateColorLabel(v.label);
           mkRecalc();
         };
@@ -552,7 +585,12 @@
             tg.querySelectorAll('.mk-tone').forEach(x => x.classList.remove('picked'));
             ch.classList.add('picked');
             swRow.querySelectorAll('.mk-swatch-circle').forEach((c,idx) => c.classList.toggle('active',idx===i));
-            if (v.image) mainImg.src = v.image.replace('+sw','').replace('_swatch','_zoom');
+            // Quitar active de thumbnails de galería
+            gThumbs.querySelectorAll('.mk-gallery-thumb').forEach(x => x.classList.remove('active'));
+            if (v.image) {
+              const fullUrl = mkSwatchToFull(v.image);
+              mkShowImage(fullUrl, v.image);
+            }
             mkUpdateColorLabel(lbl);
             mkRecalc();
           };
