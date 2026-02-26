@@ -359,12 +359,14 @@
           <div class="mk-bd-header">🇺🇸 Compra en USA</div>
           <div class="mk-bd-row"><span class="lbl">Producto(s)</span><span class="val" id="bd-prod">$ 0.00</span></div>
           <div class="mk-bd-row"><span class="lbl">Taxes (7%)</span><span class="val" id="bd-tax">$ 0.00</span></div>
+          <div class="mk-bd-row"><span class="lbl">Envío en tienda</span><span class="val free" id="bd-store-ship">Gratis</span></div>
           <div class="mk-bd-sub"><span class="lbl">Total en USA</span><span class="val" id="bd-usa">$ 0.00</span></div>
         </div>
 
         <div class="mk-bd-section">
           <div class="mk-bd-header">🇵🇪 Envío a Perú</div>
           <div class="mk-bd-row"><span class="lbl">Envío internacional <small id="bd-weight">(~0.5 Kg)</small></span><span class="val" id="bd-ship">$ 19.00</span></div>
+          <div class="mk-bd-row"><span class="lbl">Impuestos importación</span><span class="val free" id="bd-imp">Gratis</span></div>
           <div class="mk-bd-sub"><span class="lbl">Total traída</span><span class="val" id="bd-traida">$ 19.00</span></div>
         </div>
 
@@ -416,7 +418,7 @@
   // ═══════════════════════════════════════════════════════════════
   //  CONFIGURACIÓN
   // ═══════════════════════════════════════════════════════════════
-  const MK_API = 'web-production-56b31.up.railway.app';
+  const MK_API = 'https://web-production-56b31.up.railway.app';
   const MK_RATE       = 3.45;    // USD → PEN
   const MK_TAX_RATE   = 0.07;    // 7 % sales tax USA
   const MK_INTL_SHIP  = 20.00;   // envío int. base USD
@@ -456,7 +458,8 @@
       mkData = data;
       mkRender(data);
     } catch(e) {
-      al.textContent = 'Error de conexión. Intenta de nuevo.';
+      console.error('mkBuscar error:', e);
+      al.textContent = 'Error: ' + (e.message || 'Conexión fallida') + '. Intenta de nuevo.';
       al.style.display = 'block';
       document.getElementById('mk-welcome').style.display = '';
     } finally {
