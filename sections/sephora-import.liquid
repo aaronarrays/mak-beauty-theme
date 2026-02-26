@@ -159,6 +159,7 @@
   }
   .mk-color-label { font-size: 13px; color: var(--mk-text-muted); margin-bottom: 16px; }
   .mk-color-label strong { color: var(--mk-text); }
+  .mk-variant-price { font-size: 12px; color: var(--mk-pink-dark); font-weight: 600; margin-left: 6px; }
 
   .mk-field-label {
     display: block; font-size: 12px; font-weight: 600; color: var(--mk-text-muted);
@@ -446,7 +447,7 @@
     try {
       const res = await fetch(`${MK_API}/api/scrape`, {
         method: 'POST',
-        headers: { 'Content-Type':'application/json', 'ngrok-skip-browser-warning':'true' },
+        headers: { 'Content-Type':'application/json' },
         body: JSON.stringify({ url })
       });
       const data = await res.json();
@@ -486,6 +487,8 @@
     // Precio inline
     document.getElementById('mk-price-inline').textContent = d.price || '';
 
+      // Detectar si variantes son tamaños (no colores)
+      const isSize = (d.color_variants || []).some(v => /oz|ml|g\b|fl/i.test(v.label || ''));
     const mainImg = document.getElementById('mk-main-img');
     const gThumbs = document.getElementById('mk-gallery-thumbs');
     const swRow   = document.getElementById('mk-swatches-row');
@@ -563,7 +566,12 @@
           document.querySelectorAll('.mk-tone').forEach((t,idx) => t.classList.toggle('picked', idx===i));
           // Quitar active de thumbnails de galería
           gThumbs.querySelectorAll('.mk-gallery-thumb').forEach(x => x.classList.remove('active'));
-          mkUpdateColorLabel(v.label);
+          // Actualizar precio si la variante tiene precio propio
+          if (v.price && v.price > 0) {
+            mkData.price_numeric = v.price;
+            document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2);
+          }
+          mkUpdateColorLabel(v.label, isSize);
           mkRecalc();
         };
         im.onerror = function(){ c.style.display='none'; };
@@ -576,11 +584,17 @@
     const tg = document.getElementById('mk-tones');
     if (variants.length > 0) {
       tw.style.display = ''; tg.innerHTML = '';
+      document.getElementById('mk-tones-label').textContent = isSize ? 'Tamaño / Presentación' : 'Tono / Variante';
       variants.forEach((v, i) => {
         const ch = document.createElement('div');
         let lbl = (v.label || `Tono ${i+1}`).replace(/^Select\s*/i, '');
         ch.className = 'mk-tone' + (v.selected?' picked':'') + (v.out_of_stock?' oos':'');
-        ch.textContent = lbl;
+        // Mostrar precio si la variante lo tiene
+        if (v.price && v.price > 0) {
+          ch.innerHTML = lbl + ' <span class="mk-variant-price">$' + v.price.toFixed(2) + '</span>';
+        } else {
+          ch.textContent = lbl;
+        }
         if (!v.out_of_stock) {
           ch.onclick = () => {
             tg.querySelectorAll('.mk-tone').forEach(x => x.classList.remove('picked'));
@@ -592,15 +606,27 @@
               const fullUrl = mkSwatchToFull(v.image);
               mkShowImage(fullUrl, v.image);
             }
-            mkUpdateColorLabel(lbl);
+            // Actualizar precio si la variante tiene precio propio
+            if (v.price && v.price > 0) {
+              mkData.price_numeric = v.price;
+              document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2);
+            }
+            mkUpdateColorLabel(lbl, isSize);
             mkRecalc();
           };
         }
         tg.appendChild(ch);
       });
-      // Color label
+      // Color/Size label
       const sel = variants.find(v => v.selected);
-      if (sel) mkUpdateColorLabel(sel.label);
+      if (sel) {
+        mkUpdateColorLabel(sel.label, isSize);
+        // Si la variante seleccionada tiene precio, usarlo
+        if (sel.price && sel.price > 0) {
+          mkData.price_numeric = sel.price;
+          document.getElementById('mk-price-inline').textContent = '$' + sel.price.toFixed(2);
+        }
+      }
     } else { tw.style.display = 'none'; }
 
     // Fecha entrega
@@ -622,10 +648,11 @@
     document.getElementById('mk-welcome').style.display = 'none';
   }
 
-  function mkUpdateColorLabel(lbl) {
+  function mkUpdateColorLabel(lbl, isSize) {
     const el = document.getElementById('mk-color-label');
     if (lbl) {
-      el.innerHTML = `Color: <strong>${lbl.replace(/^Select\s*/i,'')}</strong>`;
+      const prefix = isSize ? 'Tamaño' : 'Color';
+      el.innerHTML = `${prefix}: <strong>${lbl.replace(/^Select\s*/i,'')}</strong>`;
       el.style.display = '';
     } else { el.style.display = 'none'; }
   }
