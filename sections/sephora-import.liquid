@@ -450,6 +450,7 @@
   let mkData = null, mkQtyVal = 1;
   let mkVariantImagesCache = {};  // { skuId: [urls] }
   let mkCurrentFetchController = null;
+  let mkActiveRequest = null;
 
   /* ═══════ BUSCAR CON SSE ═══════ */
   async function mkBuscar() {
@@ -670,7 +671,99 @@
       card.innerHTML = html;
 
       if (!v.out_of_stock) {
-        card.onclick = () => mkSelectVariant(i);
+        card.onclick = async () => {
+          // Cancelar request anterior si existe
+          if (mkActiveRequest) mkActiveRequest.cancelled = true;
+          const thisRequest = { cancelled: false };
+          mkActiveRequest = thisRequest;
+
+          // Marcar tono seleccionado
+          grid.querySelectorAll('.mk-variant-card').forEach(x => x.classList.remove('picked'));
+          card.classList.add('picked');
+
+          // Actualizar precio y label
+          const isSize = variants.some(vr => /oz|ml|g\b|fl/i.test(vr.label||''));
+          const lbl = (v.label||'').replace(/^Select\s*/i,'');
+          if (v.price && v.price > 0) {
+            mkData.price_numeric = v.price;
+            document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2);
+          }
+          mkUpdateColorLabel(lbl, isSize);
+          mkRecalc();
+
+          // Mostrar loading en imagen principal
+          const mainImg = document.getElementById('mk-main-img');
+          const thumbs = document.getElementById('mk-gallery-thumbs');
+          mainImg.style.opacity = '0.4';
+          mainImg.style.transition = 'opacity 0.2s';
+
+          // Fallback inmediato: mostrar swatch mientras carga
+          if (v.swatch) {
+            mainImg.src = v.swatch.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
+          } else if (v.image) {
+            mainImg.src = mkToFullImage(v.image);
+          }
+
+          if (v.sku_id) {
+            // Cache local
+            if (mkVariantImagesCache[v.sku_id]) {
+              mkRenderImages(mkVariantImagesCache[v.sku_id]);
+              mainImg.style.opacity = '1';
+              return;
+            }
+
+            try {
+              const res = await fetch(`${MK_API}/api/variant-images`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                body: JSON.stringify({ url: mkData.url, sku_id: v.sku_id })
+              });
+              const data = await res.json();
+
+              // Si el usuario ya cambió de variante, ignorar
+              if (thisRequest.cancelled) return;
+
+              if (data.success && data.images && data.images.length > 0) {
+                mkVariantImagesCache[v.sku_id] = data.images;
+                // Actualizar imagen principal
+                mainImg.src = data.images[0];
+                mainImg.style.opacity = '1';
+
+                // Actualizar miniaturas
+                thumbs.innerHTML = '';
+                document.getElementById('mk-img-count').textContent = data.images.length + ' fotos';
+                data.images.forEach((imgUrl, idx) => {
+                  const img = document.createElement('img');
+                  img.src = imgUrl;
+                  img.className = 'mk-gallery-thumb' + (idx === 0 ? ' active' : '');
+                  img.loading = 'lazy';
+                  img.onclick = () => {
+                    mainImg.src = imgUrl;
+                    thumbs.querySelectorAll('.mk-gallery-thumb').forEach(t => t.classList.remove('active'));
+                    img.classList.add('active');
+                  };
+                  img.onerror = function() { this.style.display = 'none'; };
+                  thumbs.appendChild(img);
+                });
+
+                // Actualizar precio si la variante tiene precio diferente
+                if (v.price && v.price > 0) {
+                  mkData.price_numeric = v.price;
+                  document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2);
+                  mkRecalc();
+                }
+              } else {
+                mainImg.style.opacity = '1';
+              }
+            } catch(e) {
+              if (!thisRequest.cancelled) {
+                mainImg.style.opacity = '1';
+              }
+            }
+          } else {
+            mainImg.style.opacity = '1';
+          }
+        };
       }
       grid.appendChild(card);
     });
@@ -683,81 +776,6 @@
         mkData.price_numeric = sel.price;
         document.getElementById('mk-price-inline').textContent = '$' + sel.price.toFixed(2);
       }
-    }
-  }
-
-  /* ── Seleccionar variante + scrape de imágenes ── */
-  async function mkSelectVariant(idx) {
-    const variants = mkData.color_variants || [];
-    const v = variants[idx];
-    if (!v || v.out_of_stock) return;
-
-    const isSize = variants.some(vr => /oz|ml|g\b|fl/i.test(vr.label||''));
-    const lbl = (v.label||'').replace(/^Select\s*/i,'');
-
-    // Marcar card activa
-    const grid = document.getElementById('mk-variants-grid');
-    grid.querySelectorAll('.mk-variant-card').forEach(c => c.classList.remove('picked'));
-    const card = grid.querySelector(`[data-idx="${idx}"]`);
-    if (card) card.classList.add('picked');
-
-    // Actualizar precio y label
-    if (v.price && v.price > 0) {
-      mkData.price_numeric = v.price;
-      document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2);
-    }
-    mkUpdateColorLabel(lbl, isSize);
-    mkRecalc();
-
-    // Mostrar la imagen principal inmediata (main-zoom del SKU)
-    const mainImg = document.getElementById('mk-main-img');
-    if (v.image) {
-      const fullUrl = mkToFullImage(v.image);
-      mainImg.onerror = function() {
-        mainImg.onerror = null;
-        if (v.swatch) mainImg.src = v.swatch;
-      };
-      mainImg.src = fullUrl;
-    }
-
-    // Si no tiene sku_id, no podemos buscar más imágenes
-    if (!v.sku_id) return;
-
-    // ¿Ya tenemos las imágenes en cache local?
-    if (mkVariantImagesCache[v.sku_id]) {
-      mkRenderImages(mkVariantImagesCache[v.sku_id]);
-      return;
-    }
-
-    // Mostrar overlay de carga en galería
-    const overlay = document.getElementById('mk-gallery-overlay');
-    overlay.classList.add('visible');
-    if (card) card.classList.add('loading');
-
-    // Cancelar fetch anterior si existe
-    if (mkCurrentFetchController) {
-      try { mkCurrentFetchController.abort(); } catch(e) {}
-    }
-    mkCurrentFetchController = new AbortController();
-
-    try {
-      const res = await fetch(`${MK_API}/api/variant-images`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: mkData.url, sku_id: v.sku_id }),
-        signal: mkCurrentFetchController.signal
-      });
-      const data = await res.json();
-      if (data.success && data.images && data.images.length > 0) {
-        mkVariantImagesCache[v.sku_id] = data.images;
-        mkRenderImages(data.images);
-      }
-    } catch(e) {
-      if (e.name !== 'AbortError') console.warn('variant-images error:', e);
-    } finally {
-      overlay.classList.remove('visible');
-      if (card) card.classList.remove('loading');
-      mkCurrentFetchController = null;
     }
   }
 
