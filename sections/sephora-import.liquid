@@ -282,27 +282,6 @@
 
   .mk-notes-section { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--mk-border); }
 
-  /* — Toast — */
-  .mk-toast {
-    position: fixed; bottom: 30px; right: 30px; background: var(--mk-white);
-    border: 2px solid var(--mk-success); border-radius: 14px; padding: 16px 24px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.15); display: none; z-index: 9999;
-    animation: mk-up 0.3s ease-out; font-family: inherit;
-  }
-  .mk-toast.show { display: block; }
-  .mk-toast-content { display: flex; align-items: flex-start; gap: 10px; }
-  .mk-toast-link {
-    font-size: 12px; font-weight: 600; color: var(--mk-pink-dark);
-    text-decoration: none; padding: 4px 12px; border-radius: 6px;
-    border: 1px solid var(--mk-pink); transition: all 0.2s;
-  }
-  .mk-toast-link:hover { background: var(--mk-pink-light); }
-  .mk-toast-link-accent {
-    background: var(--mk-pink); color: #fff; border-color: var(--mk-pink-dark);
-  }
-  .mk-toast-link-accent:hover { background: var(--mk-pink-dark); color: #fff; }
-  @keyframes mk-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
   /* — Responsive — */
   @media (max-width: 820px) {
     .mk-product.visible { grid-template-columns: 1fr; }
@@ -437,19 +416,7 @@
     </div>
   </div>
 
-  <div class="mk-toast" id="mk-toast">
-    <div class="mk-toast-content">
-      <span style="font-size:22px">✅</span>
-      <div>
-        <span style="font-size:14px;font-weight:600" id="mk-toast-msg">Producto agregado al carrito</span>
-        <div style="margin-top:6px;display:flex;gap:8px">
-          <a href="/cart" class="mk-toast-link">Ver carrito</a>
-          <a href="/checkout" class="mk-toast-link mk-toast-link-accent">Ir a pagar</a>
-        </div>
-      </div>
-      <button onclick="document.getElementById('mk-toast').classList.remove('show')" style="background:none;border:none;color:#999;font-size:18px;cursor:pointer;margin-left:8px">✕</button>
-    </div>
-  </div>
+
 </div>
 
 <script>
@@ -899,11 +866,15 @@
     const totalUsd = usa + intl + proc;
     const totalPen = totalUsd * MK_RATE;
 
-    // ── 2. Actualizar precio de la variante en Shopify via backend ──
+    // Obtener imagen principal del producto
+    const mainImg = document.getElementById('mk-main-img');
+    const imgUrl = (mkData.images && mkData.images[0]) || (mainImg ? mainImg.src : '');
+
+    // ── 2. Actualizar precio + imagen de la variante en Shopify via backend ──
     const priceRes = await fetch(`${MK_API}/api/update-price`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ price: totalPen.toFixed(2) })
+      body: JSON.stringify({ price: totalPen.toFixed(2), image: imgUrl })
     });
     const priceData = await priceRes.json();
     if (!priceData.success) {
@@ -911,7 +882,7 @@
     }
 
     // ── 3. Breve espera para propagación en Shopify ──
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 500));
 
     // ── 4. Limpiar items previos de importación del carrito ──
     try {
@@ -990,16 +961,36 @@
     try {
       await mkAddToCart();
       btn.disabled = false; btn.textContent = original;
-      // Toast con nombre del producto
-      const toastMsg = document.getElementById('mk-toast-msg');
-      if (toastMsg) toastMsg.textContent = `"${mkData.name}" agregado al carrito`;
-      const t = document.getElementById('mk-toast');
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 6000);
+      // Abrir el cart drawer del tema
+      mkOpenCartDrawer();
     } catch(e) {
       btn.disabled = false; btn.textContent = original;
       mkShowAlert('No se pudo agregar al carrito: ' + e.message);
     }
+  }
+
+  function mkOpenCartDrawer() {
+    // Intentar múltiples métodos para abrir el cart drawer según el tema
+    // 1. Evento estándar de Shopify (Dawn y temas OS 2.0)
+    document.documentElement.dispatchEvent(new CustomEvent('cart:refresh'));
+    // 2. Evento de Section Rendering API
+    document.dispatchEvent(new CustomEvent('cart:update'));
+    // 3. Buscar y clickear el icono del carrito (abre el drawer en la mayoría de temas)
+    const cartTriggers = [
+      'a[href="/cart"]', 'button[data-cart-toggle]', '.js-drawer-open-cart',
+      '.cart-toggle', '#cart-icon-bubble', '.header__icon--cart',
+      '[data-action="toggle-cart"]', '.site-header__cart',
+      'cart-icon-bubble', 'details[id*="cart"] summary'
+    ];
+    for (const sel of cartTriggers) {
+      const el = document.querySelector(sel);
+      if (el && el.offsetParent !== null) {
+        el.click();
+        return;
+      }
+    }
+    // 4. Fallback: redirigir a /cart
+    window.location.href = '/cart';
   }
 
   function mkShowAlert(msg) {
