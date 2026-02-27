@@ -21,7 +21,7 @@
       "type": "apps",
       "blocks": {
         "sk_contact_form_builder_form_BinUyk": {
-          "type": "shopify://apps/sk-contact-form-builder/blocks/form/f3e35b58-5874-4ef2-8e03-c92cda6e49eb",
+          "type": "shopify://apps/ai-contact-form-builder/blocks/form/f3e35b58-5874-4ef2-8e03-c92cda6e49eb",
           "settings": {
             "show_form": true,
             "form_token": "54306e795375764e"

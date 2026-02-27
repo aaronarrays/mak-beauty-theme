@@ -289,7 +289,18 @@
     box-shadow: 0 8px 30px rgba(0,0,0,0.15); display: none; z-index: 9999;
     animation: mk-up 0.3s ease-out; font-family: inherit;
   }
-  .mk-toast.show { display: flex; align-items: center; gap: 10px; }
+  .mk-toast.show { display: block; }
+  .mk-toast-content { display: flex; align-items: flex-start; gap: 10px; }
+  .mk-toast-link {
+    font-size: 12px; font-weight: 600; color: var(--mk-pink-dark);
+    text-decoration: none; padding: 4px 12px; border-radius: 6px;
+    border: 1px solid var(--mk-pink); transition: all 0.2s;
+  }
+  .mk-toast-link:hover { background: var(--mk-pink-light); }
+  .mk-toast-link-accent {
+    background: var(--mk-pink); color: #fff; border-color: var(--mk-pink-dark);
+  }
+  .mk-toast-link-accent:hover { background: var(--mk-pink-dark); color: #fff; }
   @keyframes mk-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
   /* — Responsive — */
@@ -427,8 +438,17 @@
   </div>
 
   <div class="mk-toast" id="mk-toast">
-    <span style="font-size:22px">✅</span>
-    <span style="font-size:14px;font-weight:600">Producto agregado al carrito</span>
+    <div class="mk-toast-content">
+      <span style="font-size:22px">✅</span>
+      <div>
+        <span style="font-size:14px;font-weight:600" id="mk-toast-msg">Producto agregado al carrito</span>
+        <div style="margin-top:6px;display:flex;gap:8px">
+          <a href="/cart" class="mk-toast-link">Ver carrito</a>
+          <a href="/checkout" class="mk-toast-link mk-toast-link-accent">Ir a pagar</a>
+        </div>
+      </div>
+      <button onclick="document.getElementById('mk-toast').classList.remove('show')" style="background:none;border:none;color:#999;font-size:18px;cursor:pointer;margin-left:8px">✕</button>
+    </div>
   </div>
 </div>
 
@@ -835,41 +855,119 @@
 
   function mkQty(d) { mkQtyVal = Math.max(1, mkQtyVal + d); document.getElementById('mk-qty').textContent = mkQtyVal; mkRecalc(); }
 
-  function mkProps() {
-    const card = document.querySelector('.mk-variant-card.picked .mk-vc-label');
-    const desc = document.querySelector('.mk-variant-card.picked .mk-vc-desc');
-    const variantText = card ? (card.textContent + (desc ? ' ' + desc.textContent : '')) : 'N/A';
+  function mkGetSelectedVariant() {
+    const card = document.querySelector('.mk-variant-card.picked');
+    if (!card) return { label: 'N/A', sku_id: '' };
+    const lblEl = card.querySelector('.mk-vc-label');
+    const descEl = card.querySelector('.mk-vc-desc');
+    const idx = parseInt(card.dataset.idx || '0');
+    const v = (mkData.color_variants || [])[idx] || {};
     return {
-      '_Producto Sephora': mkData.name,
-      '_Marca': mkData.brand || '',
-      '_Color/Variante': variantText,
-      '_Link Sephora': mkData.url,
-      '_Precio USD': document.getElementById('bd-usd').textContent,
-      '_Precio Total': document.getElementById('bd-pen').textContent,
-      '_Categoría': document.getElementById('mk-category').textContent.trim(),
-      '_Cantidad': mkQtyVal,
-      '_Indicaciones': document.getElementById('mk-notes').value || 'Sin indicaciones'
+      label: lblEl ? (lblEl.textContent + (descEl ? ' ' + descEl.textContent : '')) : 'N/A',
+      sku_id: v.sku_id || '',
+      image: v.image || '',
     };
   }
 
-  function mkComprar() {
-    if (!mkData) return;
-    fetch('/cart/add.js', { method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ id:MK_VARIANT_ID, quantity:mkQtyVal, properties:mkProps() })
-    }).then(r => { if(!r.ok) throw 0; return r.json(); })
-      .then(() => window.location.href='/checkout')
-      .catch(() => alert('Error. Intenta de nuevo.'));
+  function mkProps() {
+    const sv = mkGetSelectedVariant();
+    const mainImg = document.getElementById('mk-main-img');
+    const imgUrl = (mkData.images && mkData.images[0]) || (mainImg ? mainImg.src : '');
+    return {
+      'Producto Sephora': mkData.name || '',
+      'Marca': mkData.brand || '',
+      'Color/Variante': sv.label,
+      'Precio USD': document.getElementById('bd-usd').textContent,
+      'Total a pagar': document.getElementById('bd-pen').textContent,
+      'Categoría': document.getElementById('mk-category').textContent.trim(),
+      'Indicaciones': document.getElementById('mk-notes').value || 'Sin indicaciones',
+      '_Link Sephora': mkData.url || '',
+      '_SKU Sephora': sv.sku_id,
+      '_Imagen': imgUrl,
+      '_Precio base USD': mkData.price || '',
+      '_Cantidad solicitada': String(mkQtyVal),
+    };
   }
 
-  function mkAgregar() {
+  async function mkAddToCart() {
+    const payload = {
+      id: MK_VARIANT_ID,
+      quantity: mkQtyVal,
+      properties: mkProps(),
+    };
+    const res = await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => null);
+      const msg = errData?.description || errData?.message || `Error HTTP ${res.status}`;
+      throw new Error(msg);
+    }
+    const data = await res.json();
+    mkUpdateCartCount();
+    return data;
+  }
+
+  function mkUpdateCartCount() {
+    fetch('/cart.js')
+      .then(r => r.json())
+      .then(cart => {
+        const count = cart.item_count || 0;
+        // Actualizar badges comunes de temas Shopify
+        document.querySelectorAll(
+          '.cart-count, .cart-count-bubble span, ' +
+          '[data-cart-count], .js-cart-count, ' +
+          '.site-header__cart-count, .header__cart-count, ' +
+          '#cart-icon-bubble span'
+        ).forEach(el => {
+          el.textContent = count;
+          if (el.closest('[hidden]')) el.closest('[hidden]').hidden = false;
+        });
+      }).catch(() => {});
+  }
+
+  async function mkComprar() {
     if (!mkData) return;
-    fetch('/cart/add.js', { method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ id:MK_VARIANT_ID, quantity:mkQtyVal, properties:mkProps() })
-    }).then(r => { if(!r.ok) throw 0; return r.json(); })
-      .then(() => {
-        const t = document.getElementById('mk-toast');
-        t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000);
-      }).catch(() => alert('Error al agregar al carrito.'));
+    const btn = document.querySelector('.mk-btn-comprar');
+    const original = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Procesando...';
+    try {
+      await mkAddToCart();
+      btn.textContent = 'Redirigiendo al pago...';
+      window.location.href = '/checkout';
+    } catch(e) {
+      btn.disabled = false; btn.textContent = original;
+      mkShowAlert('No se pudo agregar al carrito: ' + e.message);
+    }
+  }
+
+  async function mkAgregar() {
+    if (!mkData) return;
+    const btn = document.querySelector('.mk-btn-carrito');
+    const original = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Agregando...';
+    try {
+      await mkAddToCart();
+      btn.disabled = false; btn.textContent = original;
+      // Toast con nombre del producto
+      const toastMsg = document.getElementById('mk-toast-msg');
+      if (toastMsg) toastMsg.textContent = `"${mkData.name}" agregado al carrito`;
+      const t = document.getElementById('mk-toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 6000);
+    } catch(e) {
+      btn.disabled = false; btn.textContent = original;
+      mkShowAlert('No se pudo agregar al carrito: ' + e.message);
+    }
+  }
+
+  function mkShowAlert(msg) {
+    const al = document.getElementById('mk-alert');
+    al.textContent = msg;
+    al.style.display = 'block';
+    setTimeout(() => { al.style.display = 'none'; }, 8000);
   }
 
   window.mkBuscar = mkBuscar;
@@ -877,6 +975,7 @@
   window.mkComprar = mkComprar;
   window.mkAgregar = mkAgregar;
   window.mkRecalc = mkRecalc;
+  window.mkUpdateCartCount = mkUpdateCartCount;
 </script>
 
 {% schema %}
