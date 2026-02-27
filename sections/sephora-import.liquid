@@ -429,12 +429,27 @@
   const MK_INTL_SHIP  = 20.00;
   const MK_COMMISSION = 0.15;
   const MK_SYMBOL     = 'S/';
-  const MK_VARIANT_ID = 51967182143801;
+
+  // ── Pool: ya NO hay MK_VARIANT_ID fijo ──
+  // El variant_id se obtiene dinámicamente de /api/prepare-product
+  let mkSessionId = null;  // Session ID para el pool
 
   let mkData = null, mkQtyVal = 1;
   let mkVariantImagesCache = {};  // { skuId: [urls] }
   let mkCurrentFetchController = null;
   let mkActiveRequest = null;
+
+  /* ═══════ SESSION ID (persistente por pestaña) ═══════ */
+  function mkGetSessionId() {
+    if (mkSessionId) return mkSessionId;
+    // Intentar recuperar de sessionStorage (persiste por pestaña)
+    mkSessionId = sessionStorage.getItem('mk_session_id');
+    if (!mkSessionId) {
+      mkSessionId = 'mk_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 8);
+      sessionStorage.setItem('mk_session_id', mkSessionId);
+    }
+    return mkSessionId;
+  }
 
   /* ═══════ BUSCAR CON SSE ═══════ */
   async function mkBuscar() {
@@ -836,7 +851,7 @@
     };
   }
 
-  function mkProps() {
+  function mkProps(variantId) {
     const sv = mkGetSelectedVariant();
     const mainImg = document.getElementById('mk-main-img');
     const imgUrl = (mkData.images && mkData.images[0]) || (mainImg ? mainImg.src : '');
@@ -853,6 +868,8 @@
       '_Imagen': imgUrl,
       '_Precio base USD': mkData.price || '',
       '_Cantidad solicitada': String(mkQtyVal),
+      '_Pool Variant': String(variantId),
+      '_Session': mkGetSessionId(),
     };
   }
 
@@ -870,26 +887,35 @@
     const mainImg = document.getElementById('mk-main-img');
     const imgUrl = (mkData.images && mkData.images[0]) || (mainImg ? mainImg.src : '');
 
-    // ── 2. Actualizar precio + imagen de la variante en Shopify via backend ──
-    const priceRes = await fetch(`${MK_API}/api/update-price`, {
+    // ── 2. POOL: Preparar producto (adquirir placeholder + actualizar Shopify) ──
+    const prepareRes = await fetch(`${MK_API}/api/prepare-product`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ price: totalPen.toFixed(2), image: imgUrl })
+      body: JSON.stringify({
+        session_id: mkGetSessionId(),
+        price: totalPen.toFixed(2),
+        title: mkData.name || 'Producto Sephora',
+        image: imgUrl,
+        sephora_url: mkData.url || '',
+      })
     });
-    const priceData = await priceRes.json();
-    if (!priceData.success) {
-      throw new Error('No se pudo fijar el precio: ' + (priceData.error || 'Error desconocido'));
+    const prepareData = await prepareRes.json();
+    if (!prepareData.success) {
+      throw new Error(prepareData.error || 'No se pudo preparar el producto');
     }
+
+    const variantId = prepareData.variant_id;
+    console.log(`[MK] Pool placeholder: variant=${variantId}, product=${prepareData.product_id}`);
 
     // ── 3. Breve espera para propagación en Shopify ──
     await new Promise(r => setTimeout(r, 500));
 
-    // ── 4. Limpiar items previos de importación del carrito ──
+    // ── 4. Limpiar items previos de este placeholder del carrito ──
     try {
       const cartRes = await fetch('/cart.js');
       const cart = await cartRes.json();
       for (const item of cart.items) {
-        if (String(item.variant_id) === String(MK_VARIANT_ID)) {
+        if (String(item.variant_id) === String(variantId)) {
           await fetch('/cart/change.js', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -899,11 +925,11 @@
       }
     } catch(e) { console.warn('No se pudo limpiar carrito previo:', e); }
 
-    // ── 5. Agregar al carrito con el precio ahora correcto ──
+    // ── 5. Agregar al carrito con el variant_id del pool ──
     const payload = {
-      id: MK_VARIANT_ID,
+      id: variantId,
       quantity: 1,  // siempre 1 — cantidad real va en propiedades
-      properties: mkProps(),
+      properties: mkProps(variantId),
     };
     const res = await fetch('/cart/add.js', {
       method: 'POST',
