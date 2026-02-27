@@ -705,6 +705,13 @@
           }
 
           if (v.sku_id) {
+            // Usar imágenes pre-extraídas del scrape inicial
+            if (v.images && v.images.length > 1) {
+              mkVariantImagesCache[v.sku_id] = v.images;
+              mkRenderImages(v.images);
+              mainImg.style.opacity = '1';
+              return;
+            }
             // Cache local
             if (mkVariantImagesCache[v.sku_id]) {
               mkRenderImages(mkVariantImagesCache[v.sku_id]);
