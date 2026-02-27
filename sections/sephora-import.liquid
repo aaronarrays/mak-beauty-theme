@@ -960,37 +960,13 @@
     btn.disabled = true; btn.textContent = 'Agregando...';
     try {
       await mkAddToCart();
-      btn.disabled = false; btn.textContent = original;
-      // Abrir el cart drawer del tema
-      mkOpenCartDrawer();
+      btn.textContent = 'Abriendo carrito...';
+      // Redirigir a /cart para ver el producto con datos frescos
+      window.location.href = '/cart';
     } catch(e) {
       btn.disabled = false; btn.textContent = original;
       mkShowAlert('No se pudo agregar al carrito: ' + e.message);
     }
-  }
-
-  function mkOpenCartDrawer() {
-    // Intentar múltiples métodos para abrir el cart drawer según el tema
-    // 1. Evento estándar de Shopify (Dawn y temas OS 2.0)
-    document.documentElement.dispatchEvent(new CustomEvent('cart:refresh'));
-    // 2. Evento de Section Rendering API
-    document.dispatchEvent(new CustomEvent('cart:update'));
-    // 3. Buscar y clickear el icono del carrito (abre el drawer en la mayoría de temas)
-    const cartTriggers = [
-      'a[href="/cart"]', 'button[data-cart-toggle]', '.js-drawer-open-cart',
-      '.cart-toggle', '#cart-icon-bubble', '.header__icon--cart',
-      '[data-action="toggle-cart"]', '.site-header__cart',
-      'cart-icon-bubble', 'details[id*="cart"] summary'
-    ];
-    for (const sel of cartTriggers) {
-      const el = document.querySelector(sel);
-      if (el && el.offsetParent !== null) {
-        el.click();
-        return;
-      }
-    }
-    // 4. Fallback: redirigir a /cart
-    window.location.href = '/cart';
   }
 
   function mkShowAlert(msg) {
