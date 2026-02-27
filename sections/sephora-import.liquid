@@ -360,10 +360,7 @@
       </div>
 
       <label class="mk-field-label">Categoría</label>
-      <select class="mk-field" id="mk-category">
-        <option>Maquillaje</option><option>Cuidado de la Piel</option><option>Cabello</option>
-        <option>Fragancia</option><option>Accesorios</option>
-      </select>
+      <div class="mk-field" id="mk-category" style="white-space:pre-line;min-height:38px;line-height:1.5;padding:8px 12px;font-size:13px;color:#555;">Maquillaje</div>
 
       <div class="mk-notes-section">
         <label class="mk-field-label">Indicaciones especiales</label>
@@ -469,6 +466,19 @@
     document.getElementById('mk-product').classList.remove('visible');
     btn.disabled = true; btn.textContent = 'Buscando...';
     mkVariantImagesCache = {};
+
+    /* ── Limpiar producto anterior ── */
+    document.getElementById('mk-brand').textContent = '';
+    document.getElementById('mk-title').textContent = '';
+    document.getElementById('mk-rating').style.display = 'none';
+    document.getElementById('mk-price-inline').textContent = '';
+    document.getElementById('mk-main-img').src = '';
+    document.getElementById('mk-gallery-thumbs').innerHTML = '';
+    document.getElementById('mk-img-count').textContent = '';
+    document.getElementById('mk-variants-grid').innerHTML = '';
+    document.getElementById('mk-variants-wrap').style.display = 'none';
+    document.getElementById('mk-color-label').style.display = 'none';
+    document.getElementById('mk-category').textContent = '';
 
     let gotProduct = false; // safety flag
     let gotError = false;
@@ -593,12 +603,8 @@
       ratingEl.style.display = '';
     } else ratingEl.style.display = 'none';
     document.getElementById('mk-price-inline').textContent = d.price || '';
-    const cat = (d.category||'').toLowerCase();
-    const cs = document.getElementById('mk-category');
-    if (cat.includes('skin')||cat.includes('piel')) cs.value = 'Cuidado de la Piel';
-    else if (cat.includes('hair')||cat.includes('cabel')) cs.value = 'Cabello';
-    else if (cat.includes('fragr')||cat.includes('perfum')) cs.value = 'Fragancia';
-    else cs.value = 'Maquillaje';
+    const catEl = document.getElementById('mk-category');
+    catEl.textContent = d.category || 'Maquillaje';
     const arr = new Date(); arr.setDate(arr.getDate() + 21);
     const m = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     document.getElementById('mk-arrival').textContent = `${arr.getDate()} de ${m[arr.getMonth()]} del ${arr.getFullYear()}`;
@@ -840,7 +846,7 @@
       '_Link Sephora': mkData.url,
       '_Precio USD': document.getElementById('bd-usd').textContent,
       '_Precio Total': document.getElementById('bd-pen').textContent,
-      '_Categoría': document.getElementById('mk-category').value,
+      '_Categoría': document.getElementById('mk-category').textContent.trim(),
       '_Cantidad': mkQtyVal,
       '_Indicaciones': document.getElementById('mk-notes').value || 'Sin indicaciones'
     };
