@@ -669,6 +669,9 @@
               mkRenderVariants(mkData);
             } else if (eventType === 'complete') {
               mkData = payload; mkData.success = true;
+              mkRenderBasic(mkData);
+              mkRenderImages(mkData.images || []);
+              mkRenderVariants(mkData);
               mkRecalc();
               gotProduct = true;
             } else if (eventType === 'error') {
