@@ -890,9 +890,48 @@
   }
 
   async function mkAddToCart() {
+    // ── 1. Calcular precio total en PEN ──
+    const price = mkData ? (mkData.price_numeric || 0) : 0;
+    const q = mkQtyVal;
+    const prod = price * q, tax = prod * MK_TAX_RATE;
+    const usa = prod + tax, intl = MK_INTL_SHIP;
+    const proc = prod * MK_COMMISSION;
+    const totalUsd = usa + intl + proc;
+    const totalPen = totalUsd * MK_RATE;
+
+    // ── 2. Actualizar precio de la variante en Shopify via backend ──
+    const priceRes = await fetch(`${MK_API}/api/update-price`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ price: totalPen.toFixed(2) })
+    });
+    const priceData = await priceRes.json();
+    if (!priceData.success) {
+      throw new Error('No se pudo fijar el precio: ' + (priceData.error || 'Error desconocido'));
+    }
+
+    // ── 3. Breve espera para propagación en Shopify ──
+    await new Promise(r => setTimeout(r, 400));
+
+    // ── 4. Limpiar items previos de importación del carrito ──
+    try {
+      const cartRes = await fetch('/cart.js');
+      const cart = await cartRes.json();
+      for (const item of cart.items) {
+        if (String(item.variant_id) === String(MK_VARIANT_ID)) {
+          await fetch('/cart/change.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: item.key, quantity: 0 })
+          });
+        }
+      }
+    } catch(e) { console.warn('No se pudo limpiar carrito previo:', e); }
+
+    // ── 5. Agregar al carrito con el precio ahora correcto ──
     const payload = {
       id: MK_VARIANT_ID,
-      quantity: mkQtyVal,
+      quantity: 1,  // siempre 1 — cantidad real va en propiedades
       properties: mkProps(),
     };
     const res = await fetch('/cart/add.js', {
