@@ -929,11 +929,11 @@
   }
 
   function mkUpdateCartCount(count = null) {
-    const set = n => document.querySelectorAll(
-      '.cart-count, .cart-count-bubble span, [data-cart-count], ' +
-      '.js-cart-count, #cart-icon-bubble span, .cart-count-bubble'
-    ).forEach(el => {
-      el.textContent = n;
+    // Usa la misma lógica de CartUtils del tema (cart-count-drawer usa formato "(n)")
+    const set = n => document.querySelectorAll('.cart-count').forEach(el => {
+      el.innerHTML = el.classList.contains('cart-count-drawer')
+        ? `(${n})`
+        : (n > 100 ? '~' : n);
       const h = el.closest('[hidden]'); if (h) h.hidden = false;
     });
     if (count !== null) return set(count);
@@ -975,97 +975,79 @@
   }
 
   // ═══════════════════════════════════════════════════════════════
-  //  ABRIR DRAWER
+  //  ABRIR MINICART
+  //
+  //  Este tema usa <cart-notification id="minicart_wrapper"> (NO Dawn).
+  //  El elemento tiene un método open() nativo que gestiona la
+  //  animación del drawer y los listeners de cierre.
   //
   //  Flujo:
   //  1. Esperar 800ms (Avada necesita tiempo tras Clear-Site-Data)
-  //  2. Preparar el HTML del drawer con fetch no-store
-  //  3. Inyectar el HTML en el drawer ANTES de abrir
-  //  4. Abrir via click (o renderContents / drawer.open como fallback)
-  //
-  //  Inyectar primero garantiza que cuando Dawn muestre el drawer
-  //  ya tenga el contenido correcto, sin depender del timing
-  //  de su propio fetch interno.
+  //  2. Cargar HTML fresco de la sección "minicart-form" (no-store)
+  //     — o usar el HTML que ya vino en la respuesta de cart/add.js
+  //  3. Inyectar en #minicart-form ANTES de abrir
+  //  4. Llamar a cartNotification.open()
   // ═══════════════════════════════════════════════════════════════
-  async function mkOpenDrawer() {
-    MK.log('Abriendo drawer...');
+  async function mkOpenDrawer(addSections = null) {
+    MK.log('Abriendo minicart...');
 
     // ── Esperar que Avada termine de procesar Clear-Site-Data ──
     await new Promise(r => setTimeout(r, 800));
 
-    const drawer = document.querySelector('cart-drawer');
+    const cartEl = document.querySelector('cart-notification');
 
-    // ── Pre-cargar HTML fresco del drawer (no-store evita cache) ──
-    let freshSections = null;
-    try {
-      freshSections = await fetch(
-        `${window.location.pathname}?sections=cart-drawer,cart-icon-bubble`,
-        { cache: 'no-store' }
-      ).then(r => r.json());
-      MK.log('Secciones frescas cargadas:', Object.keys(freshSections));
-    } catch(e) {
-      MK.warn('No se pudieron cargar secciones frescas:', e.message);
-    }
+    // ── HTML fresco: primero usa el que ya vino en cart/add.js ──
+    let freshSectionHtml = addSections?.['minicart-form'] || null;
 
-    // ── Estrategia A: renderContents (inyecta HTML + abre drawer) ──
-    if (drawer && typeof drawer.renderContents === 'function' && freshSections) {
+    if (!freshSectionHtml) {
       try {
-        drawer.renderContents({ sections: freshSections });
-        MK.log('Drawer actualizado y abierto via renderContents ✓');
-        return;
+        const data = await fetch(
+          `${window.location.pathname}?sections=minicart-form`,
+          { cache: 'no-store' }
+        ).then(r => r.json());
+        freshSectionHtml = data['minicart-form'];
+        MK.log('minicart-form cargado via fetch ✓');
       } catch(e) {
-        MK.warn('renderContents falló:', e.message);
+        MK.warn('No se pudo cargar sección fresca:', e.message);
       }
+    } else {
+      MK.log('minicart-form disponible desde respuesta de add ✓');
     }
 
-    // ── Estrategia B: inyectar HTML manualmente + click para abrir ──
-    // Inyectamos el HTML antes del click para que cuando Dawn muestre
-    // el drawer ya tenga el contenido correcto.
-    if (drawer && freshSections) {
+    // ── Inyectar HTML en #minicart-form ──
+    if (freshSectionHtml) {
       try {
-        // Actualizar el innerHTML del cart-drawer con el HTML fresco
-        const drawerKey = Object.keys(freshSections).find(k => k.includes('cart-drawer'));
-        if (drawerKey) {
-          const tmp = document.createElement('div');
-          tmp.innerHTML = freshSections[drawerKey];
-          const newDrawer = tmp.querySelector('cart-drawer');
-          if (newDrawer) {
-            drawer.innerHTML = newDrawer.innerHTML;
-            MK.log('HTML del drawer inyectado manualmente ✓');
+        const target = document.getElementById('minicart-form');
+        if (target) {
+          const parsed = new DOMParser().parseFromString(freshSectionHtml, 'text/html');
+          const src    = parsed.querySelector('#minicart-form');
+          if (src) {
+            target.innerHTML = src.innerHTML;
+            MK.log('#minicart-form inyectado con contenido fresco ✓');
           }
         }
       } catch(e) {
-        MK.warn('Inyección manual falló:', e.message);
+        MK.warn('Inyección de minicart-form falló:', e.message);
       }
     }
 
-    // ── Click en ícono del carrito para activar la animación de apertura ──
-    const btns = [
-      'button[aria-controls="cart-drawer"]',
-      '#cart-icon-bubble',
-      '.header__icon--cart',
-      '[data-cart-toggle]',
-      'button[aria-controls*="cart"]',
-      '.js-cart-toggle',
-    ];
-    for (const sel of btns) {
-      const el = document.querySelector(sel);
-      if (el && el.offsetParent !== null) {
-        el.click();
-        MK.log(`Drawer abierto via "${sel}" ✓`);
-        return;
-      }
-    }
-
-    // ── Estrategia C: drawer.open() ──
-    if (drawer && typeof drawer.open === 'function') {
-      drawer.open();
-      MK.log('Drawer abierto via drawer.open() ✓');
+    // ── Abrir via cart-notification.open() (método nativo del tema) ──
+    if (cartEl && typeof cartEl.open === 'function') {
+      await cartEl.open();
+      MK.log('Minicart abierto via cart-notification.open() ✓');
       return;
     }
 
-    // ── Fallback: toast ──
-    MK.warn('No se encontró drawer nativo → mostrando toast');
+    // ── Fallback: click en .minicart__action ──
+    const btn = document.querySelector('.minicart__action');
+    if (btn) {
+      btn.click();
+      MK.log('Minicart abierto via .minicart__action click ✓');
+      return;
+    }
+
+    // ── Fallback final: toast ──
+    MK.warn('No se encontró cart-notification → mostrando toast');
     mkShowCartToast();
   }
 
@@ -1139,15 +1121,17 @@
       return;
     }
 
-    // ── 5. Agregar nuevo item ──
+    // ── 5. Agregar nuevo item (incluye sections para recibir HTML fresco) ──
     MK.log(`Agregando variant=${variantId} qty=${mkQtyVal}`);
     const addRes  = await fetch('/cart/add.js', {
       method : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body   : JSON.stringify({
-        id        : variantId,
-        quantity  : mkQtyVal,
-        properties: mkProps(variantId),
+        id           : variantId,
+        quantity     : mkQtyVal,
+        properties   : mkProps(variantId),
+        sections     : ['minicart-form'],
+        sections_url : window.location.pathname,
       })
     });
     const addText = await addRes.text();
@@ -1158,6 +1142,13 @@
       throw new Error(msg);
     }
 
+    // Extraer secciones de la respuesta (vienen junto con el item agregado)
+    let addSections = null;
+    try {
+      const addJson = JSON.parse(addText);
+      if (addJson.sections) { addSections = addJson.sections; MK.log('Secciones recibidas en add response ✓'); }
+    } catch(e) { MK.warn('No se pudo parsear respuesta del add:', e.message); }
+
     // ── 6. Polling — Avada puede disparar Clear-Site-Data ──
     MK.log('Esperando confirmación de /cart.js...');
     const expectedCount = cartBefore.item_count + mkQtyVal;
@@ -1166,8 +1157,8 @@
 
     mkUpdateCartCount();
 
-    // ── 7. Abrir drawer ──
-    await mkOpenDrawer();
+    // ── 7. Abrir minicart (pasa las secciones para evitar fetch extra) ──
+    await mkOpenDrawer(addSections);
   }
 
   async function mkComprar() {
