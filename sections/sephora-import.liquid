@@ -464,33 +464,48 @@
 
 <script>
   // ═══════════════════════════════════════════════════════════════
-  //  CONFIGURACIÓN
+  //  MK BEAUTY — CONFIGURACIÓN + CART LOGIC v4
+  //  Fixes:
+  //  • reused=false siempre  → mkStableId() hash determinístico
+  //  • Race condition Avada  → mkPollCartCount() confirma el item
+  //  • Variant no propagado  → mkPollVariant() antes del add
   // ═══════════════════════════════════════════════════════════════
-  const MK_API = 'https://web-production-56b31.up.railway.app';
+  const MK_API        = 'https://web-production-56b31.up.railway.app';
   const MK_RATE       = 3.45;
   const MK_TAX_RATE   = 0.07;
   const MK_INTL_SHIP  = 20.00;
   const MK_COMMISSION = 0.15;
   const MK_SYMBOL     = 'S/';
 
-  // ── Pool: ya NO hay MK_VARIANT_ID fijo ──
-  // El variant_id se obtiene dinámicamente de /api/prepare-product
-  let mkSessionId = null;  // Session ID para el pool
-  const mkProductSessionMap = new Map(); // { "url::sku_id" → session_id } — reutiliza placeholder por producto
+  let mkData         = null;
+  let mkQtyVal       = 1;
+  let mkAddingToCart = false;
+  let mkVariantImagesCache = {};
+  let mkActiveRequest      = null;
 
-  let mkData = null, mkQtyVal = 1;
-  let mkVariantImagesCache = {};  // { skuId: [urls] }
-  let mkCurrentFetchController = null;
-  let mkActiveRequest = null;
-  let mkAddingToCart = false;  // mutex anti-duplicados
+  // ─── Logger con colores ───────────────────────────────────────
+  const MK = {
+    log : (...a) => console.log('%c[MK]',  'background:#E48DA5;color:#fff;padding:2px 6px;border-radius:4px;font-weight:bold', ...a),
+    warn: (...a) => console.warn('%c[MK⚠]','background:#FFB800;color:#000;padding:2px 6px;border-radius:4px', ...a),
+    err : (...a) => console.error('%c[MK✗]','background:#E53935;color:#fff;padding:2px 6px;border-radius:4px', ...a),
+  };
 
-  /* ═══════ SESSION ID (persistente por pestaña) ═══════ */
-  function mkGetSessionId(forceNew = false) {
-    // Genera un session_id único por producto si forceNew=true
-    if (!forceNew && mkSessionId) return mkSessionId;
-    mkSessionId = 'mk_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 8);
-    return mkSessionId;
+  // ─── Hash estable (NO usa Date.now) ──────────────────────────
+  // Mismo producto+variante → mismo ID → backend responde reused=true
+  function mkStableId(url, skuId) {
+    const raw = (url || '') + '|' + (skuId || 'default');
+    let h = 0;
+    for (let i = 0; i < raw.length; i++) {
+      h = (Math.imul(31, h) + raw.charCodeAt(i)) | 0;
+    }
+    return 'mk_' + Math.abs(h).toString(36);
   }
+
+  // ─── Persistencia de variant_id (localStorage) ───────────────
+  const MK_MAP = 'mk_vid_map_v4';
+  function mkGetMap()         { try { return JSON.parse(localStorage.getItem(MK_MAP) || '{}'); } catch { return {}; } }
+  function mkGetVid(key)      { return mkGetMap()[key] || null; }
+  function mkSetVid(key, vid) { const m = mkGetMap(); m[key] = String(vid); localStorage.setItem(MK_MAP, JSON.stringify(m)); }
 
   /* ═══════ BUSCAR CON SSE ═══════ */
   async function mkBuscar() {
@@ -880,236 +895,107 @@
 
   function mkQty(d) { mkQtyVal = Math.max(1, mkQtyVal + d); document.getElementById('mk-qty').textContent = mkQtyVal; mkRecalc(); }
 
+  // ═══════════════════════════════════════════════════════════════
+  //  HELPERS DE CARRITO
+  // ═══════════════════════════════════════════════════════════════
   function mkGetSelectedVariant() {
     const card = document.querySelector('.mk-variant-card.picked');
     if (!card) return { label: 'N/A', sku_id: '' };
-    const lblEl = card.querySelector('.mk-vc-label');
-    const descEl = card.querySelector('.mk-vc-desc');
     const idx = parseInt(card.dataset.idx || '0');
-    const v = (mkData.color_variants || [])[idx] || {};
-    return {
-      label: lblEl ? (lblEl.textContent + (descEl ? ' ' + descEl.textContent : '')) : 'N/A',
-      sku_id: v.sku_id || '',
-      image: v.image || '',
-    };
+    const v   = (mkData?.color_variants || [])[idx] || {};
+    const lbl = card.querySelector('.mk-vc-label')?.textContent || '';
+    const dsc = card.querySelector('.mk-vc-desc')?.textContent  || '';
+    return { label: (lbl + (dsc ? ' ' + dsc : '')).trim(), sku_id: v.sku_id || '', image: v.image || '' };
   }
 
   function mkProps(variantId) {
-    const sv = mkGetSelectedVariant();
-    const mainImg = document.getElementById('mk-main-img');
-    const imgUrl = (mkData.images && mkData.images[0]) || (mainImg ? mainImg.src : '');
+    const sv     = mkGetSelectedVariant();
+    const imgUrl = mkData.images?.[0] || document.getElementById('mk-main-img')?.src || '';
     return {
-      'Producto Sephora': mkData.name || '',
-      'Marca': mkData.brand || '',
-      'Color/Variante': sv.label,
-      'Precio USD': document.getElementById('bd-usd').textContent,
-      'Total a pagar': document.getElementById('bd-pen').textContent,
-      'Categoría': document.getElementById('mk-category').textContent.trim(),
-      'Indicaciones': document.getElementById('mk-notes').value || 'Sin indicaciones',
-      '_Link Sephora': mkData.url || '',
-      '_SKU Sephora': sv.sku_id,
-      '_Imagen': imgUrl,
-      '_Precio base USD': mkData.price || '',
-      '_Cantidad solicitada': String(mkQtyVal),
-      '_Pool Variant': String(variantId),
-      '_Session': mkGetSessionId(),
+      'Producto Sephora' : mkData.name  || '',
+      'Marca'            : mkData.brand || '',
+      'Color/Variante'   : sv.label,
+      'Precio USD'       : document.getElementById('bd-usd')?.textContent  || '',
+      'Total a pagar'    : document.getElementById('bd-pen')?.textContent  || '',
+      'Categoría'        : document.getElementById('mk-category')?.textContent.trim() || '',
+      'Indicaciones'     : document.getElementById('mk-notes')?.value || 'Sin indicaciones',
+      '_Link Sephora'    : mkData.url   || '',
+      '_SKU Sephora'     : sv.sku_id,
+      '_Imagen'          : imgUrl,
+      '_Precio base USD' : mkData.price || '',
+      '_Cantidad'        : String(mkQtyVal),
+      '_Pool Variant'    : String(variantId),
     };
   }
 
-  async function mkAddToCart() {
-    // ── 1. Calcular precio total en PEN ──
-    const price = mkData ? (mkData.price_numeric || 0) : 0;
-    const q = mkQtyVal;
-    const prod = price * q, tax = prod * MK_TAX_RATE;
-    const usa = prod + tax, intl = MK_INTL_SHIP;
-    const proc = prod * MK_COMMISSION;
-    const totalUsd = usa + intl + proc;
-    const totalPen = totalUsd * MK_RATE;
-
-    // Obtener imagen principal del producto
-    const mainImg = document.getElementById('mk-main-img');
-    const imgUrl = (mkData.images && mkData.images[0]) || (mainImg ? mainImg.src : '');
-
-    // ── 2. POOL: Session reutilizable por producto+variante ──
-    // Persiste en sessionStorage para sobrevivir recargas de página
-    const sv = mkGetSelectedVariant();
-    const productKey = (mkData.url || '') + '::' + (sv.sku_id || 'default');
-    const sessStorageKey = 'mk_sess::' + productKey;
-    const vidStorageKey  = 'mk_vid::'  + productKey;
-    let sessionId = mkProductSessionMap.get(productKey) || sessionStorage.getItem(sessStorageKey);
-    if (!sessionId) {
-      sessionId = 'mk_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 8);
-    }
-    mkProductSessionMap.set(productKey, sessionId);
-    sessionStorage.setItem(sessStorageKey, sessionId);
-
-    const prepareRes = await fetch(`${MK_API}/api/prepare-product`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session_id: sessionId,
-        price: totalPen.toFixed(2),
-        title: mkData.name || 'Producto Sephora',
-        image: imgUrl,
-        sephora_url: mkData.url || '',
-      })
+  function mkUpdateCartCount(count = null) {
+    const set = n => document.querySelectorAll(
+      '.cart-count, .cart-count-bubble span, [data-cart-count], ' +
+      '.js-cart-count, #cart-icon-bubble span, .cart-count-bubble'
+    ).forEach(el => {
+      el.textContent = n;
+      const h = el.closest('[hidden]'); if (h) h.hidden = false;
     });
-    const prepareData = await prepareRes.json();
-    if (!prepareData.success) {
-      throw new Error(prepareData.error || 'No se pudo preparar el producto');
-    }
-
-    const variantId = prepareData.variant_id;
-    // Guardar variant_id en sessionStorage para el fallback de búsqueda en carrito
-    sessionStorage.setItem(vidStorageKey, String(variantId));
-    console.log(`[MK] Pool placeholder: variant=${variantId}, product=${prepareData.product_id}, reused=${prepareData.reused}`);
-
-    // ── 3. Espera inteligente: más tiempo si el placeholder es nuevo (Shopify necesita propagarlo) ──
-    await new Promise(r => setTimeout(r, prepareData.reused ? 200 : 1200));
-
-    // ── 4. Verificar si el producto ya está en el carrito ──
-    let cartActionData = null;  // guardará la respuesta con sections para el drawer
-    try {
-      const cartRes = await fetch('/cart.js');
-      const cart = await cartRes.json();
-      // Buscar por variant_id actual O por el guardado en sessionStorage O por _SKU Sephora
-      const storedVid = sessionStorage.getItem(vidStorageKey);
-      const existingItem = cart.items.find(item =>
-        String(item.variant_id) === String(variantId) ||
-        (storedVid && String(item.variant_id) === storedVid) ||
-        (sv.sku_id && item.properties?.['_SKU Sephora'] === sv.sku_id)
-      );
-
-      if (existingItem) {
-        // Ya está en el carrito — incrementar cantidad
-        const newQty = existingItem.quantity + mkQtyVal;
-        console.log(`[MK] Producto ya en carrito (key=${existingItem.key}), actualizando qty: ${existingItem.quantity} → ${newQty}`);
-        const changeRes = await fetch('/cart/change.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: existingItem.key,
-            quantity: newQty,
-            sections: 'cart-drawer,cart-icon-bubble',
-            sections_url: window.location.pathname,
-          })
-        });
-        if (!changeRes.ok) throw new Error(`Error HTTP ${changeRes.status}`);
-        cartActionData = await changeRes.json();
-        mkUpdateCartCount();
-        return cartActionData;
-      }
-    } catch(e) { console.warn('Error revisando carrito:', e); }
-
-    // ── 5. Agregar al carrito como item nuevo ──
-    // Incluimos 'sections' para que Shopify devuelva el HTML renderizado del drawer.
-    // Dawn usa esta respuesta en renderContents() para actualizar y abrir el drawer.
-    const payload = {
-      id: variantId,
-      quantity: mkQtyVal,
-      properties: mkProps(variantId),
-      sections: 'cart-drawer,cart-icon-bubble',
-      sections_url: window.location.pathname,
-    };
-    const res = await fetch('/cart/add.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!res.ok) {
-      const errData = await res.json().catch(() => null);
-      const msg = errData?.description || errData?.message || `Error HTTP ${res.status}`;
-      throw new Error(msg);
-    }
-    cartActionData = await res.json();
-    mkUpdateCartCount();
-    return cartActionData;
+    if (count !== null) return set(count);
+    fetch('/cart.js').then(r => r.json()).then(c => set(c.item_count)).catch(() => {});
   }
 
-  function mkUpdateCartCount() {
-    fetch('/cart.js')
-      .then(r => r.json())
-      .then(cart => {
-        const count = cart.item_count || 0;
-        // Actualizar badges comunes de temas Shopify
-        document.querySelectorAll(
-          '.cart-count, .cart-count-bubble span, ' +
-          '[data-cart-count], .js-cart-count, ' +
-          '.site-header__cart-count, .header__cart-count, ' +
-          '#cart-icon-bubble span'
-        ).forEach(el => {
-          el.textContent = count;
-          if (el.closest('[hidden]')) el.closest('[hidden]').hidden = false;
-        });
-      }).catch(() => {});
-  }
-
-  async function mkComprar() {
-    if (!mkData) return;
-    const btn = document.querySelector('.mk-btn-comprar');
-    const original = btn.textContent;
-    btn.disabled = true; btn.textContent = 'Procesando...';
-    try {
-      await mkAddToCart();
-      btn.textContent = 'Redirigiendo al pago...';
-      window.location.href = '/checkout';
-    } catch(e) {
-      btn.disabled = false; btn.textContent = original;
-      mkShowAlert('No se pudo agregar al carrito: ' + e.message);
-    }
-  }
-
-  async function mkAgregar() {
-    if (!mkData) return;
-    // Mutex: evitar múltiples adds simultáneos que generan duplicados
-    if (mkAddingToCart) { console.log('[MK] Add en progreso, ignorando click duplicado'); return; }
-    mkAddingToCart = true;
-    const btn = document.querySelector('.mk-btn-carrito');
-    const original = btn.textContent;
-    btn.disabled = true; btn.textContent = 'Agregando...';
-    try {
-      const cartData = await mkAddToCart();
-      btn.textContent = '✓ ¡Agregado!';
-      // Intentar abrir minicart nativo del tema
-      const opened = await mkOpenNativeMinicart(cartData);
-      // Si no se pudo abrir, mostrar toast de confirmación
-      if (!opened) mkShowCartToast();
-      setTimeout(() => { btn.disabled = false; btn.textContent = original; }, 2500);
-    } catch(e) {
-      btn.disabled = false; btn.textContent = original;
-      mkShowAlert('No se pudo agregar al carrito: ' + e.message);
-    } finally {
-      mkAddingToCart = false;
-    }
-  }
-
-  /* ═══════ ABRIR MINICART NATIVO DEL TEMA ═══════ */
-  async function mkOpenNativeMinicart(cartData) {
-    // Pequeña pausa para que Shopify procese el add/change
-    await new Promise(r => setTimeout(r, 400));
-
-    const cartDrawer = document.querySelector('cart-drawer');
-
-    // ── Estrategia 1: renderContents() nativo de Dawn con secciones FRESCAS ──
-    // NO pasamos cartData directamente: el HTML en cartData fue generado ANTES de
-    // que /api/prepare-product actualizara título/precio en Shopify, por eso aparecía
-    // vacío. Hacemos un re-fetch para obtener el HTML ya con los datos correctos.
-    if (cartDrawer && typeof cartDrawer.renderContents === 'function') {
+  // ═══════════════════════════════════════════════════════════════
+  //  POLLING: esperar que /variants/{id}.js devuelva 200
+  //  Evita que /cart/add.js rechace silenciosamente un variant
+  //  que Shopify aún no propagó (~1-3 s en placeholders nuevos)
+  // ═══════════════════════════════════════════════════════════════
+  async function mkPollVariant(variantId, max = 10, interval = 600) {
+    for (let i = 0; i < max; i++) {
       try {
-        const sectionsRes = await fetch(`${window.location.pathname}?sections=cart-drawer,cart-icon-bubble`);
-        if (sectionsRes.ok) {
-          const freshSections = await sectionsRes.json();
-          cartDrawer.renderContents({ sections: freshSections });
-          console.log('[MK] renderContents() con secciones frescas OK');
-          return true;
-        }
-      } catch(e) { console.warn('[MK] renderContents falló, usando fallback:', e); }
+        const r = await fetch(`/variants/${variantId}.js`);
+        if (r.ok) { MK.log(`Variant OK en intento ${i + 1}`); return true; }
+        MK.log(`Variant ${i + 1}/${max}: status=${r.status}`);
+      } catch(e) { MK.warn('Variant poll error:', e.message); }
+      await new Promise(r => setTimeout(r, interval));
+    }
+    MK.err(`Variant ${variantId} no respondió después de ${max} intentos`);
+    return false;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  POLLING: esperar que /cart.js tenga ≥ expectedCount items
+  //  Resuelve el race condition con Avada (Clear-Site-Data)
+  // ═══════════════════════════════════════════════════════════════
+  async function mkPollCartCount(expectedCount, max = 10, interval = 400) {
+    for (let i = 0; i < max; i++) {
+      try {
+        const cart = await fetch('/cart.js').then(r => r.json());
+        MK.log(`Cart poll ${i + 1}/${max}: item_count=${cart.item_count} esperado≥${expectedCount}`);
+        if (cart.item_count >= expectedCount) return true;
+      } catch(e) { MK.warn('Cart poll error:', e.message); }
+      await new Promise(r => setTimeout(r, interval));
+    }
+    return false;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  ABRIR DRAWER con secciones siempre frescas
+  // ═══════════════════════════════════════════════════════════════
+  async function mkOpenDrawer() {
+    MK.log('Abriendo drawer...');
+    const drawer = document.querySelector('cart-drawer');
+
+    // A: renderContents Dawn con secciones re-fetched
+    if (drawer && typeof drawer.renderContents === 'function') {
+      try {
+        const sections = await fetch(
+          `${window.location.pathname}?sections=cart-drawer,cart-icon-bubble`
+        ).then(r => r.json());
+        MK.log('Secciones frescas:', Object.keys(sections));
+        drawer.renderContents({ sections });
+        MK.log('Drawer abierto con renderContents ✓');
+        return;
+      } catch(e) { MK.warn('renderContents falló:', e.message); }
     }
 
-    // ── Estrategia 2: click en el botón/summary del carrito ──
-    // Cuando hacemos click en el ícono del carrito Dawn dispara su propio
-    // fetch de Section Rendering y actualiza el drawer — es el camino más fiable.
-    const cartBtnSelectors = [
+    // B: click en ícono de carrito
+    const btns = [
       'button[aria-controls="cart-drawer"]',
       '#cart-icon-bubble',
       '.header__icon--cart',
@@ -1117,79 +1003,196 @@
       'button[aria-controls*="cart"]',
       '.js-cart-toggle',
     ];
-    for (const sel of cartBtnSelectors) {
+    for (const sel of btns) {
       const el = document.querySelector(sel);
-      if (el && el.offsetParent !== null) {
+      if (el?.offsetParent !== null) {
         el.click();
-        console.log(`[MK] Carrito abierto via click ${sel}`);
-        return true;
+        MK.log(`Drawer abierto via "${sel}" ✓`);
+        return;
       }
     }
 
-    // ── Estrategia 3: minicart-form en <details> (otros temas) ──
-    const mc = document.querySelector('minicart-form');
-    if (mc) {
-      const details = mc.closest('details');
-      if (details) {
-        if (details.open) { details.open = false; await new Promise(r => setTimeout(r, 150)); }
-        const summary = details.querySelector('summary');
-        if (summary) { summary.click(); return true; }
-        details.open = true;
-        return true;
-      }
+    // C: toast fallback
+    MK.warn('No se encontró drawer nativo → mostrando toast');
+    mkShowCartToast();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  CORE: prepare → poll variant → cart/add (o change) → poll cart → drawer
+  // ═══════════════════════════════════════════════════════════════
+  async function mkAddToCart() {
+    // ── 1. Calcular precio total en PEN ──
+    const price    = mkData?.price_numeric || 0;
+    const prod     = price  * mkQtyVal;
+    const tax      = prod   * MK_TAX_RATE;
+    const proc     = prod   * MK_COMMISSION;
+    const totalUsd = prod + tax + MK_INTL_SHIP + proc;
+    const totalPen = totalUsd * MK_RATE;
+
+    const sv       = mkGetSelectedVariant();
+    const imgUrl   = mkData.images?.[0] || document.getElementById('mk-main-img')?.src || '';
+    const stableId = mkStableId(mkData.url, sv.sku_id);
+
+    MK.log(`stableId="${stableId}" | sku="${sv.sku_id}" | S/ ${totalPen.toFixed(2)}`);
+
+    // ── 2. prepare-product (session_id estable → reused=true en 2ª llamada) ──
+    let variantId;
+    {
+      const res  = await fetch(`${MK_API}/api/prepare-product`, {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body   : JSON.stringify({
+          session_id  : stableId,
+          price       : totalPen.toFixed(2),
+          title       : mkData.name || 'Producto Sephora',
+          image       : imgUrl,
+          sephora_url : mkData.url || '',
+        })
+      });
+      const data = await res.json();
+      MK.log('prepare-product →', data);
+      if (!data.success) throw new Error(data.error || 'prepare-product falló');
+      variantId = data.variant_id;
+      mkSetVid(stableId, variantId);
     }
 
-    document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
-    return false;
+    // ── 3. Esperar que el variant esté disponible en Shopify ──
+    MK.log(`Esperando variant ${variantId}...`);
+    const ready = await mkPollVariant(variantId);
+    if (!ready) throw new Error('El placeholder no está disponible en Shopify. Asegúrate de que el producto esté publicado.');
+
+    // ── 4. Leer carrito actual ──
+    const cartBefore = await fetch('/cart.js').then(r => r.json());
+    MK.log(`Carrito antes: ${cartBefore.item_count} items`);
+
+    const existente = cartBefore.items.find(i =>
+      String(i.variant_id) === String(variantId) ||
+      (sv.sku_id && i.properties?.['_SKU Sephora'] === sv.sku_id)
+    );
+
+    if (existente) {
+      // ── Existe → incrementar ──────────────────────────────────
+      const newQty = existente.quantity + mkQtyVal;
+      MK.log(`Item existente key=${existente.key}, qty ${existente.quantity}→${newQty}`);
+      const res = await fetch('/cart/change.js', {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body   : JSON.stringify({ id: existente.key, quantity: newQty })
+      });
+      if (!res.ok) throw new Error(`cart/change.js HTTP ${res.status}`);
+      const changed = await res.json();
+      await mkPollCartCount(changed.item_count);
+      mkUpdateCartCount(changed.item_count);
+      await mkOpenDrawer();
+      return;
+    }
+
+    // ── 5. Agregar nuevo item ──
+    MK.log(`Agregando variant=${variantId} qty=${mkQtyVal}`);
+    const addRes  = await fetch('/cart/add.js', {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({
+        id        : variantId,
+        quantity  : mkQtyVal,
+        properties: mkProps(variantId),
+      })
+    });
+    const addText = await addRes.text();
+    MK.log(`cart/add.js ${addRes.status}:`, addText.slice(0, 200));
+    if (!addRes.ok) {
+      let msg = `HTTP ${addRes.status}`;
+      try { const j = JSON.parse(addText); msg = j.description || j.message || msg; } catch {}
+      throw new Error(msg);
+    }
+
+    // ── 6. Polling — Avada puede disparar Clear-Site-Data ──
+    MK.log('Esperando confirmación de /cart.js...');
+    const expectedCount = cartBefore.item_count + mkQtyVal;
+    const confirmed = await mkPollCartCount(expectedCount, 10, 500);
+    if (!confirmed) MK.warn('Timeout esperando confirmación — abriendo de todas formas');
+
+    mkUpdateCartCount();
+
+    // ── 7. Abrir drawer ──
+    await mkOpenDrawer();
+  }
+
+  async function mkComprar() {
+    if (!mkData) return;
+    const btn = document.querySelector('.mk-btn-comprar');
+    btn.disabled = true; btn.textContent = 'Procesando...';
+    try {
+      await mkAddToCart();
+      btn.textContent = 'Redirigiendo...';
+      window.location.href = '/checkout';
+    } catch(e) {
+      MK.err('mkComprar:', e);
+      btn.disabled = false; btn.textContent = 'Comprar ahora';
+      mkShowAlert('❌ ' + e.message);
+    }
+  }
+
+  async function mkAgregar() {
+    if (!mkData) return;
+    if (mkAddingToCart) { MK.warn('Click ignorado — add en progreso'); return; }
+    mkAddingToCart = true;
+    const btn  = document.querySelector('.mk-btn-carrito');
+    const orig = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Agregando...';
+    try {
+      await mkAddToCart();
+      btn.textContent = '✓ ¡Agregado!';
+    } catch(e) {
+      MK.err('mkAgregar:', e);
+      btn.disabled = false; btn.textContent = orig;
+      mkShowAlert('❌ ' + e.message);
+    } finally {
+      setTimeout(() => { btn.disabled = false; btn.textContent = orig; mkAddingToCart = false; }, 2800);
+    }
   }
 
   /* ═══════ TOAST DE CONFIRMACIÓN ═══════ */
   function mkShowCartToast() {
-    const existing = document.getElementById('mk-cart-toast');
-    if (existing) existing.remove();
-
-    const name = mkData?.name || 'Producto Sephora';
-    const sv = mkGetSelectedVariant();
-    const total = document.getElementById('bd-pen')?.textContent || '';
-    const variant = sv.label && sv.label !== 'N/A' ? sv.label : '';
-
+    document.getElementById('mk-cart-toast')?.remove();
+    const sv    = mkGetSelectedVariant();
     const toast = document.createElement('div');
-    toast.id = 'mk-cart-toast';
+    toast.id    = 'mk-cart-toast';
     toast.className = 'mk-cart-toast';
     toast.innerHTML = `
-      <button class="mk-toast-close" onclick="this.parentElement.remove()" aria-label="Cerrar">&times;</button>
+      <button class="mk-toast-close" onclick="this.parentElement.remove()">&times;</button>
       <div class="mk-toast-body">
         <div class="mk-toast-icon">✓</div>
         <div class="mk-toast-info">
           <strong>¡Agregado al carrito!</strong>
-          <div class="mk-toast-product">${name}${variant ? ' · ' + variant : ''}</div>
-          <div class="mk-toast-price">${total}</div>
+          <div class="mk-toast-product">${mkData?.name || 'Producto Sephora'}${sv.label !== 'N/A' ? ' · ' + sv.label : ''}</div>
+          <div class="mk-toast-price">${document.getElementById('bd-pen')?.textContent || ''}</div>
           <div class="mk-toast-actions">
             <a href="/cart" class="mk-toast-btn primary">Ver carrito</a>
             <button class="mk-toast-btn secondary" onclick="this.closest('.mk-cart-toast').remove()">Seguir comprando</button>
           </div>
         </div>
-      </div>
-    `;
+      </div>`;
     document.body.appendChild(toast);
-    setTimeout(() => { const t = document.getElementById('mk-cart-toast'); if (t) t.remove(); }, 8000);
+    setTimeout(() => document.getElementById('mk-cart-toast')?.remove(), 8000);
   }
 
   function mkShowAlert(msg) {
     const al = document.getElementById('mk-alert');
-    al.textContent = msg;
-    al.style.display = 'block';
-    setTimeout(() => { al.style.display = 'none'; }, 8000);
+    if (!al) return;
+    al.textContent = msg; al.style.display = 'block';
+    setTimeout(() => { al.style.display = 'none'; }, 9000);
   }
 
-  window.mkBuscar = mkBuscar;
-  window.mkQty = mkQty;
-  window.mkComprar = mkComprar;
-  window.mkAgregar = mkAgregar;
-  window.mkRecalc = mkRecalc;
+  // ─── Exponer globalmente ──────────────────────────────────────
+  window.mkBuscar        = mkBuscar;
+  window.mkQty           = mkQty;
+  window.mkComprar       = mkComprar;
+  window.mkAgregar       = mkAgregar;
+  window.mkRecalc        = mkRecalc;
   window.mkUpdateCartCount = mkUpdateCartCount;
-  window.mkOpenNativeMinicart = mkOpenNativeMinicart;
   window.mkShowCartToast = mkShowCartToast;
+  window.mkOpenDrawer    = mkOpenDrawer;
 </script>
 
 {% schema %}
