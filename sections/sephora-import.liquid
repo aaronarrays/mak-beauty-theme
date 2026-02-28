@@ -931,13 +931,17 @@
     const imgUrl = (mkData.images && mkData.images[0]) || (mainImg ? mainImg.src : '');
 
     // ── 2. POOL: Session reutilizable por producto+variante ──
+    // Persiste en sessionStorage para sobrevivir recargas de página
     const sv = mkGetSelectedVariant();
     const productKey = (mkData.url || '') + '::' + (sv.sku_id || 'default');
-    let sessionId = mkProductSessionMap.get(productKey);
+    const sessStorageKey = 'mk_sess::' + productKey;
+    const vidStorageKey  = 'mk_vid::'  + productKey;
+    let sessionId = mkProductSessionMap.get(productKey) || sessionStorage.getItem(sessStorageKey);
     if (!sessionId) {
       sessionId = 'mk_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 8);
-      mkProductSessionMap.set(productKey, sessionId);
     }
+    mkProductSessionMap.set(productKey, sessionId);
+    sessionStorage.setItem(sessStorageKey, sessionId);
 
     const prepareRes = await fetch(`${MK_API}/api/prepare-product`, {
       method: 'POST',
@@ -956,17 +960,25 @@
     }
 
     const variantId = prepareData.variant_id;
+    // Guardar variant_id en sessionStorage para el fallback de búsqueda en carrito
+    sessionStorage.setItem(vidStorageKey, String(variantId));
     console.log(`[MK] Pool placeholder: variant=${variantId}, product=${prepareData.product_id}, reused=${prepareData.reused}`);
 
-    // ── 3. Breve espera para propagación en Shopify ──
-    await new Promise(r => setTimeout(r, 500));
+    // ── 3. Espera inteligente: más tiempo si el placeholder es nuevo (Shopify necesita propagarlo) ──
+    await new Promise(r => setTimeout(r, prepareData.reused ? 200 : 1200));
 
     // ── 4. Verificar si el producto ya está en el carrito ──
     let cartActionData = null;  // guardará la respuesta con sections para el drawer
     try {
       const cartRes = await fetch('/cart.js');
       const cart = await cartRes.json();
-      const existingItem = cart.items.find(item => String(item.variant_id) === String(variantId));
+      // Buscar por variant_id actual O por el guardado en sessionStorage O por _SKU Sephora
+      const storedVid = sessionStorage.getItem(vidStorageKey);
+      const existingItem = cart.items.find(item =>
+        String(item.variant_id) === String(variantId) ||
+        (storedVid && String(item.variant_id) === storedVid) ||
+        (sv.sku_id && item.properties?.['_SKU Sephora'] === sv.sku_id)
+      );
 
       if (existingItem) {
         // Ya está en el carrito — incrementar cantidad
@@ -1078,14 +1090,19 @@
 
     const cartDrawer = document.querySelector('cart-drawer');
 
-    // ── Estrategia 1: renderContents() nativo de Dawn ──
-    // Disponible en Dawn 9+. Recibe el objeto de /cart/add.js con 'sections'
-    // y se encarga de actualizar el HTML + abrir el drawer de una sola vez.
-    if (cartDrawer && typeof cartDrawer.renderContents === 'function' && cartData?.sections) {
+    // ── Estrategia 1: renderContents() nativo de Dawn con secciones FRESCAS ──
+    // NO pasamos cartData directamente: el HTML en cartData fue generado ANTES de
+    // que /api/prepare-product actualizara título/precio en Shopify, por eso aparecía
+    // vacío. Hacemos un re-fetch para obtener el HTML ya con los datos correctos.
+    if (cartDrawer && typeof cartDrawer.renderContents === 'function') {
       try {
-        cartDrawer.renderContents(cartData);
-        console.log('[MK] renderContents() OK');
-        return true;
+        const sectionsRes = await fetch(`${window.location.pathname}?sections=cart-drawer,cart-icon-bubble`);
+        if (sectionsRes.ok) {
+          const freshSections = await sectionsRes.json();
+          cartDrawer.renderContents({ sections: freshSections });
+          console.log('[MK] renderContents() con secciones frescas OK');
+          return true;
+        }
       } catch(e) { console.warn('[MK] renderContents falló, usando fallback:', e); }
     }
 
