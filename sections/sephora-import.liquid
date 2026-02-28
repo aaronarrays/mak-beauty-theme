@@ -910,21 +910,22 @@
 
   function mkProps(variantId) {
     const sv     = mkGetSelectedVariant();
-    const imgUrl = mkData.images?.[0] || document.getElementById('mk-main-img')?.src || '';
+    // Usar imagen actualmente visible (variante seleccionada), no siempre la primera
+    const imgUrl = document.getElementById('mk-main-img')?.src || mkData.images?.[0] || '';
     return {
-      'Producto Sephora' : mkData.name  || '',
-      'Marca'            : mkData.brand || '',
-      'Color/Variante'   : sv.label,
-      'Precio USD'       : document.getElementById('bd-usd')?.textContent  || '',
-      'Total a pagar'    : document.getElementById('bd-pen')?.textContent  || '',
-      'Categoría'        : document.getElementById('mk-category')?.textContent.trim() || '',
-      'Indicaciones'     : document.getElementById('mk-notes')?.value || 'Sin indicaciones',
-      '_Link Sephora'    : mkData.url   || '',
-      '_SKU Sephora'     : sv.sku_id,
-      '_Imagen'          : imgUrl,
-      '_Precio base USD' : mkData.price || '',
-      '_Cantidad'        : String(mkQtyVal),
-      '_Pool Variant'    : String(variantId),
+      'Color/Variante'    : sv.label,
+      'Precio USD'        : document.getElementById('bd-usd')?.textContent  || '',
+      'Total a pagar'     : document.getElementById('bd-pen')?.textContent  || '',
+      'Categoría'         : document.getElementById('mk-category')?.textContent.trim() || '',
+      'Indicaciones'      : document.getElementById('mk-notes')?.value || 'Sin indicaciones',
+      '_Producto Sephora' : mkData.name  || '',
+      '_Marca'            : mkData.brand || '',
+      '_Link Sephora'     : mkData.url   || '',
+      '_SKU Sephora'      : sv.sku_id,
+      '_Imagen'           : imgUrl,
+      '_Precio base USD'  : mkData.price || '',
+      '_Cantidad'         : String(mkQtyVal),
+      '_Pool Variant'     : String(variantId),
     };
   }
 
@@ -972,6 +973,64 @@
       await new Promise(r => setTimeout(r, interval));
     }
     return false;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  PATCH MINICART: reemplaza imagen + título del placeholder
+  //  con los datos reales del producto Sephora.
+  //
+  //  El tema usa id="minicart__product-{item.key}" para cada item.
+  //  Shopify renderiza la imagen del producto placeholder, pero
+  //  nosotros guardamos la imagen real en la propiedad "_Imagen".
+  //  También reconstruimos el título con Marca y Producto Sephora.
+  // ═══════════════════════════════════════════════════════════════
+  async function mkPatchMinicart() {
+    try {
+      const cart = await fetch('/cart.js').then(r => r.json());
+      let patched = 0;
+      cart.items.forEach(item => {
+        const props  = item.properties || {};
+        const imgSrc = props['_Imagen'];
+        if (!imgSrc) return; // no es un item nuestro
+
+        const el = document.getElementById(`minicart__product-${item.key}`);
+        if (!el) return;
+
+        // 1. Reemplazar imagen con la de la variante seleccionada
+        el.querySelectorAll('.minicart__product__image img').forEach(img => {
+          img.removeAttribute('srcset');
+          img.removeAttribute('sizes');
+          img.src = imgSrc;
+          img.style.objectFit = 'cover';
+        });
+
+        // 2. Actualizar título: "Marca – Producto Sephora"
+        const brand    = props['_Marca']            || '';
+        const prodName = props['_Producto Sephora'] || item.product_title || '';
+        const variant  = props['Color/Variante']    || '';
+        if (prodName) {
+          const titleLink = el.querySelector('.minicart__product-name a');
+          if (titleLink) {
+            titleLink.textContent = brand ? `${brand} – ${prodName}` : prodName;
+          }
+          // Mostrar variante si no está en el bloque de opciones del tema
+          const optionWrap = el.querySelector('.minicart__item-variant');
+          if (optionWrap && variant && variant !== 'N/A') {
+            // Verificar que no esté ya visible
+            if (!optionWrap.textContent.includes(variant)) {
+              const vDiv = document.createElement('div');
+              vDiv.className = 'product-option';
+              vDiv.innerHTML = `<span>Color/Variante: </span><span>${variant}</span>`;
+              optionWrap.prepend(vDiv);
+            }
+          }
+        }
+        patched++;
+      });
+      if (patched > 0) MK.log(`Minicart parcheado: ${patched} item(s) con datos Sephora ✓`);
+    } catch(e) {
+      MK.warn('mkPatchMinicart falló:', e.message);
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -1030,6 +1089,9 @@
         MK.warn('Inyección de minicart-form falló:', e.message);
       }
     }
+
+    // ── Parchar imágenes y títulos con los datos reales de Sephora ──
+    await mkPatchMinicart();
 
     // ── Abrir via cart-notification.open() (método nativo del tema) ──
     if (cartEl && typeof cartEl.open === 'function') {
@@ -1236,6 +1298,7 @@
   window.mkUpdateCartCount = mkUpdateCartCount;
   window.mkShowCartToast = mkShowCartToast;
   window.mkOpenDrawer    = mkOpenDrawer;
+  window.mkPatchMinicart = mkPatchMinicart;
 </script>
 
 {% schema %}
