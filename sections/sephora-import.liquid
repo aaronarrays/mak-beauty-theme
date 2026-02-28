@@ -476,6 +476,7 @@
   // ── Pool: ya NO hay MK_VARIANT_ID fijo ──
   // El variant_id se obtiene dinámicamente de /api/prepare-product
   let mkSessionId = null;  // Session ID para el pool
+  const mkProductSessionMap = new Map(); // { "url::sku_id" → session_id } — reutiliza placeholder por producto
 
   let mkData = null, mkQtyVal = 1;
   let mkVariantImagesCache = {};  // { skuId: [urls] }
@@ -928,12 +929,20 @@
     const mainImg = document.getElementById('mk-main-img');
     const imgUrl = (mkData.images && mkData.images[0]) || (mainImg ? mainImg.src : '');
 
-    // ── 2. POOL: Preparar producto (adquirir placeholder + actualizar Shopify) ──
+    // ── 2. POOL: Session reutilizable por producto+variante ──
+    const sv = mkGetSelectedVariant();
+    const productKey = (mkData.url || '') + '::' + (sv.sku_id || 'default');
+    let sessionId = mkProductSessionMap.get(productKey);
+    if (!sessionId) {
+      sessionId = 'mk_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 8);
+      mkProductSessionMap.set(productKey, sessionId);
+    }
+
     const prepareRes = await fetch(`${MK_API}/api/prepare-product`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        session_id: mkGetSessionId(true),
+        session_id: sessionId,
         price: totalPen.toFixed(2),
         title: mkData.name || 'Producto Sephora',
         image: imgUrl,
@@ -946,30 +955,37 @@
     }
 
     const variantId = prepareData.variant_id;
-    console.log(`[MK] Pool placeholder: variant=${variantId}, product=${prepareData.product_id}`);
+    console.log(`[MK] Pool placeholder: variant=${variantId}, product=${prepareData.product_id}, reused=${prepareData.reused}`);
 
     // ── 3. Breve espera para propagación en Shopify ──
     await new Promise(r => setTimeout(r, 500));
 
-    // ── 4. Limpiar items previos de este placeholder del carrito ──
+    // ── 4. Verificar si el producto ya está en el carrito ──
     try {
       const cartRes = await fetch('/cart.js');
       const cart = await cartRes.json();
-      for (const item of cart.items) {
-        if (String(item.variant_id) === String(variantId)) {
-          await fetch('/cart/change.js', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: item.key, quantity: 0 })
-          });
-        }
-      }
-    } catch(e) { console.warn('No se pudo limpiar carrito previo:', e); }
+      const existingItem = cart.items.find(item => String(item.variant_id) === String(variantId));
 
-    // ── 5. Agregar al carrito con el variant_id del pool ──
+      if (existingItem) {
+        // Ya está en el carrito — incrementar cantidad
+        const newQty = existingItem.quantity + mkQtyVal;
+        console.log(`[MK] Producto ya en carrito (key=${existingItem.key}), actualizando qty: ${existingItem.quantity} → ${newQty}`);
+        const changeRes = await fetch('/cart/change.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: existingItem.key, quantity: newQty })
+        });
+        if (!changeRes.ok) throw new Error(`Error HTTP ${changeRes.status}`);
+        const changedCart = await changeRes.json();
+        mkUpdateCartCount();
+        return changedCart;
+      }
+    } catch(e) { console.warn('Error revisando carrito:', e); }
+
+    // ── 5. Agregar al carrito como item nuevo ──
     const payload = {
       id: variantId,
-      quantity: 1,  // siempre 1 — cantidad real va en propiedades
+      quantity: mkQtyVal,
       properties: mkProps(variantId),
     };
     const res = await fetch('/cart/add.js', {
