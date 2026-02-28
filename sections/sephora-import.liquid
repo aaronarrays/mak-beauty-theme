@@ -482,6 +482,7 @@
   let mkVariantImagesCache = {};  // { skuId: [urls] }
   let mkCurrentFetchController = null;
   let mkActiveRequest = null;
+  let mkAddingToCart = false;  // mutex anti-duplicados
 
   /* ═══════ SESSION ID (persistente por pestaña) ═══════ */
   function mkGetSessionId(forceNew = false) {
@@ -1038,6 +1039,9 @@
 
   async function mkAgregar() {
     if (!mkData) return;
+    // Mutex: evitar múltiples adds simultáneos que generan duplicados
+    if (mkAddingToCart) { console.log('[MK] Add en progreso, ignorando click duplicado'); return; }
+    mkAddingToCart = true;
     const btn = document.querySelector('.mk-btn-carrito');
     const original = btn.textContent;
     btn.disabled = true; btn.textContent = 'Agregando...';
@@ -1052,42 +1056,71 @@
     } catch(e) {
       btn.disabled = false; btn.textContent = original;
       mkShowAlert('No se pudo agregar al carrito: ' + e.message);
+    } finally {
+      mkAddingToCart = false;
     }
   }
 
   /* ═══════ ABRIR MINICART NATIVO DEL TEMA ═══════ */
   async function mkOpenNativeMinicart() {
-    // Dar tiempo a Shopify para procesar el cambio en el carrito
-    await new Promise(r => setTimeout(r, 800));
+    // Pequeña pausa para que Shopify procese el add/change
+    await new Promise(r => setTimeout(r, 350));
 
+    // ── Paso 1: Actualizar cart drawer via Section Rendering API ──
+    // Esto asegura que el drawer tenga el HTML más reciente ANTES de abrirse.
+    try {
+      const sectRes = await fetch('/?sections=cart-drawer,cart-icon-bubble');
+      if (sectRes.ok) {
+        const sections = await sectRes.json();
+
+        // Actualizar contenido interno de cart-drawer (sin reemplazar el custom element)
+        if (sections['cart-drawer']) {
+          const tmp = document.createElement('div');
+          tmp.innerHTML = sections['cart-drawer'];
+          const newInner = tmp.querySelector('cart-drawer');
+          const existing = document.querySelector('cart-drawer');
+          if (newInner && existing) {
+            existing.innerHTML = newInner.innerHTML;
+            console.log('[MK] cart-drawer HTML actualizado via Section Rendering');
+          }
+        }
+
+        // Actualizar el badge del ícono del carrito
+        if (sections['cart-icon-bubble']) {
+          const tmp2 = document.createElement('div');
+          tmp2.innerHTML = sections['cart-icon-bubble'];
+          const newBubble = tmp2.querySelector('#cart-icon-bubble');
+          const existBubble = document.getElementById('cart-icon-bubble');
+          if (newBubble && existBubble) {
+            existBubble.innerHTML = newBubble.innerHTML;
+            existBubble.closest('[hidden]') && (existBubble.closest('[hidden]').hidden = false);
+          }
+        }
+      }
+    } catch(e) { console.warn('[MK] Section Rendering fallido:', e); }
+
+    // ── Paso 2: Llamar open() del custom element cart-drawer (Dawn / compatible) ──
+    const cartDrawer = document.querySelector('cart-drawer');
+    if (cartDrawer && typeof cartDrawer.open === 'function') {
+      cartDrawer.open();
+      console.log('[MK] cart-drawer.open() llamado');
+      return true;
+    }
+
+    // ── Paso 3: minicart-form en <details> (otros temas) ──
     const mc = document.querySelector('minicart-form');
-
-    // ── Estrategia 1: Click en <summary> del <details> padre ──
-    // Esto deja que el JS del tema maneje todo: fetch de secciones,
-    // render del contenido y apertura del drawer.
     if (mc) {
       const details = mc.closest('details');
       if (details) {
-        // Si ya estaba abierto, cerrar primero para forzar refresh
-        if (details.open) {
-          details.open = false;
-          await new Promise(r => setTimeout(r, 200));
-        }
+        if (details.open) { details.open = false; await new Promise(r => setTimeout(r, 150)); }
         const summary = details.querySelector('summary');
-        if (summary) {
-          summary.click();
-          console.log('[MK] Minicart abierto via summary.click()');
-          return true;
-        }
-        // Sin summary, abrir directamente
+        if (summary) { summary.click(); console.log('[MK] Minicart via summary.click()'); return true; }
         details.open = true;
-        details.dispatchEvent(new Event('toggle'));
-        console.log('[MK] Minicart abierto via details.open');
         return true;
       }
     }
 
-    // ── Estrategia 2: Click en el ícono/botón del carrito del header ──
+    // ── Paso 4: Click en botón del carrito del header ──
     const selectors = [
       '.header__icon--cart', '#cart-icon-bubble',
       '[data-cart-toggle]', '.minicart__toggle',
@@ -1099,16 +1132,14 @@
       const el = document.querySelector(sel);
       if (el && el.offsetParent !== null) {
         el.click();
-        console.log(`[MK] Minicart abierto via ${sel}`);
+        console.log(`[MK] Minicart via ${sel}`);
         return true;
       }
     }
 
-    // ── Estrategia 3: Dispatch de eventos comunes de temas ──
+    // ── Paso 5: Eventos genéricos como último recurso ──
     document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
     document.documentElement.dispatchEvent(new CustomEvent('ajaxProduct:added', { bubbles: true }));
-    document.documentElement.dispatchEvent(new CustomEvent('product:added', { bubbles: true }));
-    console.log('[MK] Eventos de carrito disparados como fallback');
     return false;
   }
 
