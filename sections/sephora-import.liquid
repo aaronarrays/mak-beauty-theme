@@ -975,23 +975,71 @@
   }
 
   // ═══════════════════════════════════════════════════════════════
-  //  ABRIR DRAWER — siempre via click nativo
+  //  ABRIR DRAWER
   //
-  //  NO usamos renderContents() porque Avada dispara
-  //  Clear-Site-Data justo después del add, haciendo que el HTML
-  //  renderizado de las secciones muestre el carrito vacío.
-  //  Al hacer click en el ícono, Dawn dispara su propio fetch
-  //  fresco DESPUÉS de que Avada terminó de limpiar — y en ese
-  //  punto el Liquid ya lee la sesión actualizada correctamente.
+  //  Flujo:
+  //  1. Esperar 800ms (Avada necesita tiempo tras Clear-Site-Data)
+  //  2. Preparar el HTML del drawer con fetch no-store
+  //  3. Inyectar el HTML en el drawer ANTES de abrir
+  //  4. Abrir via click (o renderContents / drawer.open como fallback)
+  //
+  //  Inyectar primero garantiza que cuando Dawn muestre el drawer
+  //  ya tenga el contenido correcto, sin depender del timing
+  //  de su propio fetch interno.
   // ═══════════════════════════════════════════════════════════════
   async function mkOpenDrawer() {
     MK.log('Abriendo drawer...');
 
-    // Pequeña pausa extra para que Avada termine de procesar
-    // Clear-Site-Data antes de que Dawn haga su fetch de secciones
-    await new Promise(r => setTimeout(r, 300));
+    // ── Esperar que Avada termine de procesar Clear-Site-Data ──
+    await new Promise(r => setTimeout(r, 800));
 
-    // A: click en ícono del carrito → Dawn fetches sus propias secciones frescas
+    const drawer = document.querySelector('cart-drawer');
+
+    // ── Pre-cargar HTML fresco del drawer (no-store evita cache) ──
+    let freshSections = null;
+    try {
+      freshSections = await fetch(
+        `${window.location.pathname}?sections=cart-drawer,cart-icon-bubble`,
+        { cache: 'no-store' }
+      ).then(r => r.json());
+      MK.log('Secciones frescas cargadas:', Object.keys(freshSections));
+    } catch(e) {
+      MK.warn('No se pudieron cargar secciones frescas:', e.message);
+    }
+
+    // ── Estrategia A: renderContents (inyecta HTML + abre drawer) ──
+    if (drawer && typeof drawer.renderContents === 'function' && freshSections) {
+      try {
+        drawer.renderContents({ sections: freshSections });
+        MK.log('Drawer actualizado y abierto via renderContents ✓');
+        return;
+      } catch(e) {
+        MK.warn('renderContents falló:', e.message);
+      }
+    }
+
+    // ── Estrategia B: inyectar HTML manualmente + click para abrir ──
+    // Inyectamos el HTML antes del click para que cuando Dawn muestre
+    // el drawer ya tenga el contenido correcto.
+    if (drawer && freshSections) {
+      try {
+        // Actualizar el innerHTML del cart-drawer con el HTML fresco
+        const drawerKey = Object.keys(freshSections).find(k => k.includes('cart-drawer'));
+        if (drawerKey) {
+          const tmp = document.createElement('div');
+          tmp.innerHTML = freshSections[drawerKey];
+          const newDrawer = tmp.querySelector('cart-drawer');
+          if (newDrawer) {
+            drawer.innerHTML = newDrawer.innerHTML;
+            MK.log('HTML del drawer inyectado manualmente ✓');
+          }
+        }
+      } catch(e) {
+        MK.warn('Inyección manual falló:', e.message);
+      }
+    }
+
+    // ── Click en ícono del carrito para activar la animación de apertura ──
     const btns = [
       'button[aria-controls="cart-drawer"]',
       '#cart-icon-bubble',
@@ -1009,29 +1057,14 @@
       }
     }
 
-    // B: cart-drawer con getSectionsToRender / open() si existe
-    const drawer = document.querySelector('cart-drawer');
-    if (drawer) {
-      if (typeof drawer.open === 'function') {
-        drawer.open();
-        MK.log('Drawer abierto via drawer.open() ✓');
-        return;
-      }
-      // Forzar renderContents como último recurso (con nocache)
-      if (typeof drawer.renderContents === 'function') {
-        try {
-          const sections = await fetch(
-            `${window.location.pathname}?sections=cart-drawer,cart-icon-bubble&_=${Date.now()}`,
-            { cache: 'no-store' }
-          ).then(r => r.json());
-          drawer.renderContents({ sections });
-          MK.log('Drawer abierto via renderContents (fallback) ✓');
-          return;
-        } catch(e) { MK.warn('renderContents fallback falló:', e.message); }
-      }
+    // ── Estrategia C: drawer.open() ──
+    if (drawer && typeof drawer.open === 'function') {
+      drawer.open();
+      MK.log('Drawer abierto via drawer.open() ✓');
+      return;
     }
 
-    // C: toast fallback
+    // ── Fallback: toast ──
     MK.warn('No se encontró drawer nativo → mostrando toast');
     mkShowCartToast();
   }
