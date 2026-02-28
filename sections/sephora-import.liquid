@@ -995,7 +995,7 @@
       await mkAddToCart();
       btn.textContent = '¡Agregado!';
       // Abrir el minicart nativo del tema (minicart-form.liquid)
-      mkOpenNativeMinicart();
+      await mkOpenNativeMinicart();
       setTimeout(() => { btn.disabled = false; btn.textContent = original; }, 1500);
     } catch(e) {
       btn.disabled = false; btn.textContent = original;
@@ -1004,37 +1004,83 @@
   }
 
   /* ═══════ ABRIR MINICART NATIVO DEL TEMA ═══════ */
-  function mkOpenNativeMinicart() {
-    // 1. Refrescar contenido del minicart vía Section Rendering API
-    fetch('/?sections=minicart-form')
-      .then(r => r.json())
-      .then(sections => {
-        if (sections['minicart-form']) {
-          const minicart = document.querySelector('minicart-form');
-          if (minicart) {
-            const tmp = document.createElement('div');
-            tmp.innerHTML = sections['minicart-form'];
-            const source = tmp.querySelector('minicart-form');
-            if (source) minicart.innerHTML = source.innerHTML;
+  async function mkOpenNativeMinicart() {
+    // 1. Localizar el section wrapper del minicart en la página
+    let sectionWrapper = null;
+    let sectionName = 'minicart-form';
+    const minicartEl = document.querySelector('minicart-form');
+
+    if (minicartEl) {
+      sectionWrapper = minicartEl.closest('[id^="shopify-section"]');
+      if (sectionWrapper) {
+        sectionName = sectionWrapper.id.replace('shopify-section-', '');
+      }
+    }
+    // Fallback: buscar cualquier section wrapper con "minicart" en el id
+    if (!sectionWrapper) {
+      sectionWrapper = document.querySelector('[id^="shopify-section"][id*="minicart"]');
+      if (sectionWrapper) sectionName = sectionWrapper.id.replace('shopify-section-', '');
+    }
+
+    console.log(`[MK] Minicart section: ${sectionName}, wrapper: ${sectionWrapper?.id || 'no encontrado'}`);
+
+    // 2. Refrescar HTML del minicart vía Section Rendering API (AWAIT)
+    try {
+      const res = await fetch(`/?sections=${sectionName}`);
+      const data = await res.json();
+
+      if (data[sectionName]) {
+        const freshHtml = data[sectionName];
+
+        if (sectionWrapper) {
+          // El API devuelve el HTML completo del section wrapper
+          // Extraer solo el contenido interno si viene con wrapper
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(freshHtml, 'text/html');
+          const newWrapper = doc.querySelector(`#${sectionWrapper.id}`);
+
+          if (newWrapper) {
+            sectionWrapper.innerHTML = newWrapper.innerHTML;
+          } else {
+            // El HTML no incluía el wrapper, usarlo directamente
+            sectionWrapper.innerHTML = freshHtml;
+          }
+          console.log('[MK] Minicart HTML actualizado via Section Rendering API');
+        } else {
+          // Sin wrapper, intentar reemplazar el elemento minicart-form directamente
+          const mc = document.querySelector('minicart-form');
+          if (mc) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(freshHtml, 'text/html');
+            const newMc = doc.querySelector('minicart-form');
+            if (newMc) mc.innerHTML = newMc.innerHTML;
           }
         }
-      })
-      .catch(e => console.warn('[MK] Section render minicart:', e));
+      }
+    } catch(e) {
+      console.warn('[MK] Error refrescando minicart:', e);
+    }
 
-    // 2. Intentar abrir el minicart nativo con múltiples estrategias
-    // Estrategia A: Disparar eventos comunes de temas Shopify
-    document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
-    document.documentElement.dispatchEvent(new CustomEvent('ajaxProduct:added', { bubbles: true }));
-    document.documentElement.dispatchEvent(new CustomEvent('product:added', { bubbles: true }));
+    // Pequeña pausa para que el DOM se estabilice tras reemplazo
+    await new Promise(r => setTimeout(r, 50));
 
-    // Estrategia B: Buscar el elemento <minicart-form> y abrirlo
-    const minicart = document.querySelector('minicart-form');
-    if (minicart) {
-      if (typeof minicart.open === 'function') { minicart.open(); return; }
-      if (typeof minicart.show === 'function') { minicart.show(); return; }
-      // Activar atributo open (patrón <details>/<dialog>)
-      minicart.setAttribute('open', '');
-      minicart.classList.add('active', 'open', 'is-open');
+    // 3. Abrir el minicart — re-consultar elementos porque el DOM cambió
+    const mc = document.querySelector('minicart-form');
+
+    // Estrategia A: <details> padre (patrón más común en temas modernos)
+    const details = mc ? mc.closest('details') : document.querySelector('details:has(minicart-form)');
+    if (details) {
+      details.open = true;
+      console.log('[MK] Minicart abierto via <details>');
+      return;
+    }
+
+    // Estrategia B: Métodos del custom element
+    if (mc) {
+      if (typeof mc.open === 'function') { mc.open(); console.log('[MK] Minicart abierto via .open()'); return; }
+      if (typeof mc.show === 'function') { mc.show(); console.log('[MK] Minicart abierto via .show()'); return; }
+      mc.setAttribute('open', '');
+      mc.classList.add('active', 'open', 'is-open');
     }
 
     // Estrategia C: Click en el botón toggle del carrito del header
@@ -1045,13 +1091,13 @@
       '.cart-icon-bubble, #cart-icon-bubble, ' +
       'a[href="/cart"].header__icon'
     );
-    if (toggleBtn) { toggleBtn.click(); return; }
+    if (toggleBtn) { toggleBtn.click(); console.log('[MK] Minicart abierto via toggle click'); return; }
 
-    // Estrategia D: Buscar cualquier <details> que contenga minicart-form
-    const details = minicart ? minicart.closest('details') : null;
-    if (details) { details.open = true; return; }
-
-    console.log('[MK] Minicart nativo activado');
+    // Estrategia D: Disparar eventos de temas Shopify
+    document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+    document.documentElement.dispatchEvent(new CustomEvent('ajaxProduct:added', { bubbles: true }));
+    document.documentElement.dispatchEvent(new CustomEvent('product:added', { bubbles: true }));
+    console.log('[MK] Minicart: eventos dispatched como fallback');
   }
 
   function mkShowAlert(msg) {
