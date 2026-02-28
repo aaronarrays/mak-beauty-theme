@@ -1066,44 +1066,77 @@
     // Pequeña pausa para que Shopify procese el add/change
     await new Promise(r => setTimeout(r, 350));
 
-    // ── Paso 1: Actualizar cart drawer via Section Rendering API ──
-    // Esto asegura que el drawer tenga el HTML más reciente ANTES de abrirse.
+    // ── Paso 1: Section Rendering — actualizar SOLO el div interno, nunca el custom element ──
+    // Si reemplazamos cart-drawer.innerHTML destruimos sus event listeners y se resetea.
+    // En su lugar actualizamos el contenedor interno que el tema usa para los items.
     try {
       const sectRes = await fetch('/?sections=cart-drawer,cart-icon-bubble');
       if (sectRes.ok) {
         const sections = await sectRes.json();
 
-        // Actualizar contenido interno de cart-drawer (sin reemplazar el custom element)
         if (sections['cart-drawer']) {
-          const tmp = document.createElement('div');
-          tmp.innerHTML = sections['cart-drawer'];
-          const newInner = tmp.querySelector('cart-drawer');
-          const existing = document.querySelector('cart-drawer');
-          if (newInner && existing) {
-            existing.innerHTML = newInner.innerHTML;
-            console.log('[MK] cart-drawer HTML actualizado via Section Rendering');
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(sections['cart-drawer'], 'text/html');
+
+          // Dawn usa #CartDrawer como div interno; otros temas usan variantes
+          const innerSelectors = [
+            '#CartDrawer',
+            '.cart-drawer__inner',
+            '.cart-drawer__form',
+            '[data-cart-drawer]',
+          ];
+          let updated = false;
+          for (const sel of innerSelectors) {
+            const newEl  = doc.querySelector(sel);
+            const existEl = document.querySelector(sel);
+            if (newEl && existEl) {
+              existEl.outerHTML = newEl.outerHTML;
+              console.log(`[MK] Cart drawer actualizado via inner ${sel}`);
+              updated = true;
+              break;
+            }
+          }
+
+          // Fallback: si no encontramos el div interno, reemplazar el innerHTML del custom element
+          if (!updated) {
+            const newCd = doc.querySelector('cart-drawer');
+            const existCd = document.querySelector('cart-drawer');
+            if (newCd && existCd) {
+              existCd.innerHTML = newCd.innerHTML;
+              console.log('[MK] cart-drawer.innerHTML actualizado (fallback)');
+            }
           }
         }
 
-        // Actualizar el badge del ícono del carrito
+        // Actualizar badge del ícono del carrito
         if (sections['cart-icon-bubble']) {
-          const tmp2 = document.createElement('div');
-          tmp2.innerHTML = sections['cart-icon-bubble'];
-          const newBubble = tmp2.querySelector('#cart-icon-bubble');
+          const tmp = document.createElement('div');
+          tmp.innerHTML = sections['cart-icon-bubble'];
+          const newBubble = tmp.querySelector('#cart-icon-bubble');
           const existBubble = document.getElementById('cart-icon-bubble');
           if (newBubble && existBubble) {
             existBubble.innerHTML = newBubble.innerHTML;
-            existBubble.closest('[hidden]') && (existBubble.closest('[hidden]').hidden = false);
+            const hidden = existBubble.closest('[hidden]');
+            if (hidden) hidden.hidden = false;
           }
         }
       }
     } catch(e) { console.warn('[MK] Section Rendering fallido:', e); }
 
-    // ── Paso 2: Llamar open() del custom element cart-drawer (Dawn / compatible) ──
+    // ── Paso 2: Abrir el drawer — intentar varios métodos ──
     const cartDrawer = document.querySelector('cart-drawer');
-    if (cartDrawer && typeof cartDrawer.open === 'function') {
-      cartDrawer.open();
-      console.log('[MK] cart-drawer.open() llamado');
+    if (cartDrawer) {
+      if (typeof cartDrawer.open === 'function') {
+        cartDrawer.open();
+        console.log('[MK] cart-drawer.open() llamado');
+        return true;
+      }
+      // Dawn también responde a setAttribute('open', '')
+      cartDrawer.setAttribute('open', '');
+      cartDrawer.classList.add('is-open', 'animate');
+      const overlay = cartDrawer.querySelector('#CartDrawer-Overlay, .cart-drawer__overlay');
+      if (overlay) overlay.classList.add('is-active');
+      console.log('[MK] cart-drawer abierto via setAttribute');
       return true;
     }
 
@@ -1121,14 +1154,13 @@
     }
 
     // ── Paso 4: Click en botón del carrito del header ──
-    const selectors = [
-      '.header__icon--cart', '#cart-icon-bubble',
-      '[data-cart-toggle]', '.minicart__toggle',
-      '[data-action="toggle-cart"]', '.js-cart-toggle',
-      'button[aria-controls*="cart"]', '.cart-icon-bubble',
-      'a[href="/cart"].header__icon',
+    const btnSelectors = [
+      'button[aria-controls="cart-drawer"]',
+      '.header__icon--cart button', '[data-cart-toggle]',
+      '.minicart__toggle', '[data-action="toggle-cart"]',
+      '.js-cart-toggle', 'button[aria-controls*="cart"]',
     ];
-    for (const sel of selectors) {
+    for (const sel of btnSelectors) {
       const el = document.querySelector(sel);
       if (el && el.offsetParent !== null) {
         el.click();
@@ -1139,7 +1171,7 @@
 
     // ── Paso 5: Eventos genéricos como último recurso ──
     document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
-    document.documentElement.dispatchEvent(new CustomEvent('ajaxProduct:added', { bubbles: true }));
+    document.documentElement.dispatchEvent(new CustomEvent('cart:open', { bubbles: true }));
     return false;
   }
 
