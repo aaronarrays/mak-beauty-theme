@@ -1002,7 +1002,7 @@
     ];
     for (const sel of btns) {
       const el = document.querySelector(sel);
-      if (el?.offsetParent !== null) {
+      if (el && el.offsetParent !== null) {
         el.click();
         MK.log(`Drawer abierto via "${sel}" ✓`);
         return;
