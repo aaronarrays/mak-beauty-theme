@@ -323,6 +323,16 @@
   .mk-toast-btn.secondary { background: #F5F5F5; color: #666; }
   .mk-toast-btn.secondary:hover { background: #EEE; }
 
+  /* — Badge de fuente (Sephora / Amazon) — */
+  .mk-source-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; padding: 3px 10px;
+    border-radius: 20px; margin-bottom: 10px; text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .mk-source-badge.sephora { background: #FDF2F5; color: #C96B8B; border: 1px solid #F8D7E0; }
+  .mk-source-badge.amazon  { background: #FFF8EE; color: #B45309; border: 1px solid #FDDFA0; }
+
   /* — Responsive — */
   @media (max-width: 820px) {
     .mk-product.visible { grid-template-columns: 1fr; }
@@ -336,17 +346,17 @@
 
 <div class="mk-importer">
   <div class="mk-header">
-    <h2>Importar desde Sephora USA</h2>
-    <p>Pega el enlace del producto y te lo traemos hasta tu puerta</p>
+    <h2>Importar desde Sephora &amp; Amazon USA</h2>
+    <p>Pega el enlace de Sephora o Amazon (o un ASIN) y te lo traemos hasta tu puerta</p>
   </div>
 
   <div class="mk-search">
     <div class="mk-search-label">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-      Pega el link del producto de Sephora
+      Link de Sephora, Amazon o ASIN (ej: B08BHXG144)
     </div>
     <div class="mk-search-row">
-      <input type="text" class="mk-search-input" id="mk-url" placeholder="https://www.sephora.com/product/...">
+      <input type="text" class="mk-search-input" id="mk-url" placeholder="https://sephora.com/product/... · https://amazon.com/dp/... · B08BHXG144">
       <button class="mk-btn-buscar" id="mk-btn" onclick="mkBuscar()">Buscar Producto</button>
     </div>
     <div class="mk-alert" id="mk-alert"></div>
@@ -354,13 +364,13 @@
 
   <div class="mk-loading" id="mk-loading">
     <div class="mk-loader"></div>
-    <p id="mk-loading-msg">Conectando con Sephora...</p>
+    <p id="mk-loading-msg">Conectando...</p>
   </div>
 
   <div class="mk-welcome" id="mk-welcome">
     <div class="mk-welcome-icon">✨</div>
     <h3>Tu próximo favorito te espera</h3>
-    <p>Copia el enlace de cualquier producto de sephora.com y pégalo arriba. Nosotros hacemos el resto.</p>
+    <p>Copia el link de <strong>sephora.com</strong> o <strong>amazon.com</strong> (o pega directamente el ASIN). Nosotros hacemos el resto.</p>
   </div>
 
   <!-- ═══════ PRODUCTO ═══════ -->
@@ -379,6 +389,7 @@
         </div>
       </div>
 
+      <div id="mk-source-badge"></div>
       <div class="mk-brand" id="mk-brand"></div>
       <h3 class="mk-title" id="mk-title"></h3>
       <div class="mk-rating" id="mk-rating" style="display:none;"></div>
@@ -477,6 +488,10 @@
   const MK_COMMISSION = 0.15;
   const MK_SYMBOL     = 'S/';
 
+  // ── RapidAPI — Amazon Real-Time Data ──
+  const MK_AMZN_HOST = 'real-time-amazon-data.p.rapidapi.com';
+  const MK_AMZN_KEY  = 'cda0d06925msh01a0e1d8675d51dp1ceef6jsn6b73c86035d9';
+
   let mkData         = null;
   let mkQtyVal       = 1;
   let mkAddingToCart = false;
@@ -507,16 +522,52 @@
   function mkGetVid(key)      { return mkGetMap()[key] || null; }
   function mkSetVid(key, vid) { const m = mkGetMap(); m[key] = String(vid); localStorage.setItem(MK_MAP, JSON.stringify(m)); }
 
-  /* ═══════ BUSCAR CON SSE ═══════ */
+  // ═══════════════════════════════════════════════════════════════
+  //  DETECCION DE FUENTE
+  // ═══════════════════════════════════════════════════════════════
+  // Retorna 'sephora' | 'amazon' | null
+  function mkDetectSource(input) {
+    if (!input) return null;
+    if (input.includes('sephora.com')) return 'sephora';
+    if (input.includes('amazon.com') || input.includes('amzn.to') || input.includes('amzn.com')) return 'amazon';
+    // ASIN directo: B seguido de 9 carácteres alfanuméricos
+    if (/^B[A-Z0-9]{9}$/i.test(input.trim())) return 'amazon';
+    return null;
+  }
+
+  // Extrae el ASIN de una URL de Amazon o lo retorna si es ASIN directo
+  function mkExtractAsin(input) {
+    input = input.trim();
+    // ASIN directo
+    if (/^B[A-Z0-9]{9}$/i.test(input)) return input.toUpperCase();
+    // /dp/ASIN o /gp/product/ASIN
+    const m = input.match(/\/(?:dp|gp\/product)\/([A-Z0-9]{10})/i);
+    if (m) return m[1].toUpperCase();
+    // /product/ASIN al final
+    const m2 = input.match(/[?&]asin=([A-Z0-9]{10})/i);
+    if (m2) return m2[1].toUpperCase();
+    return null;
+  }
+
+  /* ═══════ BUSCAR: ROUTER (Sephora / Amazon) ═══════ */
   async function mkBuscar() {
     const url = document.getElementById('mk-url').value.trim();
     const al  = document.getElementById('mk-alert');
     const btn = document.getElementById('mk-btn');
     al.style.display = 'none';
-    if (!url || !url.includes('sephora.com')) {
-      al.textContent = 'Por favor ingresa un enlace válido de sephora.com';
+
+    const source = mkDetectSource(url);
+    if (!source) {
+      al.textContent = 'Por favor ingresa un enlace de sephora.com, amazon.com o un ASIN (ej: B08BHXG144)';
       al.style.display = 'block'; return;
     }
+
+    if (source === 'amazon') {
+      await mkBuscarAmazon(url);
+      return;
+    }
+
+    // ── Sephora ──
     const loadMsg = document.getElementById('mk-loading-msg');
     loadMsg.textContent = 'Conectando con Sephora...';
     document.getElementById('mk-loading').classList.add('visible');
@@ -563,7 +614,7 @@
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
-      mkData = { success: false, url: url, images: [], color_variants: [] };
+      mkData = { success: false, source: 'sephora', url: url, images: [], color_variants: [] };
 
       while (true) {
         const { done, value } = await reader.read();
@@ -630,6 +681,154 @@
     }
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  //  BUSCADOR AMAZON (RapidAPI: real-time-amazon-data)
+  //
+  //  Normaliza la respuesta al mismo formato mkData que usa Sephora
+  //  para que el resto del flujo (render, cart) funcione igual.
+  // ═══════════════════════════════════════════════════════════════
+  async function mkBuscarAmazon(input) {
+    const al  = document.getElementById('mk-alert');
+    const btn = document.getElementById('mk-btn');
+    al.style.display = 'none';
+
+    const asin = mkExtractAsin(input);
+    if (!asin) {
+      al.textContent = 'No se pudo extraer el ASIN del enlace de Amazon. Intenta pegar la URL completa o solo el ASIN (ej: B08BHXG144).';
+      al.style.display = 'block'; return;
+    }
+
+    MK.log('Amazon ASIN detectado:', asin);
+    const loadMsg = document.getElementById('mk-loading-msg');
+    loadMsg.textContent = 'Consultando Amazon...';
+    document.getElementById('mk-loading').classList.add('visible');
+    document.getElementById('mk-welcome').style.display = 'none';
+    document.getElementById('mk-product').classList.remove('visible');
+    btn.disabled = true; btn.textContent = 'Buscando...';
+
+    // ── Limpiar UI ──
+    ['mk-brand','mk-title','mk-price-inline','mk-img-count'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.textContent = '';
+    });
+    document.getElementById('mk-rating').style.display = 'none';
+    const mimg = document.getElementById('mk-main-img'); if (mimg) mimg.src = '';
+    document.getElementById('mk-gallery-thumbs').innerHTML = '';
+    document.getElementById('mk-variants-grid').innerHTML = '';
+    document.getElementById('mk-variants-wrap').style.display = 'none';
+    document.getElementById('mk-color-label').style.display = 'none';
+    document.getElementById('mk-category').textContent = '';
+    mkVariantImagesCache = {};
+
+    try {
+      const apiUrl = `https://${MK_AMZN_HOST}/product-details?asin=${asin}&country=US&autoselect_variant=true`;
+      const res = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-host': MK_AMZN_HOST,
+          'x-rapidapi-key' : MK_AMZN_KEY,
+        }
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`RapidAPI ${res.status}: ${errText.slice(0, 120)}`);
+      }
+
+      const json = await res.json();
+      MK.log('Amazon raw response:', json);
+
+      if (json.status !== 'OK' || !json.data) {
+        throw new Error(json.message || 'La API de Amazon no retornó datos válidos.');
+      }
+
+      const d = json.data;
+
+      // ── Normalizar precio ──
+      const parsePx = s => s ? parseFloat(String(s).replace(/[^0-9.]/g, '')) || 0 : 0;
+      const price   = parsePx(d.product_price || d.price);
+
+      // ── Imágenes ──
+      let images = [];
+      if (Array.isArray(d.product_photos) && d.product_photos.length) {
+        images = d.product_photos;
+      } else if (d.product_photo) {
+        images = [d.product_photo];
+      }
+
+      // ── Categoría ──
+      let category = 'Amazon';
+      if (Array.isArray(d.category_path) && d.category_path.length) {
+        category = d.category_path.map(c => c.name || c).join(' > ');
+      } else if (d.product_information?.Category) {
+        category = d.product_information.Category;
+      }
+
+      // ── Marca ──
+      const brand =
+        d.brand ||
+        d.product_details?.Brand ||
+        d.product_information?.Brand ||
+        (d.sub_title?.text ? d.sub_title.text.replace(/^Visit the|Store$/gi, '').trim() : '') ||
+        '';
+
+      // ── Variantes (color / tamaño) ──
+      const color_variants = [];
+      if (d.product_variations) {
+        // Buscar el eje de color o tamaño
+        const axes = Object.entries(d.product_variations);
+        const preferredAxis = axes.find(([k]) => /color|colour|shade/i.test(k))
+                           || axes.find(([k]) => /size|tamaño|oz|ml/i.test(k))
+                           || axes[0];
+        if (preferredAxis) {
+          const [axisName, options] = preferredAxis;
+          (Array.isArray(options) ? options : []).forEach(opt => {
+            color_variants.push({
+              label      : opt.value || opt.name || opt,
+              sku_id     : opt.asin || '',
+              out_of_stock: opt.is_available === false,
+              swatch     : opt.swatch_image || opt.image || null,
+              selected   : opt.asin === asin,
+              price      : price,
+            });
+          });
+        }
+      }
+
+      // ── Construir mkData normalizado ──
+      mkData = {
+        success       : true,
+        source        : 'amazon',
+        url           : d.product_url || `https://www.amazon.com/dp/${asin}`,
+        asin          : asin,
+        name          : d.product_title || '',
+        brand         : brand,
+        price         : price ? `$${price.toFixed(2)}` : '',
+        price_numeric : price,
+        rating        : parseFloat(d.product_star_rating) || 0,
+        review_count  : parseInt(d.product_num_ratings) || 0,
+        images        : images,
+        color_variants: color_variants,
+        category      : category,
+      };
+
+      mkRenderBasic(mkData);
+      mkRenderImages(images);
+      if (color_variants.length) mkRenderVariants(mkData);
+      mkRenderSourceBadge('amazon');
+      mkRecalc();
+      MK.log('Amazon producto cargado:', mkData.name);
+
+    } catch(e) {
+      MK.err('mkBuscarAmazon:', e);
+      al.textContent = '❌ ' + (e.message || 'Error al consultar Amazon. Verifica el enlace o ASIN.');
+      al.style.display = 'block';
+      document.getElementById('mk-welcome').style.display = '';
+    } finally {
+      document.getElementById('mk-loading').classList.remove('visible');
+      btn.disabled = false; btn.textContent = 'Buscar Producto';
+    }
+  }
+
   async function mkBuscarClassic(url) {
     const al = document.getElementById('mk-alert');
     const res = await fetch(`${MK_API}/api/scrape`, {
@@ -653,9 +852,25 @@
 
   /* ═══════ RENDER PROGRESIVO ═══════ */
 
+  // Muestra un badge visual indicando la fuente del producto
+  function mkRenderSourceBadge(source) {
+    const el = document.getElementById('mk-source-badge');
+    if (!el) return;
+    if (source === 'amazon') {
+      el.innerHTML = '<span class="mk-source-badge amazon">📦 Amazon USA</span>';
+    } else if (source === 'sephora') {
+      el.innerHTML = '<span class="mk-source-badge sephora">💄 Sephora USA</span>';
+    } else {
+      el.innerHTML = '';
+    }
+  }
+
   function mkRenderBasic(d) {
     document.getElementById('mk-brand').textContent = d.brand || '';
     document.getElementById('mk-title').textContent = d.name || '';
+    // Badge de fuente (si ya está definida antes de llamar a mkRenderBasic)
+    if (d.source) mkRenderSourceBadge(d.source);
+    else mkRenderSourceBadge('sephora'); // default Sephora
     const ratingEl = document.getElementById('mk-rating');
     if (d.rating) {
       const full = Math.floor(d.rating), half = d.rating - full >= 0.3 ? '½' : '';
@@ -918,10 +1133,12 @@
       'Total a pagar'     : document.getElementById('bd-pen')?.textContent  || '',
       'Categoría'         : document.getElementById('mk-category')?.textContent.trim() || '',
       'Indicaciones'      : document.getElementById('mk-notes')?.value || 'Sin indicaciones',
-      '_Producto Sephora' : mkData.name  || '',
+      '_Fuente'           : mkData.source === 'amazon' ? 'Amazon' : 'Sephora',
+      '_Producto'         : mkData.name  || '',
       '_Marca'            : mkData.brand || '',
-      '_Link Sephora'     : mkData.url   || '',
-      '_SKU Sephora'      : sv.sku_id,
+      '_Link'             : mkData.url   || '',
+      '_ASIN'             : mkData.asin  || '',
+      '_SKU'              : sv.sku_id,
       '_Imagen'           : imgUrl,
       '_Precio base USD'  : mkData.price || '',
       '_Cantidad'         : String(mkQtyVal),
@@ -1005,9 +1222,9 @@
         });
 
         // 2. Actualizar título: "Marca – Producto Sephora"
-        const brand    = props['_Marca']            || '';
-        const prodName = props['_Producto Sephora'] || item.product_title || '';
-        const variant  = props['Color/Variante']    || '';
+        const brand    = props['_Marca']    || '';
+        const prodName = props['_Producto'] || item.product_title || '';
+        const variant  = props['Color/Variante'] || '';
         if (prodName) {
           const titleLink = el.querySelector('.minicart__product-name a');
           if (titleLink) {
@@ -1027,7 +1244,7 @@
         }
         patched++;
       });
-      if (patched > 0) MK.log(`Minicart parcheado: ${patched} item(s) con datos Sephora ✓`);
+      if (patched > 0) MK.log(`Minicart parcheado: ${patched} item(s) ✓`);
     } catch(e) {
       MK.warn('mkPatchMinicart falló:', e.message);
     }
@@ -1163,7 +1380,7 @@
 
     const existente = cartBefore.items.find(i =>
       String(i.variant_id) === String(variantId) ||
-      (sv.sku_id && i.properties?.['_SKU Sephora'] === sv.sku_id)
+      (sv.sku_id && i.properties?.['_SKU'] === sv.sku_id)
     );
 
     if (existente) {
@@ -1291,6 +1508,8 @@
 
   // ─── Exponer globalmente ──────────────────────────────────────
   window.mkBuscar        = mkBuscar;
+  window.mkBuscarAmazon  = mkBuscarAmazon;
+  window.mkDetectSource  = mkDetectSource;
   window.mkQty           = mkQty;
   window.mkComprar       = mkComprar;
   window.mkAgregar       = mkAgregar;
