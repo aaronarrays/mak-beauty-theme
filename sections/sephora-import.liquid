@@ -548,80 +548,77 @@
       let buffer = '';
       mkData = { success: false, url: url, images: [], color_variants: [] };
 
-      async function mkAddToCart() {
-        // ── 1. Calcular precio total en PEN ──
-        const price = mkData ? (mkData.price_numeric || 0) : 0;
-        const q = mkQtyVal;
-        const prod = price * q, tax = prod * MK_TAX_RATE;
-        const usa = prod + tax, intl = MK_INTL_SHIP;
-        const proc = prod * MK_COMMISSION;
-        const totalUsd = usa + intl + proc;
-        const totalPen = totalUsd * MK_RATE;
-
-        // Obtener imagen principal del producto
-        const mainImg = document.getElementById('mk-main-img');
-        const imgUrl = (mkData.images && mkData.images[0]) || (mainImg ? mainImg.src : '');
-
-        // ── 2. POOL: Preparar producto (adquirir placeholder + actualizar Shopify) ──
-        // Generar session_id único por producto
-        const sessionId = mkGetSessionId(true);
-        const prepareRes = await fetch(`${MK_API}/api/prepare-product`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            session_id: sessionId,
-            price: totalPen.toFixed(2),
-            title: mkData.name || 'Producto Sephora',
-            image: imgUrl,
-            sephora_url: mkData.url || '',
-          })
-        });
-        const prepareData = await prepareRes.json();
-        if (!prepareData.success) {
-          throw new Error(prepareData.error || 'No se pudo preparar el producto');
-        }
-
-        const variantId = prepareData.variant_id;
-        console.log(`[MK] Pool placeholder: variant=${variantId}, product=${prepareData.product_id}`);
-
-        // ── 3. Breve espera para propagación en Shopify ──
-        await new Promise(r => setTimeout(r, 500));
-
-        // ── 4. Limpiar items previos de este placeholder del carrito ──
-        try {
-          const cartRes = await fetch('/cart.js');
-          const cart = await cartRes.json();
-          for (const item of cart.items) {
-            if (String(item.variant_id) === String(variantId)) {
-              await fetch('/cart/change.js', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: item.key, quantity: 0 })
-              });
-            }
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split('\n\n');
+        buffer = events.pop();
+        for (const evt of events) {
+          if (!evt.trim()) continue;
+          let eventType = 'message', eventData = '';
+          for (const line of evt.split('\n')) {
+            if (line.startsWith('event: ')) eventType = line.slice(7).trim();
+            if (line.startsWith('data: ')) eventData = line.slice(6);
           }
-        } catch(e) { console.warn('No se pudo limpiar carrito previo:', e); }
-
-        // ── 5. Agregar al carrito con el variant_id del pool ──
-        const payload = {
-          id: variantId,
-          quantity: 1,  // siempre 1 — cantidad real va en propiedades
-          properties: mkProps(variantId),
-        };
-        const res = await fetch('/cart/add.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (!res.ok) {
-          const errData = await res.json().catch(() => null);
-          const msg = errData?.description || errData?.message || `Error HTTP ${res.status}`;
-          throw new Error(msg);
+          if (!eventData) continue;
+          try {
+            const payload = JSON.parse(eventData);
+            if (eventType === 'basic') {
+              loadMsg.textContent = 'Obteniendo imágenes...';
+              Object.assign(mkData, payload);
+              mkRenderBasic(mkData);
+              gotProduct = true;
+            } else if (eventType === 'images') {
+              loadMsg.textContent = 'Cargando variantes...';
+              mkData.images = payload.images || [];
+              mkRenderImages(mkData.images);
+            } else if (eventType === 'variants') {
+              mkData.color_variants = payload.color_variants || [];
+              mkRenderVariants(mkData);
+            } else if (eventType === 'complete') {
+              mkData = payload; mkData.success = true;
+              mkRenderBasic(mkData);
+              mkRenderImages(mkData.images || []);
+              mkRenderVariants(mkData);
+              mkRecalc();
+              gotProduct = true;
+            } else if (eventType === 'error') {
+              al.textContent = payload.error || 'Error al obtener producto.';
+              al.style.display = 'block';
+              gotError = true;
+            }
+          } catch(e) { console.warn('SSE parse:', e); }
         }
-        const data = await res.json();
-        mkUpdateCartCount();
-        return data;
       }
+    } catch(e) {
+      console.warn('SSE failed:', e);
+      if (!gotProduct) {
+        try { await mkBuscarClassic(url); gotProduct = document.getElementById('mk-product').classList.contains('visible'); } catch(e2) {
+          al.textContent = 'Error de conexión. El servidor puede estar iniciando, intenta en 30 segundos.';
+          al.style.display = 'block';
+          gotError = true;
+        }
+      }
+    } finally {
+      document.getElementById('mk-loading').classList.remove('visible');
+      btn.disabled = false; btn.textContent = 'Buscar Producto';
+      if (!gotProduct) {
+        document.getElementById('mk-welcome').style.display = '';
+        if (!gotError) {
+          al.textContent = 'No se pudo conectar con el servidor. Puede estar iniciando — intenta de nuevo en unos segundos.';
+          al.style.display = 'block';
+        }
+      }
+    }
+  }
+
+  async function mkBuscarClassic(url) {
+    const al = document.getElementById('mk-alert');
+    const res = await fetch(`${MK_API}/api/scrape`, {
+      method: 'POST', headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ url })
+    });
     const data = await res.json();
     if (!data.success) {
       al.textContent = data.error || 'No pudimos obtener el producto.';
@@ -936,7 +933,7 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        session_id: mkGetSessionId(),
+        session_id: mkGetSessionId(true),
         price: totalPen.toFixed(2),
         title: mkData.name || 'Producto Sephora',
         image: imgUrl,
