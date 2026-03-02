@@ -29,6 +29,24 @@
     color: var(--mk-text);
   }
 
+  /* — Banner superior — */
+  .mk-banner {
+    width: 100%; border-radius: var(--mk-radius); overflow: hidden;
+    margin-bottom: 28px; background: var(--mk-pink-light);
+    aspect-ratio: 1100 / 320;
+    max-height: 320px;
+  }
+  .mk-banner img {
+    width: 100%; height: 100%; object-fit: cover; object-position: center;
+    display: block;
+  }
+  @media (max-width: 768px) {
+    .mk-banner { aspect-ratio: 768 / 220; max-height: 220px; }
+  }
+  @media (max-width: 480px) {
+    .mk-banner { aspect-ratio: 480 / 180; max-height: 180px; border-radius: 12px; }
+  }
+
   /* — Header — */
   .mk-header { text-align: center; margin-bottom: 32px; }
   .mk-header h2 { font-size: 28px; font-weight: 700; margin: 0 0 6px; }
@@ -345,6 +363,20 @@
 </style>
 
 <div class="mk-importer">
+
+  {%- if section.settings.banner_image -%}
+  <div class="mk-banner">
+    <img src="{{ section.settings.banner_image | image_url: width: 1400 }}"
+         srcset="{{ section.settings.banner_image | image_url: width: 480 }} 480w,
+                 {{ section.settings.banner_image | image_url: width: 768 }} 768w,
+                 {{ section.settings.banner_image | image_url: width: 1100 }} 1100w,
+                 {{ section.settings.banner_image | image_url: width: 1400 }} 1400w"
+         sizes="(max-width: 480px) 480px, (max-width: 768px) 768px, 1100px"
+         alt="{{ section.settings.banner_alt | default: 'Mak Beauty Banner' }}"
+         loading="eager">
+  </div>
+  {%- endif -%}
+
   <div class="mk-header">
     <h2>Importar desde Sephora &amp; Amazon USA</h2>
     <p>Pega el enlace de Sephora o Amazon (o un ASIN) y te lo traemos hasta tu puerta</p>
@@ -1595,7 +1627,24 @@
 {% schema %}
 {
   "name": "Importador Sephora",
-  "settings": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Banner superior"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Imagen del banner",
+      "info": "Dimensiones recomendadas: 1100 × 320 px (PC) · 768 × 220 px (tablet) · 480 × 180 px (móvil). Formato JPG/PNG/WebP."
+    },
+    {
+      "type": "text",
+      "id": "banner_alt",
+      "label": "Texto alternativo (accesibilidad)",
+      "default": "Mak Beauty — Importamos desde USA"
+    }
+  ],
   "presets": [{ "name": "Importador Sephora" }]
 }
 {% endschema %}
