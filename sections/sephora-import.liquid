@@ -1,11 +1,3 @@
-{% comment %}
-  SECCIÓN: Importador de productos Sephora — Mak Beauty v2
-  
-  INSTALACIÓN EN SHOPIFY (OS 2.0):
-  1. Admin → Online Store → Themes → Edit code
-  2. En "Sections" → sephora-import.liquid → pegar TODO esto
-  3. Guardar
-{% endcomment %}
 
 <style>
   .mk-importer {
@@ -482,9 +474,11 @@
   //  • Variant no propagado  → mkPollVariant() antes del add
   // ═══════════════════════════════════════════════════════════════
   const MK_API        = 'https://web-production-56b31.up.railway.app';
-  const MK_RATE       = 3.45;
+  let   MK_RATE       = 3.75;   // fallback — se reemplaza con yfinance via /api/config
   const MK_TAX_RATE   = 0.07;
-  const MK_INTL_SHIP  = 20.00;
+  const MK_INTL_SHIP    = 20.00;   // envío fijo Sephora (USD)
+  const MK_SHIP_RATE_LB = 12.00;   // $ por lb — envío aéreo Amazon
+  const MK_SHIP_MIN     = 12.00;   // mínimo de envío Amazon (USD)
   const MK_COMMISSION = 0.15;
   const MK_SYMBOL     = 'S/';
 
@@ -497,6 +491,22 @@
   let mkAddingToCart = false;
   let mkVariantImagesCache = {};
   let mkActiveRequest      = null;
+
+  /* ── Cargar tipo de cambio desde backend (yfinance + 0.10) ── */
+  async function mkLoadConfig() {
+    try {
+      const r = await fetch(MK_API + '/api/config');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const cfg = await r.json();
+      if (cfg.exchange_rate && cfg.exchange_rate > 0) {
+        MK_RATE = cfg.exchange_rate;
+        MK.log(`Tipo de cambio: 1 USD = S/ ${MK_RATE.toFixed(4)} (yfinance)`);
+      }
+    } catch(e) {
+      MK.warn('mkLoadConfig: usando fallback', MK_RATE, e.message);
+    }
+  }
+  mkLoadConfig(); // llamar inmediatamente al cargar la página
 
   // ─── Logger con colores ───────────────────────────────────────
   const MK = {
@@ -763,6 +773,16 @@
         category = d.product_information.Category;
       }
 
+      // ── Peso ──
+      const weightStr = d.product_information?.['Item Weight']
+                     || d.product_details?.['Item Weight']
+                     || d.product_details?.['Weight']
+                     || (Array.isArray(d.specifications)
+                           ? (d.specifications.find(s => /weight/i.test(s.name))?.value || '')
+                           : '') || '';
+      const weight_lbs = mkParseWeightLbs(weightStr);
+      if (weight_lbs) MK.log(`Peso detectado: ${weight_lbs.toFixed(3)} lb ("${weightStr}")`);
+
       // ── Marca ──
       const brand =
         d.brand ||
@@ -809,6 +829,8 @@
         images        : images,
         color_variants: color_variants,
         category      : category,
+        weight_lbs    : weight_lbs,
+        weight_str    : weightStr,
       };
 
       mkRenderBasic(mkData);
@@ -1085,14 +1107,47 @@
     } else el.style.display = 'none';
   }
 
+  /* ── Peso: parsear string → libras ── */
+  function mkParseWeightLbs(str) {
+    if (!str) return 0;
+    const s = String(str).toLowerCase();
+    const n = parseFloat(s) || 0;
+    if (!n) return 0;
+    if (/oz|ounce/.test(s))                          return n / 16;
+    if (/\bkg|kilogram/.test(s))                     return n * 2.20462;
+    if (/\bg\b|gram/.test(s) && !/lb|pound/.test(s)) return n * 0.00220462;
+    return n; // asume lbs
+  }
+
+  /* ── Calcular envío internacional ── */
+  function mkCalcIntlShip(weightLbs, qty) {
+    if (!weightLbs || weightLbs <= 0) return MK_INTL_SHIP; // fallback fijo
+    const totalLbs = weightLbs * Math.max(1, qty || 1);
+    return Math.max(MK_SHIP_MIN, parseFloat((totalLbs * MK_SHIP_RATE_LB).toFixed(2)));
+  }
+
   /* ── Recalcular precios ── */
   function mkRecalc() {
     const price = mkData ? (mkData.price_numeric || 0) : 0;
     const q = mkQtyVal;
     const prod = price * q, tax = prod * MK_TAX_RATE, sShip = 0;
-    const usa = prod + tax + sShip, intl = MK_INTL_SHIP, imp = 0;
+    const usa   = prod + tax + sShip;
+    const intl  = mkCalcIntlShip(mkData?.weight_lbs, q);
+    const imp   = 0;
     const traida = intl + imp, proc = prod * MK_COMMISSION;
     const usd = usa + traida + proc, pen = usd * MK_RATE;
+
+    // Actualizar etiqueta de peso
+    const wEl = document.getElementById('bd-weight');
+    if (wEl) {
+      if (mkData?.weight_lbs && mkData.weight_lbs > 0) {
+        const kgTotal = (mkData.weight_lbs * q * 0.453592).toFixed(2);
+        const lbTotal = (mkData.weight_lbs * q).toFixed(2);
+        wEl.textContent = `(${lbTotal} lb / ${kgTotal} kg)`;
+      } else {
+        wEl.textContent = mkData?.source === 'amazon' ? '(peso no disponible)' : '(~0.5 kg)';
+      }
+    }
 
     document.getElementById('bd-prod').textContent      = `$ ${prod.toFixed(2)}`;
     document.getElementById('bd-tax').textContent        = `$ ${tax.toFixed(2)}`;
@@ -1139,6 +1194,7 @@
       '_Link'             : mkData.url   || '',
       '_ASIN'             : mkData.asin  || '',
       '_SKU'              : sv.sku_id,
+      '_Peso (lbs)'       : mkData.weight_lbs ? String(mkData.weight_lbs.toFixed(3)) : '',
       '_Imagen'           : imgUrl,
       '_Precio base USD'  : mkData.price || '',
       '_Cantidad'         : String(mkQtyVal),
@@ -1339,7 +1395,7 @@
     const prod     = price  * mkQtyVal;
     const tax      = prod   * MK_TAX_RATE;
     const proc     = prod   * MK_COMMISSION;
-    const totalUsd = prod + tax + MK_INTL_SHIP + proc;
+    const totalUsd = prod + tax + mkCalcIntlShip(mkData?.weight_lbs, mkQtyVal) + proc;
     const totalPen = totalUsd * MK_RATE;
 
     const sv       = mkGetSelectedVariant();
