@@ -427,7 +427,7 @@
           <div class="mk-bd-header">🇵🇪 Envío a Perú</div>
           <div class="mk-bd-row"><span class="lbl">Envío internacional <small id="bd-weight">(~0.5 Kg)</small></span><span class="val" id="bd-ship">$ 19.00</span></div>
           <div class="mk-bd-row"><span class="lbl">Impuestos importación</span><span class="val free" id="bd-imp">Gratis</span></div>
-          <div class="mk-bd-sub"><span class="lbl">Total</span><span class="val" id="bd-traida">$ 19.00</span></div>
+          <div class="mk-bd-sub"><span class="lbl">Total traída</span><span class="val" id="bd-traida">$ 19.00</span></div>
         </div>
 
         <div class="mk-bd-section">
@@ -1160,7 +1160,7 @@
         const lbTotal = (mkData.weight_lbs * q).toFixed(2);
         wEl.textContent = `(${lbTotal} lb / ${kgTotal} kg)`;
       } else {
-        wEl.textContent = mkData?.source === 'amazon' ? '(peso no disponible)' : '(~0.5 kg)';
+        wEl.textContent = '(peso estimado no disponible)';
       }
     }
 
