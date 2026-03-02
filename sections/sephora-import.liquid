@@ -1,3 +1,11 @@
+{% comment %}
+  SECCIÓN: Importador de productos Sephora — Mak Beauty v2
+  
+  INSTALACIÓN EN SHOPIFY (OS 2.0):
+  1. Admin → Online Store → Themes → Edit code
+  2. En "Sections" → sephora-import.liquid → pegar TODO esto
+  3. Guardar
+{% endcomment %}
 
 <style>
   .mk-importer {
@@ -430,6 +438,7 @@
 
         <div class="mk-bd-section" style="border-bottom:none;">
           <div class="mk-bd-row"><span class="lbl" style="font-weight:600">Total (USD)</span><span class="val hl" id="bd-usd">$ 0.00</span></div>
+          <div class="mk-bd-row" style="font-size:0.78rem;opacity:0.65"><span class="lbl">Tipo de cambio</span><span class="val" id="bd-rate">$1 = S/ 3.75</span></div>
           <div class="mk-bd-total"><span class="lbl">Total a pagar</span><span class="val" id="bd-pen">S/ 0.00</span></div>
         </div>
       </div>
@@ -501,6 +510,12 @@
       if (cfg.exchange_rate && cfg.exchange_rate > 0) {
         MK_RATE = cfg.exchange_rate;
         MK.log(`Tipo de cambio: 1 USD = S/ ${MK_RATE.toFixed(4)} (yfinance)`);
+        // Si ya hay un producto cargado, refrescar el desglose
+        if (mkData) mkRecalc();
+        else {
+          const rateEl = document.getElementById('bd-rate');
+          if (rateEl) rateEl.textContent = `$1 = ${MK_SYMBOL} ${MK_RATE.toFixed(4)}`;
+        }
       }
     } catch(e) {
       MK.warn('mkLoadConfig: usando fallback', MK_RATE, e.message);
@@ -961,12 +976,12 @@
       if (swatchSrc) {
         html += `<img class="mk-vc-img" src="${swatchSrc}" loading="lazy" onerror="this.style.display='none'">`;
       }
-      // Separar nombre y descripción heurísticamente
-      const words = lbl.split(' ');
+      // Separar número/código del nombre del tono (ej: "1 - fair, cool peach")
+      const dashIdx = lbl.indexOf(' - ');
       let name = lbl, desc = '';
-      if (words.length > 2) {
-        name = words.slice(0,2).join(' ');
-        desc = words.slice(2).join(' ');
+      if (dashIdx > 0) {
+        name = lbl.slice(0, dashIdx);
+        desc = lbl.slice(dashIdx + 3);
       }
       html += `<span class="mk-vc-label">${name}</span>`;
       if (desc) html += `<span class="mk-vc-desc">${desc}</span>`;
@@ -1160,6 +1175,7 @@
     document.getElementById('bd-traida').textContent     = `$ ${traida.toFixed(2)}`;
     document.getElementById('bd-proc').textContent       = `$ ${proc.toFixed(2)}`;
     document.getElementById('bd-usd').textContent        = `$ ${usd.toFixed(2)}`;
+    document.getElementById('bd-rate').textContent       = `$1 = ${MK_SYMBOL} ${MK_RATE.toFixed(4)}`;
     document.getElementById('bd-pen').textContent        = `${MK_SYMBOL} ${pen.toFixed(2)}`;
   }
 
