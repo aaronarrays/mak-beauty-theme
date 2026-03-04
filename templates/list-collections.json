@@ -103,6 +103,7 @@
           "type": "collection",
           "settings": {
             "collection": "kiko",
+            "collection_image": "shopify://shop_images/1_fe872042-8d5e-493c-9468-203161ba8c4b.png",
             "collection_title": ""
           }
         },
@@ -110,6 +111,7 @@
           "type": "collection",
           "settings": {
             "collection": "hailey-bieber-maquillaje",
+            "collection_image": "shopify://shop_images/2_ea496d3f-6430-474c-a4f5-3776af1363ea.png",
             "collection_title": ""
           }
         },
@@ -117,6 +119,7 @@
           "type": "collection",
           "settings": {
             "collection": "huda-beauty",
+            "collection_image": "shopify://shop_images/3.png",
             "collection_title": ""
           }
         },
@@ -124,7 +127,7 @@
           "type": "collection",
           "settings": {
             "collection": "the-ordinary",
-            "collection_image": "shopify://shop_images/Quality_skincare_that_actually_works_can_exist_for_all_this_brand_s_science-backed_formulations_d____jpg.jpg",
+            "collection_image": "shopify://shop_images/Sin_titulo_287_x_482_px.png",
             "collection_title": ""
           }
         }
@@ -144,7 +147,7 @@
         "collection_XB6zVM"
       ],
       "settings": {
-        "section_width": "fluid_container",
+        "section_width": "container",
         "color_scheme": "default",
         "type": "selected",
         "sort_collections": "products_low",
