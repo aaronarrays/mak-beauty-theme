@@ -124,6 +124,7 @@
           "type": "collection",
           "settings": {
             "collection": "the-ordinary",
+            "collection_image": "shopify://shop_images/Quality_skincare_that_actually_works_can_exist_for_all_this_brand_s_science-backed_formulations_d____jpg.jpg",
             "collection_title": ""
           }
         }
