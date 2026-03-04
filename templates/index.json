@@ -121,7 +121,7 @@
         "section_width": "fluid_container",
         "color_scheme": "scheme-29cb05bc-ad3c-44ac-b79b-748511cc42c7",
         "heading": "¿Qué estás buscando hoy?",
-        "description": "<p>Encuentra exactamente lo que buscas: desde el \"glow\" perfecto de <strong>Rhode</strong> hasta el cuidado capilar avanzado</p>",
+        "description": "<p>Todo lo que amas en un solo lugar: skincare, maquillaje y ese glow que no pasa desapercibido.</p>",
         "show_view_all_button": true,
         "header_size": "medium",
         "header_alignment": "center",
@@ -223,6 +223,7 @@
         "scrolling_text_7defWk",
         "scrolling_text_PtA9FE"
       ],
+      "disabled": true,
       "settings": {
         "section_width": "full_width",
         "color_scheme": "scheme-4faf0e4d-27f4-4d02-bc51-617383bab1a9",
@@ -278,13 +279,6 @@
             "link": ""
           }
         },
-        "logo_G3XW4V": {
-          "type": "logo",
-          "settings": {
-            "image": "shopify://shop_images/rappi_logo.png",
-            "link": ""
-          }
-        },
         "logo_KiMwXd": {
           "type": "logo",
           "settings": {
@@ -305,7 +299,6 @@
         "logo_6NCnQx",
         "logo_xdYyk3",
         "logo_K9qKCf",
-        "logo_G3XW4V",
         "logo_KiMwXd",
         "logo_NFX4y7"
       ],
