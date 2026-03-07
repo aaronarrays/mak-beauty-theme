@@ -43,6 +43,13 @@
     "main": {
       "type": "main-list-collections",
       "blocks": {
+        "collection_F7aznG": {
+          "type": "collection",
+          "settings": {
+            "collection": "kerastase",
+            "collection_title": ""
+          }
+        },
         "collection_GawBmm": {
           "type": "collection",
           "settings": {
@@ -133,6 +140,7 @@
         }
       },
       "block_order": [
+        "collection_F7aznG",
         "collection_GawBmm",
         "collection_k6UJWD",
         "collection_qag64J",
