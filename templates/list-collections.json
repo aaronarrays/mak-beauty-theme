@@ -43,13 +43,6 @@
     "main": {
       "type": "main-list-collections",
       "blocks": {
-        "collection_F7aznG": {
-          "type": "collection",
-          "settings": {
-            "collection": "kerastase",
-            "collection_title": ""
-          }
-        },
         "collection_GawBmm": {
           "type": "collection",
           "settings": {
@@ -137,10 +130,16 @@
             "collection_image": "shopify://shop_images/Sin_titulo_287_x_482_px.png",
             "collection_title": ""
           }
+        },
+        "collection_F7aznG": {
+          "type": "collection",
+          "settings": {
+            "collection": "kerastase",
+            "collection_title": ""
+          }
         }
       },
       "block_order": [
-        "collection_F7aznG",
         "collection_GawBmm",
         "collection_k6UJWD",
         "collection_qag64J",
@@ -152,7 +151,8 @@
         "collection_HLUY4E",
         "collection_dHMiiC",
         "collection_pip9Fw",
-        "collection_XB6zVM"
+        "collection_XB6zVM",
+        "collection_F7aznG"
       ],
       "settings": {
         "section_width": "container",
