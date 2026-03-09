@@ -8,7 +8,8 @@
 {% endcomment %}
 
 <style>
-  .mk-importer {
+  /* Variables CSS y fuente para toda la sección */
+  .mk-section-wrap {
     --mk-pink: #E48DA5;
     --mk-pink-dark: #D4729A;
     --mk-pink-light: #FDF2F5;
@@ -23,29 +24,47 @@
     --mk-radius: 16px;
     --mk-shadow: 0 4px 20px rgba(228, 141, 165, 0.12);
     font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 30px 20px 60px;
     color: var(--mk-text);
   }
 
-  /* — Banner superior — */
+  .mk-importer {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 6px 20px 60px;
+  }
+
+ /* — Banner superior — full-width edge-to-edge, justo después del nav */
+.mk-banner {
+  width: 100%;
+  overflow: hidden;
+  background: var(--mk-pink-light);
+  aspect-ratio: 1100 / 160;
+  max-height: 160px;
+  /* Sin border-radius ni márgenes: ocupa todo el ancho, pegado al nav */
+}
+
+.mk-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+@media (max-width: 768px) {
   .mk-banner {
-    width: 100%; border-radius: var(--mk-radius); overflow: hidden;
-    margin-bottom: 28px; background: var(--mk-pink-light);
-    aspect-ratio: 1100 / 320;
-    max-height: 320px;
+    aspect-ratio: 768 / 110;
+    max-height: 110px;
   }
-  .mk-banner img {
-    width: 100%; height: 100%; object-fit: cover; object-position: center;
-    display: block;
+}
+
+@media (max-width: 480px) {
+  .mk-banner {
+    aspect-ratio: 480 / 90;
+    max-height: 90px;
+    border-radius: 12px;
   }
-  @media (max-width: 768px) {
-    .mk-banner { aspect-ratio: 768 / 220; max-height: 220px; }
-  }
-  @media (max-width: 480px) {
-    .mk-banner { aspect-ratio: 480 / 180; max-height: 180px; border-radius: 12px; }
-  }
+}
 
   /* — Header — */
   .mk-header { text-align: center; margin-bottom: 32px; }
@@ -362,7 +381,7 @@
   }
 </style>
 
-<div class="mk-importer">
+<div class="mk-section-wrap">
 
   {%- if section.settings.banner_image -%}
   <div class="mk-banner">
@@ -376,6 +395,8 @@
          loading="eager">
   </div>
   {%- endif -%}
+
+  <div class="mk-importer">
 
   <div class="mk-header">
     <h2>Importar desde Sephora &amp; Amazon USA</h2>
@@ -502,7 +523,8 @@
   </div>
 
 
-</div>
+  </div><!-- /mk-importer -->
+</div><!-- /mk-section-wrap -->
 
 
 
@@ -514,8 +536,8 @@
   //  • Race condition Avada  → mkPollCartCount() confirma el item
   //  • Variant no propagado  → mkPollVariant() antes del add
   // ═══════════════════════════════════════════════════════════════
-  const MK_API        = 'https://web-production-56b31.up.railway.app';
-  let   MK_RATE       = 3.75;   // fallback — se reemplaza con yfinance via /api/config
+  const MK_API        = 'https://importador-production.up.railway.app';
+  let   MK_RATE       = 3.60;   // fallback — se reemplaza con yfinance via /api/config
   const MK_TAX_RATE   = 0.07;
   const MK_INTL_SHIP    = 20.00;   // envío fijo Sephora (USD)
   const MK_SHIP_RATE_LB = 12.00;   // $ por lb — envío aéreo Amazon
