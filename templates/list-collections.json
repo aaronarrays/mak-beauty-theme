@@ -43,18 +43,18 @@
     "main": {
       "type": "main-list-collections",
       "blocks": {
+        "collection_GawBmm": {
+          "type": "collection",
+          "settings": {
+            "collection": "rare-beauty",
+            "collection_title": ""
+          }
+        },
         "collection_ey44BB": {
           "type": "collection",
           "settings": {
             "collection": "dior",
             "collection_image": "shopify://shop_images/1_db1fd1ca-2b32-4d18-8de1-8963d4afd275.png",
-            "collection_title": ""
-          }
-        },
-        "collection_GawBmm": {
-          "type": "collection",
-          "settings": {
-            "collection": "rare-beauty",
             "collection_title": ""
           }
         },
@@ -148,8 +148,8 @@
         }
       },
       "block_order": [
-        "collection_ey44BB",
         "collection_GawBmm",
+        "collection_ey44BB",
         "collection_k6UJWD",
         "collection_qag64J",
         "collection_Kk8pDP",
