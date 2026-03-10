@@ -183,6 +183,18 @@
     font-size: 12px; color: var(--mk-text-muted); font-weight: 500;
   }
 
+  /* — Badge Compra Internacional — */
+  .mk-intl-badge {
+    position: absolute; top: 12px; left: 12px; z-index: 4;
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    color: #fff; font-size: 10px; font-weight: 700;
+    padding: 5px 11px; border-radius: 20px;
+    letter-spacing: 0.6px; text-transform: uppercase;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+    display: flex; align-items: center; gap: 5px; white-space: nowrap;
+  }
+  .mk-intl-badge::before { content: '\1F30D'; font-size: 12px; }
+
   /* — Unified variant grid (swatches + chips combined) — */
   .mk-variants-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
@@ -433,6 +445,7 @@
       <div class="mk-gallery">
         <div class="mk-gallery-thumbs" id="mk-gallery-thumbs"></div>
         <div class="mk-gallery-main">
+          <div class="mk-intl-badge">Compra Internacional</div>
           <img id="mk-main-img" src="" alt="Producto">
           <span class="mk-img-count" id="mk-img-count"></span>
           <div class="mk-gallery-overlay" id="mk-gallery-overlay">
@@ -537,7 +550,7 @@
   //  • Variant no propagado  → mkPollVariant() antes del add
   // ═══════════════════════════════════════════════════════════════
   const MK_API        = 'https://importador-production.up.railway.app';
-  let   MK_RATE       = 3.60;   // fallback — se reemplaza con yfinance via /api/config
+  let   MK_RATE       = 3.65;   // fallback — se reemplaza con yfinance via /api/config
   const MK_TAX_RATE   = 0.07;
   const MK_INTL_SHIP    = 20.00;   // envío fijo Sephora (USD)
   const MK_SHIP_RATE_LB = 12.00;   // $ por lb — envío aéreo Amazon
