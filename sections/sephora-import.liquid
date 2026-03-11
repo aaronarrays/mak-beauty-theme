@@ -1018,159 +1018,75 @@
   /* ── Variantes (grid unificado) ── */
   function mkRenderVariants(d) {
     const variants = d.color_variants || [];
-    const grid = document.getElementById('mk-variants-grid');
-    const wrap = document.getElementById('mk-variants-wrap');
+    const grid  = document.getElementById('mk-variants-grid');
+    const wrap  = document.getElementById('mk-variants-wrap');
     grid.innerHTML = '';
     if (variants.length === 0) { wrap.style.display = 'none'; return; }
 
     const isSize = variants.some(v => /oz|ml|g\b|fl/i.test(v.label||''));
     wrap.style.display = '';
-    document.getElementById('mk-variants-label').textContent = isSize ? 'Tamaño / Presentación' : 'Tono / Variante';
+    document.getElementById('mk-variants-label').textContent = isSize ? 'Tamaño' : 'Tono / Variante';
+    grid.style.gridTemplateColumns = variants.length <= 4 ? 'repeat(2,1fr)' : 'repeat(3,1fr)';
 
-    // Ajustar columnas según cantidad
-    if (variants.length <= 4) grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-    else grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-
-    variants.forEach((v, i) => {
+    variants.forEach(v => {
       const card = document.createElement('div');
-      const lbl = (v.label||`Variante ${i+1}`).replace(/^Select\s*/i,'');
-      card.className = 'mk-variant-card' + (v.selected?' picked':'') + (v.out_of_stock?' oos':'');
-      card.dataset.idx = i;
-
-      // Contenido de la card
+      const rawLabel = (v.label || v.variation_value || 'Variante').replace(/^Select\s*/i, '');
+      card.className = 'mk-variant-card' + (v.selected ? ' picked' : '') + (v.out_of_stock ? ' oos' : '');
       let html = '';
       const swatchSrc = v.swatch || v.image;
-      if (swatchSrc) {
-        html += `<img class="mk-vc-img" src="${swatchSrc}" loading="lazy" onerror="this.style.display='none'">`;
-      }
-      // Separar número/código del nombre del tono (ej: "1 - fair, cool peach")
-      const dashIdx = lbl.indexOf(' - ');
-      let name = lbl, desc = '';
-      if (dashIdx > 0) {
-        name = lbl.slice(0, dashIdx);
-        desc = lbl.slice(dashIdx + 3);
-      }
+      if (swatchSrc) html += `<img class="mk-vc-img" src="${swatchSrc}" loading="lazy" onerror="this.style.display='none'">`;
+      const di = rawLabel.indexOf(' - ');
+      const name = di > 0 ? rawLabel.slice(0, di) : rawLabel;
+      const desc = di > 0 ? rawLabel.slice(di + 3) : '';
       html += `<span class="mk-vc-label">${name}</span>`;
       if (desc) html += `<span class="mk-vc-desc">${desc}</span>`;
       if (v.price && v.price > 0) html += `<span class="mk-vc-price">$${v.price.toFixed(2)}</span>`;
       card.innerHTML = html;
-
       if (!v.out_of_stock) {
         card.onclick = async () => {
-          // Cancelar request anterior si existe
           if (mkActiveRequest) mkActiveRequest.cancelled = true;
-          const thisRequest = { cancelled: false };
-          mkActiveRequest = thisRequest;
-
-          // Marcar tono seleccionado
+          const req = { cancelled: false }; mkActiveRequest = req;
           grid.querySelectorAll('.mk-variant-card').forEach(x => x.classList.remove('picked'));
           card.classList.add('picked');
-
-          // Actualizar precio y label
-          const isSize = variants.some(vr => /oz|ml|g\b|fl/i.test(vr.label||''));
-          const lbl = (v.label||'').replace(/^Select\s*/i,'');
-          if (v.price && v.price > 0) {
-            mkData.price_numeric = v.price;
-            document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2);
-          }
-          mkUpdateColorLabel(lbl, isSize);
-          mkRecalc();
-
-          // Mostrar loading en imagen principal
+          const lbl = (v.variation_value || v.label || '').replace(/^Select\s*/i, '');
+          if (v.price && v.price > 0) { mkData.price_numeric = v.price; document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2); }
+          mkUpdateColorLabel(lbl, isSize); mkRecalc();
           const mainImg = document.getElementById('mk-main-img');
-          const thumbs = document.getElementById('mk-gallery-thumbs');
-          mainImg.style.opacity = '0.4';
-          mainImg.style.transition = 'opacity 0.2s';
-
-          // Fallback inmediato: mostrar swatch mientras carga
-          if (v.swatch) {
-            mainImg.src = v.swatch.replace('-swatch', '-zoom').replace('_swatch', '_zoom');
-          } else if (v.image) {
-            mainImg.src = mkToFullImage(v.image);
-          }
-
+          const thumbs  = document.getElementById('mk-gallery-thumbs');
+          mainImg.style.opacity = '0.4'; mainImg.style.transition = 'opacity 0.2s';
+          if (v.swatch) mainImg.src = v.swatch.replace('-swatch','-zoom').replace('_swatch','_zoom');
+          else if (v.image) mainImg.src = mkToFullImage(v.image);
           if (v.sku_id) {
-            // Usar imágenes pre-extraídas del scrape inicial
-            if (v.images && v.images.length > 1) {
-              mkVariantImagesCache[v.sku_id] = v.images;
-              mkRenderImages(v.images);
-              mainImg.style.opacity = '1';
-              return;
-            }
-            // Cache local
-            if (mkVariantImagesCache[v.sku_id]) {
-              mkRenderImages(mkVariantImagesCache[v.sku_id]);
-              mainImg.style.opacity = '1';
-              return;
-            }
-
+            if (v.images && v.images.length > 1) { mkVariantImagesCache[v.sku_id]=v.images; mkRenderImages(v.images); mainImg.style.opacity='1'; return; }
+            if (mkVariantImagesCache[v.sku_id]) { mkRenderImages(mkVariantImagesCache[v.sku_id]); mainImg.style.opacity='1'; return; }
             try {
-              const res = await fetch(`${MK_API}/api/variant-images`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-                body: JSON.stringify({ url: mkData.url, sku_id: v.sku_id })
-              });
+              const res = await fetch(`${MK_API}/api/variant-images`, { method:'POST', headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'}, body: JSON.stringify({url:mkData.url,sku_id:v.sku_id}) });
               const data = await res.json();
-
-              // Si el usuario ya cambió de variante, ignorar
-              if (thisRequest.cancelled) return;
-
+              if (req.cancelled) return;
               if (data.success && data.images && data.images.length > 0) {
                 mkVariantImagesCache[v.sku_id] = data.images;
-                // Actualizar imagen principal
-                mainImg.src = data.images[0];
-                mainImg.style.opacity = '1';
-
-                // Actualizar miniaturas
-                thumbs.innerHTML = '';
-                document.getElementById('mk-img-count').textContent = data.images.length + ' fotos';
-                data.images.forEach((imgUrl, idx) => {
-                  const img = document.createElement('img');
-                  img.src = imgUrl;
-                  img.className = 'mk-gallery-thumb' + (idx === 0 ? ' active' : '');
-                  img.loading = 'lazy';
-                  img.onclick = () => {
-                    mainImg.src = imgUrl;
-                    thumbs.querySelectorAll('.mk-gallery-thumb').forEach(t => t.classList.remove('active'));
-                    img.classList.add('active');
-                  };
-                  img.onerror = function() { this.style.display = 'none'; };
-                  thumbs.appendChild(img);
+                mainImg.src = data.images[0]; mainImg.style.opacity = '1';
+                thumbs.innerHTML = ''; document.getElementById('mk-img-count').textContent = data.images.length + ' fotos';
+                data.images.forEach((u,idx) => {
+                  const im = document.createElement('img'); im.src=u; im.className='mk-gallery-thumb'+(idx===0?' active':''); im.loading='lazy';
+                  im.onclick = () => { mainImg.src=u; thumbs.querySelectorAll('.mk-gallery-thumb').forEach(t=>t.classList.remove('active')); im.classList.add('active'); };
+                  im.onerror = function(){ this.style.display='none'; }; thumbs.appendChild(im);
                 });
-
-                // Actualizar precio si la variante tiene precio diferente
-                if (v.price && v.price > 0) {
-                  mkData.price_numeric = v.price;
-                  document.getElementById('mk-price-inline').textContent = '$' + v.price.toFixed(2);
-                  mkRecalc();
-                }
-              } else {
-                mainImg.style.opacity = '1';
-              }
-            } catch(e) {
-              if (!thisRequest.cancelled) {
-                mainImg.style.opacity = '1';
-              }
-            }
-          } else {
-            mainImg.style.opacity = '1';
-          }
+                if (v.price && v.price > 0) { mkData.price_numeric=v.price; document.getElementById('mk-price-inline').textContent='$'+v.price.toFixed(2); mkRecalc(); }
+              } else mainImg.style.opacity = '1';
+            } catch(e) { if (!req.cancelled) mainImg.style.opacity = '1'; }
+          } else mainImg.style.opacity = '1';
         };
       }
       grid.appendChild(card);
     });
 
-    // Seleccionar la variante activa
     const sel = variants.find(v => v.selected);
     if (sel) {
-      mkUpdateColorLabel(sel.label, isSize);
-      if (sel.price && sel.price > 0) {
-        mkData.price_numeric = sel.price;
-        document.getElementById('mk-price-inline').textContent = '$' + sel.price.toFixed(2);
-      }
+      mkUpdateColorLabel((sel.variation_value || sel.label), isSize);
+      if (sel.price && sel.price > 0) { mkData.price_numeric = sel.price; document.getElementById('mk-price-inline').textContent = '$' + sel.price.toFixed(2); }
     }
   }
-
   /* ── Helpers de imagen ── */
   function mkToFullImage(url) {
     if (!url) return '';
@@ -1243,7 +1159,7 @@
     document.getElementById('bd-proc').textContent       = `$ ${proc.toFixed(2)}`;
     document.getElementById('bd-usd').textContent        = `$ ${usd.toFixed(2)}`;
     document.getElementById('bd-rate').textContent       = `$1 = ${MK_SYMBOL} ${MK_RATE.toFixed(4)}`;
-    document.getElementById('bd-pen').textContent        = `${MK_SYMBOL} ${pen.toFixed(2)}`;
+    document.getElementById('bd-pen').textContent        = `${MK_SYMBOL} ${Math.round(pen).toFixed(2)}`;  // redondeado
   }
 
   function mkQty(d) { mkQtyVal = Math.max(1, mkQtyVal + d); document.getElementById('mk-qty').textContent = mkQtyVal; mkRecalc(); }
@@ -1485,7 +1401,8 @@
     const imgUrl   = mkData.images?.[0] || document.getElementById('mk-main-img')?.src || '';
     const stableId = mkStableId(mkData.url, sv.sku_id);
 
-    MK.log(`stableId="${stableId}" | sku="${sv.sku_id}" | S/ ${totalPen.toFixed(2)}`);
+    const totalPenRounded = Math.round(totalPen);
+    MK.log(`stableId="${stableId}" | sku="${sv.sku_id}" | S/ ${totalPenRounded}`);
 
     // ── 2. prepare-product (session_id estable → reused=true en 2ª llamada) ──
     let variantId;
@@ -1495,7 +1412,7 @@
         headers: { 'Content-Type': 'application/json' },
         body   : JSON.stringify({
           session_id  : stableId,
-          price       : totalPen.toFixed(2),
+          price       : totalPenRounded.toFixed(2),
           title       : mkData.name || 'Producto Sephora',
           image       : imgUrl,
           sephora_url : mkData.url || '',
