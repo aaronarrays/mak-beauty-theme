@@ -15,7 +15,7 @@
         "slider_item_LzjxbH": {
           "type": "slider_item",
           "settings": {
-            "image": "shopify://shop_images/BAMNER-1900_jpg_4d3a9d74-07f6-4bbe-9a66-f982eadb3c32.jpg",
+            "image": "shopify://shop_images/BANNWER_WEB_NUEVA_MEDIA_1920X400_jpg.jpg",
             "image_mobile": "shopify://shop_images/BANNER-600_jpg.jpg",
             "overlay_opacity": 0,
             "slider_effect": "effect_fadeindown",
@@ -28,12 +28,12 @@
             "second_button_label": "",
             "second_button_link": "",
             "second_button_style": false,
-            "content_alignment": "left",
+            "content_alignment": "right",
             "content_position": "bottom-center",
-            "content_width": "full_width",
-            "content_max_width": 100,
-            "content_padding_block": 115,
-            "content_padding_inline": 60,
+            "content_width": "container",
+            "content_max_width": 40,
+            "content_padding_block": 40,
+            "content_padding_inline": 0,
             "show_content_background": false,
             "content_background": "#ffffff",
             "content_box_opacity": 100,
@@ -471,8 +471,6 @@
       "disabled": true,
       "name": "Banner Dual (Pro)",
       "settings": {
-        "image_desktop": "shopify://shop_images/Mesa_de_trabajo_1.png",
-        "image_mobile": "shopify://shop_images/Mesa_de_trabajo_2.png",
         "link": "shopify://collections/all"
       }
     },
