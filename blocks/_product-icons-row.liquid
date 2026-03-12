@@ -64,11 +64,9 @@
   </style>
 
   {%- assign is_intl = false -%}
-  {%- for tag in product.tags -%}
-    {%- if tag == 'compra-internacional' -%}
-      {%- assign is_intl = true -%}
-    {%- endif -%}
-  {%- endfor -%}
+  {%- if product.tags contains 'compra-internacional' -%}
+    {%- assign is_intl = true -%}
+  {%- endif -%}
 
   {%- if is_intl -%}
     <div class="intl-delivery-badge" style="display:flex;align-items:center;gap:10px;background:#fff8f0;border:1.5px solid #f4a84a;border-radius:8px;padding:12px 16px;">
