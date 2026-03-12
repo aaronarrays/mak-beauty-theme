@@ -63,32 +63,48 @@
     }
   </style>
 
-  <div class="icons-row-{{ block.id }}">
-    {%- for i in (1..5) -%}
-      {%- assign svg_id = 'icon_svg_' | append: i -%}
-      {%- assign img_id = 'icon_image_' | append: i -%}
-      {%- assign txt_id = 'icon_text_' | append: i -%}
+  {%- assign is_intl = false -%}
+  {%- for tag in product.tags -%}
+    {%- if tag == 'compra-internacional' -%}
+      {%- assign is_intl = true -%}
+    {%- endif -%}
+  {%- endfor -%}
 
-      {%- assign svg_code = block_st[svg_id] -%}
-      {%- assign image = block_st[img_id] -%}
-      {%- assign text = block_st[txt_id] -%}
+  {%- if is_intl -%}
+    <div class="intl-delivery-badge" style="display:flex;align-items:center;gap:10px;background:#fff8f0;border:1.5px solid #f4a84a;border-radius:8px;padding:12px 16px;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f4a84a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+      <span style="font-size:14px;font-weight:600;color:#c47a00;">&#x1F4E6; El pedido llega en aproximadamente 15 días</span>
+    </div>
+  {%- else -%}
+    <div class="icons-row-{{ block.id }}">
+      {%- for i in (1..5) -%}
+        {%- assign svg_id = 'icon_svg_' | append: i -%}
+        {%- assign img_id = 'icon_image_' | append: i -%}
+        {%- assign txt_id = 'icon_text_' | append: i -%}
 
-      {%- if svg_code != blank or image != blank or text != blank -%}
-        <div class="icon-item-{{ block.id }}">
-          <div class="icon-media-{{ block.id }}">
-            {%- if svg_code != blank -%}
-              {{ svg_code }}
-            {%- elsif image != blank -%}
-              <img src="{{ image | image_url: width: 200 }}" alt="{{ text | escape }}" width="{{ icon_width }}" height="{{ icon_width }}" loading="lazy">
+        {%- assign svg_code = block_st[svg_id] -%}
+        {%- assign image = block_st[img_id] -%}
+        {%- assign text = block_st[txt_id] -%}
+
+        {%- if svg_code != blank or image != blank or text != blank -%}
+          <div class="icon-item-{{ block.id }}">
+            <div class="icon-media-{{ block.id }}">
+              {%- if svg_code != blank -%}
+                {{ svg_code }}
+              {%- elsif image != blank -%}
+                <img src="{{ image | image_url: width: 200 }}" alt="{{ text | escape }}" width="{{ icon_width }}" height="{{ icon_width }}" loading="lazy">
+              {%- endif -%}
+            </div>
+            {%- if text != blank -%}
+              <span class="icon-text-{{ block.id }}">{{ text }}</span>
             {%- endif -%}
           </div>
-          {%- if text != blank -%}
-            <span class="icon-text-{{ block.id }}">{{ text }}</span>
-          {%- endif -%}
-        </div>
-      {%- endif -%}
-    {%- endfor -%}
-  </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
 </div>
 
 {% schema %}
