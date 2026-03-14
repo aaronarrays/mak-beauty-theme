@@ -611,17 +611,17 @@
     "collection_tab_MHAJyc": {
       "type": "collection-tab",
       "blocks": {
-        "collection_eUKa9f": {
-          "type": "collection",
-          "settings": {
-            "collection": "sol-de-janeiro",
-            "collection_title": ""
-          }
-        },
         "collection_GzftdW": {
           "type": "collection",
           "settings": {
             "collection": "rare-beauty",
+            "collection_title": ""
+          }
+        },
+        "collection_eUKa9f": {
+          "type": "collection",
+          "settings": {
+            "collection": "sol-de-janeiro",
             "collection_title": ""
           }
         },
@@ -648,8 +648,8 @@
         }
       },
       "block_order": [
-        "collection_eUKa9f",
         "collection_GzftdW",
+        "collection_eUKa9f",
         "collection_Ujy4rH",
         "collection_Kafxid",
         "collection_Yjc86X"
@@ -669,7 +669,7 @@
         "tab_header_postion": "default",
         "display_mode": "carousel",
         "items_to_show": 8,
-        "items_per_row": 3,
+        "items_per_row": 5,
         "column_gap": 30,
         "show_arrow": false,
         "carousel_pagination": "disable",
