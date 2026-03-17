@@ -69,11 +69,29 @@
   {%- endif -%}
 
   {%- if is_intl -%}
-    <div class="intl-delivery-badge" style="display:flex;align-items:center;gap:10px;background:#fff8f0;border:1.5px solid #f4a84a;border-radius:8px;padding:12px 16px;margin-bottom:4px;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f4a84a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
-        <rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-      </svg>
-      <span style="font-size:13px;font-weight:600;color:#c47a00;">El pedido llega en aproximadamente 15 días</span>
+    <div class="intl-delivery-info">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff8f0;border:1.5px solid #f4a84a;border-radius:8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f4a84a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
+          <rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+        <span style="font-size:13px;font-weight:600;color:#c47a00;flex:1;">Compra internacional &middot; hasta 15 días hábiles</span>
+        <button
+          type="button"
+          aria-label="Ver detalles del envío internacional"
+          onclick="var p=this.closest('.intl-delivery-info');var d=p.querySelector('.intl-details');var open=d.style.display!=='block';d.style.display=open?'block':'none';p.querySelector('.intl-chevron').style.transform=open?'rotate(180deg)':'rotate(0deg)';"
+          style="background:none;border:none;cursor:pointer;padding:0;color:#c47a00;line-height:1;flex-shrink:0;display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;"
+        >
+          Más info
+          <svg class="intl-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+      </div>
+      <div class="intl-details" style="display:none;padding:10px 16px 12px;background:#fff8f0;border:1.5px solid #f4a84a;border-top:none;border-radius:0 0 8px 8px;font-size:12px;color:#7a5500;line-height:1.6;">
+        <p style="margin:0 0 4px;">📦 Este producto se envía directamente desde el proveedor internacional.</p>
+        <p style="margin:0 0 4px;">🗓️ El plazo de <strong>15 días hábiles</strong> no incluye sábados, domingos ni feriados.</p>
+        <p style="margin:0;">⚠️ El tiempo puede variar según la aduana y la dirección de destino.</p>
+      </div>
     </div>
   {%- else -%}
     <div class="icons-row-{{ block.id }}">
