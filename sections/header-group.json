@@ -30,6 +30,7 @@
         },
         "announcement_qhwmhW": {
           "type": "announcement",
+          "disabled": true,
           "settings": {
             "text": "<strong>Obten los mejores descuentos en nuestros live de TIKTOK</strong>",
             "countdown_deadline": ""
