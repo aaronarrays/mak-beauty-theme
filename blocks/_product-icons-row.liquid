@@ -64,6 +64,11 @@
     }
   </style>
 
+  {%- comment -%}DEBUG TEMPORAL - BORRAR LUEGO{%- endcomment -%}
+  <div style="font-size:10px;color:red;background:#ffe;padding:2px 6px;border:1px solid red;margin-bottom:6px;">
+    DEBUG handle={{ product.handle }} | tags={{ product.tags | join:',' }}
+  </div>
+
   {%- assign is_intl = false -%}
   {%- if product.tags contains 'compra-internacional' -%}
     {%- assign is_intl = true -%}
