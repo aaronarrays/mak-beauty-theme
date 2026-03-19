@@ -64,12 +64,7 @@
     }
   </style>
 
-  {%- assign is_intl = false -%}
   {%- if product.tags contains 'compra-internacional' -%}
-    {%- assign is_intl = true -%}
-  {%- endif -%}
-
-  {%- if is_intl -%}
     <div class="intl-delivery-info">
       <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff8f0;border:1.5px solid #f4a84a;border-radius:8px;">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f4a84a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
